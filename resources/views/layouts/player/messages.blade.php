@@ -12,7 +12,7 @@
 						<div class="row">
 							<div class="col-md-10">
 								<div class="form-group">
-									{!! Form::textarea('msg_composer', null, ['size' => '14x8']) !!}
+									{!! Form::textarea('msg_composer', null, ['size' => '14x6']) !!}
 								</div>
 							</div>
 							<div class="col-md-2 share-to">
