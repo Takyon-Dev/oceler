@@ -1,0 +1,5 @@
+suites:
+    main:
+        namespace: oceler
+        psr4_prefix: oceler
+        src_path: app

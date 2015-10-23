@@ -1,0 +1,182 @@
+body {
+	color: #212121;
+    font-family: "Open Sans", Helvetica, Arial, sans;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #666;
+}
+
+/* Row and column behavior */
+
+.top-buffer {
+	margin-top: 24px;
+}
+
+/* centered columns styles */
+.row-centered {
+    text-align:center;
+}
+
+.col-centered {
+    display:inline-block;
+    float:none;
+    /* reset the text-align */
+    text-align:left;
+    /* inline-block space fix */
+    margin-right:-4px;
+}
+
+.full-width {
+    margin: 0;
+}
+
+.full-width div.col-md-12 {
+    padding: 0;
+}
+
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+
+/* Overrides Bootstrap's default navbar properties */
+
+.navbar-default {
+    background-image: none;
+    background: #4FC3F7;
+    border-radius: 0;
+}
+
+.navbar-default .navbar-brand,  .navbar-default .navbar-brand:hover{
+    color: #fff;
+    font-size: 160%;
+		cursor: default;
+}
+
+.navbar-default .navbar-nav>li>a, .navbar-toggle span {
+    color: #212121;
+}
+
+
+
+.navbar-default .navbar-nav>li>a:hover {
+    color: #fff;
+}
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover {
+    background-image: none;
+    background-color: #03A9F4;
+    color: #fff;;
+}
+
+.navbar-toggle {
+    border-color: #fff;
+}
+
+.navbar-toggle .icon-bar {
+    background-color: #fff;
+}
+
+.nav-tabs:hover {
+  cursor: pointer;
+}
+
+/* Sticky footer styles */
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 200px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 200px;
+  background-color: #BDBDBD;
+  padding-top: 24px;
+}
+
+/* Forms and input */
+
+form fieldset{
+    padding: 18px;
+    background-color: #E1F5FE;
+    margin-top: 18px;
+		margin-bottom: 24px;
+
+}
+
+input.form-control {
+    width: 36%;
+}
+
+.btn-default, .btn-default:hover {
+    background-image: none;
+    background-color: #FFA000;
+    border: none;
+    text-shadow: 0 0 0 ;
+    color: #fff;
+    margin-top: 18px;
+
+}
+.btn-default:hover {
+  background-color: #FFC107;
+}
+
+
+.checkbox input[type=checkbox] {
+    margin-left: 0;
+}
+
+.hero-unit {
+  padding: 60px;
+  margin: 30px 0;
+  font-size: 18px;
+  font-weight: 200;
+  line-height: 30px;
+  color: inherit;
+  background-color: #eeeeee;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+}
+
+.hero-unit h1 {
+  margin-bottom: 0;
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: inherit;
+}
+
+.hero-unit li {
+  line-height: 30px;
+}
+
+.hero-unit a {
+	margin-right: 48px;
+}
+
+.btn-large {
+  padding: 11px 19px;
+  font-size: 17.5px;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+.btn-large [class^="icon-"],
+.btn-large [class*=" icon-"] {
+  margin-top: 4px;
+}
+
+.btn-info {
+	background-image: none;
+	background-color: #4FC3F7;
+}

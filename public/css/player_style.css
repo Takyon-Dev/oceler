@@ -1,0 +1,144 @@
+body {
+	background-color: #F0F1F4;
+	color: #000;
+}
+
+.container {
+	width: 100%;
+}
+
+h1 {
+	text-align: center;
+	font-size: 150%;
+	color: #000;
+}  
+
+h2, h3 {
+	font-size: 110%;
+	color: #000;
+}
+
+/**
+* 	Solutions 
+*/
+
+div.solutions {
+	border-top: 1px solid #000;
+	border-bottom: 1px solid #000;
+}
+
+table {
+	border: none;
+}
+
+.table>thead>tr>th {
+	border: none;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th {
+	/* Sets all columns to be equal width (i.e. 1/6) */
+	width: 16.67%;
+	border: 1px solid #000;
+	line-height: .75;
+}
+
+table.solutions {
+	background-color: #fff;
+	width: 90%;
+}
+
+table.solutions th{
+	background-color: #F0F1F4;
+	text-align: center;
+	font-weight: 700;
+}
+
+table.solutions tr td:first-child{
+	border: none;
+	text-align: right;
+	background-color:  #F0F1F4;
+}
+
+/**
+* Timer
+*/
+
+div#timer_container {
+	padding: 8px;
+}
+
+div#timer_container div {
+    border: 1px solid black;
+    width: 12%;
+    float: right;
+    margin-right: 2%;
+    padding: 4px;
+    text-align: left;
+    background: #fff
+}  
+
+/**
+* Messaging
+*/
+
+div#messaging_container {
+    width: 95%;
+    border: 1px solid #666666;
+    margin: 0 auto;
+    padding: 4px;
+    background: #fff;
+}
+
+div#messaging_container form{
+	width: 94%;
+	margin: 0 auto;
+}
+
+div#messaging_container form textarea {
+	width: 100%;
+}
+
+div.share-to {
+	background-color: #fff;
+	padding: 8px;
+}
+
+div.share-to h3 {
+	margin-top: -4px;
+	text-align: center;
+}
+
+div.share-to div {
+	float:left;
+	clear: both;
+	margin: 24px 0 0 18px;
+}
+
+label.share-name, input.share-name {
+	float: left;
+}
+
+input.share-name {
+	margin: -10px 6px 0 0;
+}
+
+label.share-name {
+	-webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+
+    padding: 8px;
+    width: 1%;
+}
+
+div.share-to div br {
+	float: left;
+	clear: both;
+}
+
+#msg_cancel {
+	margin-right: 12px;
+}
+
