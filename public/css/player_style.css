@@ -59,6 +59,12 @@ table.solutions tr td:first-child{
 	background-color:  #F0F1F4;
 }
 
+table.solutions .btn-sm {
+	font-size: 10px;
+	padding: 1px 4px;
+	margin: 0;
+}
+
 /**
 * Timer
 */
