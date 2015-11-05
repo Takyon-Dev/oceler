@@ -5,26 +5,28 @@
 		<div class="row">
 			<div id="composer">
 				
-				<form>
+				{!! Form::open(array('class' => 'form')) !!}
 					<fieldset>
 						<h2>Compose</h2>
 						<p id="share_container"></p>
 						<div class="row">
 							<div class="col-md-10">
 								<div class="form-group">
-									<textarea id="msg_composer" rows="6" cols="14"></textarea>
+									{!! Form::textarea('msg_composer', null, ['size' => '14x6']) !!}
 								</div>
 							</div>
 							<div class="col-md-2 share-to">
 								<h3>share to:</h3>
 								<div class="form-group">
-									@foreach($players_to AS $player)
-										<label for="share_to_{{ $player->id }}" class="share-name">{{ $player->player_name }}</label>
-									@endforeach
+									{!! Form::label('share_to_1', 'Harley', ['class' => 'share-name']) !!}
+									{!! Form::label('share_to_2', 'Casey', ['class' => 'share-name']) !!}									
+									{!! Form::label('share_to_3', 'Dakota', ['class' => 'share-name']) !!}									
+									{!! Form::label('share_to_4', 'Jordan', ['class' => 'share-name']) !!}
 									<br>
-									@foreach($players_to AS $player)
-										<input name="share_to_{{ $player->id }}" type="checkbox" class="share-name" value="{{ $player->id }}">
-									@endforeach
+									{!! Form::checkbox('share_to_1', 1, null, ['class' => 'share-name']) !!}
+									{!! Form::checkbox('share_to_2', 2, null, ['class' => 'share-name']) !!}
+									{!! Form::checkbox('share_to_3', 3, null, ['class' => 'share-name']) !!}
+									{!! Form::checkbox('share_to_4', 4, null, ['class' => 'share-name']) !!}
 								</div>
 							</div>
 						</div>
@@ -35,7 +37,7 @@
 							</div>
 						</div>	
 					</fieldset>
-				</form>	
+				{!! Form::close()  !!}	
 			</div>	
 		</div>
 	</div>
