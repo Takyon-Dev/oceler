@@ -65,6 +65,25 @@ table.solutions .btn-sm {
 	margin: 0;
 }
 
+table.solutions tr td {
+	padding: 4px;
+	position: relative;
+	height: 24px;
+}
+
+form.solution_form {
+	width: 100%;
+	padding: 4px;
+	z-index: 2;
+	position: absolute;
+	background-color: #F0F1F4;
+	border: 1px solid #000;
+}
+
+form.solution_form input, form.solution_form label {
+	margin: 8px 0;
+}
+
 /**
 * Timer
 */
