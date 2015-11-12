@@ -8,6 +8,9 @@ use oceler\Http\Controllers\Controller;
 use View;
 use Auth;
 use DB;
+use Response;
+use Session;
+use oceler\Solution;
 use oceler\SolutionCategory;
 
 class PlayerController extends Controller
@@ -69,9 +72,60 @@ class PlayerController extends Controller
     	*/
     	$solution_categories = SolutionCategory::all();
 
+    	Session::put('players_from', $players_from);
+    	Session::put('players_to', $players_to);
+
     	// Finally, we generate the page, passing the user's id, the players_from and players_to arrays and the solution categories array
     	return View::make('layouts.player.main')->with('user', Auth::user())->with('players_from', $players_from)->with('players_to', $players_to)->with('solution_categories', $solution_categories);
-    }
+    }   
+
+    /**
+    * Stores a new solution to the solutions table in the DB
+    *
+    */
+	public function  postSolution(Request $request)
+	{
+
+		$user = Auth::user();
+
+		$sol = new Solution;
+		$sol->category_id = $request->category_id;
+		$sol->solution = $request->solution;
+		$sol->confidence = $request->confidence;
+		$sol->user_id = $user->id;
+		
+		$sol->save();
+	}
+
+    /**
+    * Gets the most recent solutions for every player
+    *  that is visible to the user
+    *
+    * @param solution_id	The id of the latest solution that was retrieved
+    */
+	public function getListenSolution($solution_id)
+	{
+
+		// We build an array of user IDs for each player
+		//  the user can see (including themselves)
+		//  to use in our query
+
+		$ids[] = Auth::user()->id;
+
+		foreach (Session::get('players_from') as $player) {
+			$ids[] = $player->id;
+		}
+
+		// Get all solutions more recent than the last solution ID we have
+		$solutions = DB::table('solutions')
+                    ->whereIn('user_id', $ids)
+                    ->where('id', '>', $solution_id)
+                    ->get();
+
+		return Response::json($solutions);
+		
+		
+	} 	
 
     /**
     * This function ensures that users are authenticated (i.e. logged in) before showing this page.

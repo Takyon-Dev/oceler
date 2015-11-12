@@ -19,6 +19,24 @@ h2, h3 {
 }
 
 /**
+* Timer
+*/
+
+div#timer_container {
+	padding: 8px;
+}
+
+div#timer_container div {
+    border: 1px solid black;
+    width: 12%;
+    float: right;
+    margin-right: 2%;
+    padding: 4px;
+    text-align: left;
+    background: #fff
+} 
+
+/**
 * 	Solutions 
 */
 
@@ -39,7 +57,7 @@ table {
 	/* Sets all columns to be equal width (i.e. 1/6) */
 	width: 16.67%;
 	border: 1px solid #000;
-	line-height: .6;
+	
 }
 
 table.solutions {
@@ -69,38 +87,29 @@ table.solutions tr td {
 	padding: 4px;
 	position: relative;
 	height: 24px;
+	vertical-align: middle;
 }
 
-form.solution_form {
+.solution-container {
+	margin-right: 4px;
+}
+
+form.solution-form {
 	width: 100%;
+	min-width: 224px;
 	padding: 4px;
+	margin-top: -22px;
+    margin-left: -2px;
 	z-index: 2;
 	position: absolute;
 	background-color: #F0F1F4;
 	border: 1px solid #000;
+	display: none;
 }
 
-form.solution_form input, form.solution_form label {
+form.solution-form input, form.solution-form label {
 	margin: 8px 0;
-}
-
-/**
-* Timer
-*/
-
-div#timer_container {
-	padding: 8px;
-}
-
-div#timer_container div {
-    border: 1px solid black;
-    width: 12%;
-    float: right;
-    margin-right: 2%;
-    padding: 4px;
-    text-align: left;
-    background: #fff
-}  
+} 
 
 /**
 * Messaging

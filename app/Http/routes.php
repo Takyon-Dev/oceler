@@ -27,6 +27,9 @@ Route::get('player', function () {
 */
 
 Route::get('player/', 'PlayerController@getShow');
+Route::post('solution', 'PlayerController@postSolution');
+
+Route::get('listen/solution/{id}', 'PlayerController@getListenSolution');
 
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
