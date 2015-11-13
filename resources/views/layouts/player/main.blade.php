@@ -6,6 +6,7 @@
 
 @section('js')
 	<script type="text/javascript" src="{{ asset('js/solutions.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/messages.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/listen.js') }}"></script>
 @stop
 

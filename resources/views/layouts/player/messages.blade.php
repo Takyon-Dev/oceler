@@ -5,25 +5,29 @@
 		<div class="row">
 			<div id="composer">
 				
-				<form>
+				<form id="msg_form">
 					<fieldset>
 						<h2>Compose</h2>
 						<p id="share_container"></p>
 						<div class="row">
-							<div class="col-md-10">
+							<div class="col-md-10">								
 								<div class="form-group">
-									<textarea id="msg_composer" rows="6" cols="14"></textarea>
+									<textarea id="message" name="message" rows="6" cols="14"></textarea>
 								</div>
 							</div>
+							<input type="hidden" name="factoid_id" value="">
+							<input type="hidden" name="thread_id" value="">
+							<input type="hidden" name="reply_to_id" value="">
+							<input type="hidden" name="via_id" value="">
 							<div class="col-md-2 share-to">
 								<h3>share to:</h3>
 								<div class="form-group">
 									@foreach($players_to AS $player)
-										<label for="share_to_{{ $player->id }}" class="share-name">{{ $player->player_name }}</label>
+										<label for="share_to" class="share-name">{{ $player->player_name }}</label>
 									@endforeach
 									<br>
 									@foreach($players_to AS $player)
-										<input name="share_to_{{ $player->id }}" type="checkbox" class="share-name" value="{{ $player->id }}">
+										<input name="share_to" type="checkbox" class="share-name" value="{{ $player->id }}">
 									@endforeach
 								</div>
 							</div>
