@@ -28,4 +28,4 @@
 <!-- jQueryUI () -->
 <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 
-@yield('js');
+@yield('js')
