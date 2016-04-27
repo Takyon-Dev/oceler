@@ -16,8 +16,6 @@ class CreateMessagesTable extends Migration
             $table->increments('id');
             $table->integer('thread_id');
             $table->integer('sender_id');
-            $table->integer('via_id');
-            $table->integer('reply_to_id');
             $table->integer('factoid_id');
             $table->text('message');
             $table->timestamps();

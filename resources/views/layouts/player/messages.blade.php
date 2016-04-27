@@ -15,10 +15,9 @@
 									<textarea id="message" name="message" rows="6" cols="14"></textarea>
 								</div>
 							</div>
-							<input type="hidden" name="factoid_id" value="">
-							<input type="hidden" name="thread_id" value="">
-							<input type="hidden" name="reply_to_id" value="">
-							<input type="hidden" name="via_id" value="">
+							<input type="hidden" id="factoid_id" name="factoid_id" value="0">
+							<input type="hidden" id="thread_id" name="thread_id" value="0">
+							<input type="hidden" id="_token" name="_token" value="<?php echo csrf_token(); ?>">
 							<div class="col-md-2 share-to">
 								<h3>share to:</h3>
 								<div class="form-group">
@@ -27,7 +26,7 @@
 									@endforeach
 									<br>
 									@foreach($players_to AS $player)
-										<input name="share_to" type="checkbox" class="share-name" value="{{ $player->id }}">
+										<input name="share_to[]" type="checkbox" class="share-name" value="{{ $player->id }}">
 									@endforeach
 								</div>
 							</div>
