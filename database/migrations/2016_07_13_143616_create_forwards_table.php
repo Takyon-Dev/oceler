@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMessagesTable extends Migration
+class CreateForwardsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,16 @@ class CreateMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('forwards', function (Blueprint $table) {
+
             $table->increments('id');
-            $table->integer('sender_id')->unsigned();
-            $table->integer('factoid_id');
-            $table->text('message');
+            $table->integer('sender_id');
+            $table->integer('message_id')->unsigned();
             $table->timestamps();
 
-            //$table->foreign('sender_id')->references('id')->on('users');
+            // Add foreign key on id field in messages table
+            $table->foreign('message_id')->references('id')->on('messages');
+
         });
     }
 
@@ -30,6 +32,7 @@ class CreateMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('messages');
+        
+        Schema::drop('forwards');
     }
 }

@@ -16,7 +16,7 @@
 								</div>
 							</div>
 							<input type="hidden" id="factoid_id" name="factoid_id" value="0">
-							<input type="hidden" id="thread_id" name="thread_id" value="0">
+							<input type="hidden" id="reply_to" name="reply_to" value="0">
 							<input type="hidden" id="_token" name="_token" value="<?php echo csrf_token(); ?>">
 							<div class="col-md-2 share-to">
 								<h3>share to:</h3>
@@ -45,6 +45,13 @@
 			<div class="col-md-12" id="msg_feed">
 				<h2>MESSAGE FEED</h2>
 				<div id="messages">
+					<div id="1" class="message">
+						<span class="header text-danger">You to Casey, Dakota:</span>
+						<span class="msg-body">
+							This is an example of a short message!
+						</span>
+						<span class="">(<a id="1">reply</a> / <a id="1">share</a>)</span>
+					</div>
 				</div>
 			</div>
 		</div>

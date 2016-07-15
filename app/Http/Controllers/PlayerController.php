@@ -16,7 +16,7 @@ use oceler\SolutionCategory;
 class PlayerController extends Controller
 {
     //
-    public function getShow() 
+    public function getShow()
     {
     	/**
     	* Let me take a moment to explain networks. The connections between users
@@ -24,9 +24,9 @@ class PlayerController extends Controller
     	*   Each node can serve as a source or a target to other nodes. A source is
     	*   a player whose information can be seen by the target. Connections can
     	*   be bi-directional (player A can see player B's information, and player B
-    	*   can see Player A's information) or uni-directional (player A can see 
+    	*   can see Player A's information) or uni-directional (player A can see
     	*   player B's information, but player B CAN'T see player A's information).
-    	*	
+    	*
     	* Below, we find the network relationships to the current user, and store
     	*   the players the user can see in one array ($players_from) and the players
     	*   that can see the user in another array ($players_to).
@@ -34,11 +34,18 @@ class PlayerController extends Controller
 
     	// Get the user's ID, the ID of the network, and the user's network node
     	$u_id = Auth::id();
-    	$network = DB::table('networks')->where('sess_id', '=', Auth::user()->session_id)->value('id');
-    	$u_node = DB::table('user_nodes')->where('user_id', '=', $u_id)->value('node');
+    	$network = DB::table('networks')
+                      ->where('sess_id', '=', Auth::user()->session_id)
+                      ->value('id');
+
+    	$u_node = DB::table('user_nodes')
+                    ->where('user_id', '=', $u_id)
+                    ->value('node');
 
     	// Get each player that is in the same session as the user
-    	$session_players = DB::table('users')->where('session_id', '=', Auth::user()->session_id)->get();
+    	$session_players = DB::table('users')
+                              ->where('session_id', '=', Auth::user()->session_id)
+                              ->get();
 
     	// Create two arrays -- one to hold the players the user can see, and another to hold the players that can see the user
     	$players_from = array();
@@ -48,26 +55,40 @@ class PlayerController extends Controller
     	foreach ($session_players as $player) {
 
     		// Get the network node for this player
-    		$node = DB::table('user_nodes')->where('user_id', '=', $player->id)->value('node');
+    		$node = DB::table('user_nodes')
+                    ->where('user_id', '=', $player->id)
+                    ->value('node');
 
     		// See if their node is a source where the user's node is a target
-    		$from = DB::table('network_edges')->where('net_id', '=', $network)->where('source', '=', $node)->where('target', '=', $u_node)->value('source');
+    		$from = DB::table('network_edges')
+                    ->where('net_id', '=', $network)
+                    ->where('source', '=', $node)
+                    ->where('target', '=', $u_node)
+                    ->value('source');
 
     		// See if their node is a target where the user's node is a source
-    		$to = DB::table('network_edges')->where('net_id', '=', $network)->where('target', '=', $u_node)->where('source', '=', $node)->value('target');	
+    		$to = DB::table('network_edges')
+                  ->where('net_id', '=', $network)
+                  ->where('target', '=', $u_node)
+                  ->where('source', '=', $node)
+                  ->value('target');
 
-    		// If they are a source (e.g. the user can see this player), add them to the $players_from array
+    		// If they are a source (e.g. the user can see this player),
+    		// add them to the $players_from array
     		if($from) $players_from[] = $player;
 
-    		// If they are a target (e.g., this player can see the user), add them to the $players_to array
+    		// If they are a target (e.g., this player can see the user),
+    		// add them to the $players_to array
     		if($to) $players_to[] = $player;
 
     	}
 
 
-    	/** 
-    	* Solution categories are stored in the DB. This makes it possible to support different sessions
-    	*  having different solution categories. At the moment, all sessions use the same categories, so
+    	/**
+    	* Solution categories are stored in the DB. This makes it
+    	*  possible to support different sessions
+    	*  having different solution categories. At the moment,
+    	*  all sessions use the same categories, so
     	*  we simply get them all in an array.
     	*/
     	$solution_categories = SolutionCategory::all();
@@ -75,9 +96,15 @@ class PlayerController extends Controller
     	Session::put('players_from', $players_from);
     	Session::put('players_to', $players_to);
 
-    	// Finally, we generate the page, passing the user's id, the players_from and players_to arrays and the solution categories array
-    	return View::make('layouts.player.main')->with('user', Auth::user())->with('players_from', $players_from)->with('players_to', $players_to)->with('solution_categories', $solution_categories);
-    }   
+    	// Finally, we generate the page, passing the user's id,
+    	// the players_from and players_to arrays and the
+    	// solution categories array
+    	return View::make('layouts.player.main')
+                   ->with('user', Auth::user())
+                   ->with('players_from', $players_from)
+                   ->with('players_to', $players_to)
+                   ->with('solution_categories', $solution_categories);
+    }
 
     /**
     * Stores a new solution to the solutions table in the DB
@@ -93,7 +120,7 @@ class PlayerController extends Controller
 		$sol->solution = $request->solution;
 		$sol->confidence = $request->confidence;
 		$sol->user_id = $user->id;
-		
+
 		$sol->save();
 	}
 
@@ -123,13 +150,13 @@ class PlayerController extends Controller
                     ->get();
 
 		return Response::json($solutions);
-		
-		
-	} 	
+
+	}
 
     /**
-    * This function ensures that users are authenticated (i.e. logged in) before showing this page.
-    *   If they are not, they are taken to a login page.
+    * This function ensures that users are authenticated (i.e. logged in)
+    * before showing this page. If they are not, they are taken to a
+    * login page.
     */
     public function __construct()
     {

@@ -11,4 +11,13 @@ class Message extends Model
     return $this->belongsToMany('oceler\User')->withTimestamps();
   }
 
+  public function sender() {
+    return $this->belongsTo('\oceler\User');
+  }
+
+  public function replies() {
+    return $this->hasMany('\oceler\Reply')->with('replier');
+  }
+
+
 }

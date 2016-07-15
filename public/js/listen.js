@@ -1,9 +1,11 @@
 var last_solution = 0;
+var last_message_time = 0;
 
 
 $(document).ready(function() {
 
 	solutionListener(last_solution);
+	messageListener(last_message_time);
 
 });
 
@@ -15,26 +17,46 @@ function solutionListener()
 		type: "GET",
 		url: "listen/solution/"+last_solution,
 		success: function(solutions)
-		{	
+		{
 
-			console.log(JSON.stringify(solutions));
-
-			$.each(solutions, function(key, sol) 
+			$.each(solutions, function(key, sol)
 			{
-				console.log(sol.solution);
-
-				key = sol.user_id+'_'+sol.category_id;
-
-				$('#sol_'+key).html(sol.solution);
-				$('#conf_'+key).html(sol.confidence + '%');
-				$('#sol_'+key).parent().css('background-color', '#FFC92C'); // Highlight the cell
-				$('#sol_'+key).parent().animate({'backgroundColor': '#FFF' }, 30000); // and then slowly fade it out
+				addNewSolution(sol);
 				last_solution = sol.id;
 			});
-			
+
 		}
 	});
 
 	setTimeout(solutionListener, 2000);
 
+}
+
+function messageListener()
+{
+	$.ajax({
+		type: "GET",
+		url: "listen/message/"+last_message_time,
+		success: function(messages)
+		{
+
+			$.each(messages, function(key, msg)
+			{
+				//updateMessageWindow(msg);
+
+				var m = new Message(msg.users, msg.sender, msg.message, msg.id);
+				m.addMessage($("#messages"));
+
+				$.each(msg.replies, function(key, reply){
+					var r = new Reply(msg.users, reply.replier, reply.message, msg.id);
+					r.addMessage($("#msg_" + msg.id));
+				});
+
+				last_message_time = msg.updated_at;
+			});
+
+
+		}
+	});
+	setTimeout(messageListener, 2000);
 }

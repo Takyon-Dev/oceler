@@ -11,7 +11,7 @@ h1 {
 	text-align: center;
 	font-size: 150%;
 	color: #000;
-}  
+}
 
 h2, h3 {
 	font-size: 110%;
@@ -34,10 +34,10 @@ div#timer_container div {
     padding: 4px;
     text-align: left;
     background: #fff
-} 
+}
 
 /**
-* 	Solutions 
+* 	Solutions
 */
 
 div.solutions {
@@ -57,7 +57,7 @@ table {
 	/* Sets all columns to be equal width (i.e. 1/6) */
 	width: 16.67%;
 	border: 1px solid #000;
-	
+
 }
 
 table.solutions {
@@ -99,7 +99,7 @@ form.solution-form {
 	min-width: 224px;
 	padding: 4px;
 	margin-top: -22px;
-    margin-left: -2px;
+  margin-left: -2px;
 	z-index: 2;
 	position: absolute;
 	background-color: #F0F1F4;
@@ -109,7 +109,7 @@ form.solution-form {
 
 form.solution-form input, form.solution-form label {
 	margin: 8px 0;
-} 
+}
 
 /**
 * Messaging
@@ -123,7 +123,7 @@ div#messaging_container {
     background: #fff;
 }
 
-div#messaging_container form{
+div#messaging_container form#msg_form{
 	width: 94%;
 	margin: 0 auto;
 }
@@ -179,3 +179,67 @@ div.share-to div br {
 	margin-right: 12px;
 }
 
+div#msg_feed {
+	padding-left: 36px;
+	padding-right: 36px;
+}
+
+div.message {
+	background-color: #F3FBFE;
+	padding: 4px;
+	margin-bottom: 8px;
+	float: left;
+	width: 100%;
+}
+
+div.reply {
+	float: left;
+	clear: both;
+	margin-left: 6px;
+}
+
+div.message span.header {
+	font-weight: bold;
+	display: block;
+	float: left;
+	clear: left;
+	width: 100%
+}
+
+span.msg-body {
+	float: left;
+}
+
+
+span.msg-body span {
+	margin-left: 4px;
+}
+
+span.msg-body span a:hover {
+	cursor: pointer;
+}
+
+div.message form.reply-form {
+	display: none;
+	width: 50%;
+	float: left;
+	clear: both;
+	background-color: #E1F5FE;
+	padding: 8px;
+}
+
+form.reply-form h3 {
+	margin-top: 4px;
+}
+
+form.reply-form input[type="text"]{
+	float: left;
+	clear: both;
+	width: 96%;
+	margin-bottom: 4px;
+}
+
+form.reply-form .btn-sm {
+	padding: 2px 8px!important;
+
+}
