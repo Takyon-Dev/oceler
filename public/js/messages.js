@@ -221,18 +221,30 @@ Message.prototype.toHTML = function(){
 	// Add the reply form
 	var reply_form = $('<form>', {class: 'reply-form'});
 	var reply_prompt = $('<h3>Reply to ' + this.sender_name + ':</h3>');
-	var reply = $('<input>', {type: 'text', name: 'reply'});
-	var parent_msg = $('<input>', {type: 'hidden', name: 'parent_msg', value: this.id});
+	var reply = $('<input>', {type: 'text', name: 'message'});
+	var parent_msg = $('<input>', {type: 'hidden', name: 'message_id', value: this.id});
+	var token = $('<input type="hidden" name="_token" id="token" value="' + $("#_token").val() + '">');
 	var reply_send = $('<button type="button" class="btn btn-primary btn-sm pull-right">SEND</button>');
 	$(reply_send).click(function(){
 												msgData = $(this).parent().serialize();
+
+												$.ajaxPrefilter(function(options, originalOptions, xhr) {
+													var token = $('#_token').val();
+
+													if(token){
+														return xhr.setRequestHeader('X-CSRF-TOKEN', token);
+													}
+												});
+
 												// Send the message to the Reply Controller
 												$.post(
 													'reply', /* *** NEED TO CREATE A NEW ROUTE! *** */
 													msgData,
 													function (data) {
-														$("input[name='reply']").val('');
-														$(this).parent().hide(400);
+														//$(this).parent().hide(400);
+														$(".reply-form").hide(400);
+														$("input[name='message']").val('');
+
 													})
 													.fail(function () {
 														// Add fail function here
@@ -249,6 +261,7 @@ Message.prototype.toHTML = function(){
 	$(reply_form).append(reply_prompt);
 	$(reply_form).append(reply);
 	$(reply_form).append(parent_msg);
+	$(reply_form).append(token);
 	$(reply_form).append(reply_cancel);
 	$(reply_form).append(reply_send);
 	$(div).append(reply_form);
@@ -260,7 +273,10 @@ Message.prototype.toHTML = function(){
 
 Message.prototype.addMessage = function(target){
 
-	$(target).append($(this.toHTML()));
+	// If the message is already in the inbox, remove it
+	$("#msg_" + this.id).remove();
+
+	$(target).prepend($(this.toHTML()));
 }
 
 /**
@@ -311,4 +327,9 @@ Reply.prototype.toHTML = function(){
 	$(reply_div).append(reply_body);
 
 	return $(reply_div);
+}
+
+Reply.prototype.addMessage = function(target){
+
+	$(target).append($(this.toHTML()));
 }

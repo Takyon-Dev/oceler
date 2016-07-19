@@ -34,6 +34,8 @@ Route::get('listen/solution/{id}', 'PlayerController@getListenSolution');
 Route::post('message', 'MessageController@postMessage');
 Route::get('listen/message/{id}', 'MessageController@getListenMessage');
 
+Route::post('reply', 'ReplyController@postReply');
+
 // Authentication routes...
 Route::get('auth/login', 'Auth\AuthController@getLogin');
 Route::post('auth/login', 'Auth\AuthController@postLogin');

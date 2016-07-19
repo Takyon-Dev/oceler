@@ -19,5 +19,4 @@ class Message extends Model
     return $this->hasMany('\oceler\Reply')->with('replier');
   }
 
-
 }

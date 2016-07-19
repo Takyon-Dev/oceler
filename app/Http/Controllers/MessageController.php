@@ -92,5 +92,13 @@ class MessageController extends Controller
 
 	}
 
+	/*
+	public function updateTime()
+	{
+		$dt = new DateTime;
+		$this->updated_at = $dt->format('m-d-y H:i:s');
+		$this->save();
+	}
+	*/
 
 }

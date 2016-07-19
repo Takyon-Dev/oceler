@@ -116,7 +116,7 @@ form.solution-form input, form.solution-form label {
 */
 
 div#messaging_container {
-    width: 95%;
+    width: 100%;
     border: 1px solid #666666;
     margin: 0 auto;
     padding: 4px;
@@ -242,4 +242,24 @@ form.reply-form input[type="text"]{
 form.reply-form .btn-sm {
 	padding: 2px 8px!important;
 
+}
+
+/**
+ * Search
+ */
+
+div#search_container {
+	width: 100%;
+	border: 1px solid #666666;
+	margin: 0 auto;
+	padding: 4px;
+	background: #fff;
+	min-height: 400px;
+}
+
+
+#search_form input#search_term {
+	width: 90%;
+	font-size: 150%;
+	padding: 4px;
 }

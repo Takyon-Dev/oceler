@@ -42,7 +42,6 @@ function messageListener()
 
 			$.each(messages, function(key, msg)
 			{
-				//updateMessageWindow(msg);
 
 				var m = new Message(msg.users, msg.sender, msg.message, msg.id);
 				m.addMessage($("#messages"));
