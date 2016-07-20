@@ -40,47 +40,7 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
 }
 
-/* Overrides Bootstrap's default navbar properties */
 
-.navbar-default {
-    background-image: none;
-    background: #4FC3F7;
-    border-radius: 0;
-}
-
-.navbar-default .navbar-brand,  .navbar-default .navbar-brand:hover{
-    color: #fff;
-    font-size: 160%;
-		cursor: default;
-}
-
-.navbar-default .navbar-nav>li>a, .navbar-toggle span {
-    color: #212121;
-}
-
-
-
-.navbar-default .navbar-nav>li>a:hover {
-    color: #fff;
-}
-
-.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover {
-    background-image: none;
-    background-color: #03A9F4;
-    color: #fff;;
-}
-
-.navbar-toggle {
-    border-color: #fff;
-}
-
-.navbar-toggle .icon-bar {
-    background-color: #fff;
-}
-
-.nav-tabs:hover {
-  cursor: pointer;
-}
 
 /* Sticky footer styles */
 

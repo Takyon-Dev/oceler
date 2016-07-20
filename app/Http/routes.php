@@ -74,6 +74,12 @@ Route::get('admin/dashboard', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('admin/config-files', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@showConfigFiles',
+	'roles' => ['administrator']
+]);
+
 
 // Authentication routes...
 Route::get('/login', 'Auth\AuthController@getLogin');
