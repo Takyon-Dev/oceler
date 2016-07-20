@@ -20,7 +20,8 @@ class UserTableSeeder extends Seeder
 	        'session_id' => 1,
 	        'player_name' => 'Harley',
 	        'password' => Hash::make('oceler'),
-	    ]); 
+          'role_id' => 3,
+	    ]);
 
 	    DB::table('users')->insert([
 	        'created_at' => Carbon\Carbon::now()->toDateTimeString(),
@@ -30,7 +31,8 @@ class UserTableSeeder extends Seeder
 	        'session_id' => 1,
 	        'player_name' => 'Casey',
 	        'password' => Hash::make('oceler'),
-	    ]);	   
+          'role_id' => 3,
+	    ]);
 
 	    DB::table('users')->insert([
 	        'created_at' => Carbon\Carbon::now()->toDateTimeString(),
@@ -40,6 +42,7 @@ class UserTableSeeder extends Seeder
 	        'session_id' => 1,
 	        'player_name' => 'Dakota',
 	        'password' => Hash::make('oceler'),
+          'role_id' => 3,
 	    ]);
 
 	    DB::table('users')->insert([
@@ -50,6 +53,7 @@ class UserTableSeeder extends Seeder
 	        'session_id' => 1,
 	        'player_name' => 'Jordan',
 	        'password' => Hash::make('oceler'),
+          'role_id' => 3,
 	    ]);
 
 	    DB::table('users')->insert([
@@ -60,7 +64,19 @@ class UserTableSeeder extends Seeder
 	        'session_id' => 1,
 	        'player_name' => 'Riley',
 	        'password' => Hash::make('oceler'),
-	    ]);	    	    	       
+          'role_id' => 3,
+	    ]);
+
+      DB::table('users')->insert([
+          'created_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'name' => 'Adam Admintest',
+          'email' => 'admin@test.com',
+          'session_id' => 1,
+          'player_name' => 'Administrator',
+          'password' => Hash::make('OcelerAdmin'),
+          'role_id' => 2,
+      ]);
 
     }
 }

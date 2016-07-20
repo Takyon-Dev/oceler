@@ -1,5 +1,5 @@
 @extends('layouts.master')
-	
+
 
 @section('content')
 	<div class="row">
@@ -16,7 +16,7 @@
 				</div>
 			@endif
 
-			{!! Form::open(array('url' => '/auth/login', 'class' => 'form')) !!}
+			{!! Form::open(array('url' => '/login', 'class' => 'form')) !!}
 				<fieldset>
 					<div class="form-group">
 						{!! Form::label('email', 'Your email:') !!}
@@ -30,7 +30,7 @@
 						<label>
 							{!! Form::checkbox('remember', 'remember') !!} Remember Me
 						</label>
-					</div>					
+					</div>
 					<div class="form-group">
 						{!! Form::submit('Sign In', ['class' => 'btn btn-primary'] ) !!}
 					</div>

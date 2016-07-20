@@ -29,5 +29,6 @@ class Kernel extends HttpKernel
         'auth' => \oceler\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'guest' => \oceler\Http\Middleware\RedirectIfAuthenticated::class,
+        'roles' => \oceler\Http\Middleware\CheckRole::class,
     ];
 }

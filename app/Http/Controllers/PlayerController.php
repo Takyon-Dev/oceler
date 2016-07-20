@@ -15,7 +15,11 @@ use oceler\SolutionCategory;
 
 class PlayerController extends Controller
 {
-    //
+    public function home()
+    {
+      return redirect('player');
+    }
+
     public function getShow()
     {
     	/**
@@ -157,10 +161,11 @@ class PlayerController extends Controller
     * This function ensures that users are authenticated (i.e. logged in)
     * before showing this page. If they are not, they are taken to a
     * login page.
-    */
+
     public function __construct()
     {
     	$this->middleware('auth');
 
     }
+    */
 }

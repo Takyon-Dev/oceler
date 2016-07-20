@@ -14,36 +14,75 @@
 Route::get('/', function () {
     return view('welcome');
 });
-/*
-Route::get('/player', function () {
-    return view('layouts.player.main');
-});
-*/
 
-/*
-Route::get('player', function () {
-    return '[INSERT LOGIN PAGE HERE]';
-});
-*/
+Route::get('/home', [
+	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'PlayerController@home',
+	'roles' => ['player', 'administrator'] // Only a player role can view this page
+]);
 
-Route::get('player/', 'PlayerController@getShow');
+// Player routes...
 
-Route::post('solution', 'PlayerController@postSolution');
-Route::get('listen/solution/{id}', 'PlayerController@getListenSolution');
+Route::get('player/', [
+	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'PlayerController@getShow',
+	'roles' => ['player'] // Only a player role can view this page
+]);
 
-Route::post('message', 'MessageController@postMessage');
-Route::get('listen/message/{id}', 'MessageController@getListenMessage');
+Route::post('solution', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@postSolution',
+	'roles' => ['player']
+]);
 
-Route::post('reply', 'ReplyController@postReply');
+Route::get('listen/solution/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@getListenSolution',
+	'roles' => ['player']
+]);
+
+Route::post('message', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'MessageController@postMessage',
+	'roles' => ['player']
+]);
+
+Route::get('listen/message/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'MessageController@getListenMessage',
+	'roles' => ['player']
+]);
+
+Route::post('reply', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'ReplyController@postReply',
+	'roles' => ['player']
+]);
+
+//Route::post('solution', 'PlayerController@postSolution');
+//Route::get('listen/solution/{id}', 'PlayerController@getListenSolution');
+
+//Route::post('message', 'MessageController@postMessage');
+//Route::get('listen/message/{id}', 'MessageController@getListenMessage');
+
+//Route::post('reply', 'ReplyController@postReply');
+
+// Admin routes...
+Route::get('admin/dashboard', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@showDashboard',
+	'roles' => ['administrator']
+]);
+
 
 // Authentication routes...
-Route::get('auth/login', 'Auth\AuthController@getLogin');
-Route::post('auth/login', 'Auth\AuthController@postLogin');
-Route::get('auth/logout', 'Auth\AuthController@getLogout');
+Route::get('/login', 'Auth\AuthController@getLogin');
+Route::post('/login', 'Auth\AuthController@postLogin');
+Route::get('/logout', 'Auth\AuthController@getLogout');
 
 // Registration routes...
-Route::get('auth/register', 'Auth\AuthController@getRegister');
-Route::post('auth/register', 'Auth\AuthController@postRegister');
+Route::get('/register', 'Auth\AuthController@getRegister');
+Route::post('/register', 'Auth\AuthController@postRegister');
 
 Route::get('password/email', 'Auth\PasswordController@getEmail');
 Route::post('password/email', 'Auth\PasswordController@postEmail');
