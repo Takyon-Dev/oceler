@@ -16,6 +16,7 @@
                 <div id="navbarCollapse" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li><a href="/admin/dashboard">Dashboard</a></li>
+                        <li><a href="/admin/trials">Trials</a></li>
                         <li><a href="/admin/config">Config</a></li>
                         <li><a href="/admin/config-files">Config Files</a></li>
                     </ul>

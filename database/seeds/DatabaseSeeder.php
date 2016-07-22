@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
         $this->call(NetworksTableSeeder::class);
         $this->call(SessionTableSeeder::class);
         $this->call(SolutionCategoryTableSeeder::class);
+        $this->call(CountrysetsTableSeeder::class);
+        $this->call(FactoidsetsTableSeeder::class);
+        $this->call(NamesetsTableSeeder::class);
 
         Model::reguard();
     }

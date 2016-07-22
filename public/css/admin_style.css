@@ -1,3 +1,11 @@
-div.config-container h3 {
+form#trial_config label,  form#trial_config input, form#trial_config select{
+  margin-bottom: 8px;
+}
+
+form#trial_config h3 {
   padding: 4px;
+}
+
+.num-input {
+  width: 40px;
 }

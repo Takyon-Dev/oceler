@@ -68,13 +68,31 @@ Route::post('reply', [
 //Route::post('reply', 'ReplyController@postReply');
 
 // Admin routes...
-Route::get('admin/dashboard', [
+Route::get('/admin/dashboard', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@showDashboard',
 	'roles' => ['administrator']
 ]);
 
-Route::get('admin/config-files', [
+Route::get('/admin/trials', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@showTrials',
+	'roles' => ['administrator']
+]);
+
+Route::get('/admin/trials/new', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@showTrialConfig',
+	'roles' => ['administrator']
+]);
+
+Route::post('/admin/trials/new', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@postTrialConfig',
+	'roles' => ['administrator']
+]);
+
+Route::get('/admin/config-files', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@showConfigFiles',
 	'roles' => ['administrator']
