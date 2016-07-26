@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CountrysetsTableSeeder::class);
         $this->call(FactoidsetsTableSeeder::class);
         $this->call(NamesetsTableSeeder::class);
+        $this->call(NamesTableSeeder::class);
         $this->call(FactoidsTableSeeder::class);
         $this->call(KeywordTableSeeder::class);
         $this->call(FactoidKeywordTableSeeder::class);
