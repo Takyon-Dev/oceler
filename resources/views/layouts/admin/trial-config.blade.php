@@ -21,7 +21,7 @@
 @section('content')
     <div class="container">
       @include('layouts.admin.menu')
-      {!! Form::open(['url'=>'/admin/trials/new','method'=>'POST', 'id'=>'trial_config']) !!}
+      {!! Form::open(['url'=>'/admin/trial','method'=>'POST', 'id'=>'trial_config']) !!}
         <div class="row">
           <div class="col-md-12">
             <h1 class="text-center">New Trial</h1>
@@ -82,9 +82,9 @@
 
                 {!! Form::select('factoidset_id[]', ['1'=>'factoidset1ha1-17.txt', '2'=>'factoidset1ha2-17.txt']) !!}<br>
 
-                {!! Form::select('countryset_id[]', ['1'=>'countries1.txt', '2'=>'countries2.txt']) !!}<br>
+                {!! Form::select('countryset_id[]', ['1'=>'countries1.txt']) !!}<br>
 
-                {!! Form::select('nameset_id[]', ['1'=>'names.txt', '2'=>'names.txt']) !!}<br>
+                {!! Form::select('nameset_id[]', ['1'=>'names17.txt', '2'=>'names20.txt']) !!}<br>
 
               </div>
             </div>
@@ -107,7 +107,7 @@
             <h3 class="bg-info">Group 1</h3>
             <div class="form-group">
 
-              {!! Form::select('organization[]', ['organizationTest1.txt', 'organizationTest2.txt']) !!}<br>
+              {!! Form::select('organization[]', ['1' => 'organizationTest1.txt']) !!}<br>
 
               {!! Form::text('survey_url[]', null, ['class'=>'form-control']) !!}<br>
 
@@ -117,7 +117,7 @@
             <h3 class="bg-info">Group 2</h3>
             <div class="form-group">
 
-              {!! Form::select('organization[]', ['organizationTest1.txt', 'organizationTest2.txt']) !!}<br>
+              {!! Form::select('organization[]', ['1' => 'organizationTest1.txt']) !!}<br>
 
               {!! Form::text('survey_url[]', null, ['class'=>'form-control']) !!}<br>
 

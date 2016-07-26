@@ -25,22 +25,50 @@
         <div class="col-md-12">
           <h1 class="text-center">Trials</h1>
 
-          <a href="/admin/trials/new" class="btn btn-primary" role="button">
+          <a href="/admin/trial/create" class="btn btn-primary" role="button">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             New Trial
           </a>
           <table class="table table-striped trials">
             <tr>
               <th>Trial</th>
               <th>Date</th>
+              <th>Active</th>
+              <th>Players</th>
+              <th></th>
               <th></th>
               <th></th>
             </tr>
+            @foreach($trials as $trial)
             <tr>
-              <td>1</td>
-              <td>7-22-2016 12:27:36 PM</td>
-              <td><a href="admin/trials/1">view</a></td>
-              <td><a href="admin/trials/1">delete</a></td>
+              <td>{{ $trial->id }}</td>
+              <td>{{ $trial->created_at }}</td>
+              <td>
+                @if ($trial->is_active)
+
+                  <span class="text-success">Active</span>
+                  <a href="/admin/trial/toggle/{{ $trial->id }}"
+                          class="btn btn-primary btn-xs" role="button">
+                    Make Inactive
+                  </a>
+
+                @else
+
+                  <span class="text-danger">Not Active</span>
+                  <a href="/admin/trial/toggle/{{ $trial->id }}"
+                          class="btn btn-primary btn-xs" role="button">
+                    Make Active
+                  </a>
+
+                @endif
+              </td>
+              <td>0/{{ $trial->num_players }}</td>
+              <td><a href="/admin/trial/{{ $trial->id }}">view</a></td>
+
+              <td><a href="/admin/trial/1">delete</a></td>
             </tr>
+            @endforeach
+
         </div>
       </div>
     </div>

@@ -20,6 +20,7 @@ class CreateTrialsTable extends Migration
             $table->boolean('mult_factoid');
             $table->boolean('pay_correct');
             $table->integer('num_rounds');
+            $table->boolean('is_active');
             $table->timestamps();
         });
     }

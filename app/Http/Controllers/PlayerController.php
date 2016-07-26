@@ -17,7 +17,7 @@ class PlayerController extends Controller
 {
     public function home()
     {
-      return redirect('player');
+      echo '<h2>[ PLAYER HOME ]</h2><br><a href="/player/trial">Start Trial</a>';
     }
 
     public function getShow()

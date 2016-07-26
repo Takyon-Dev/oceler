@@ -15,18 +15,35 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/home', [
+Route::get('/home', function(){
+
+  if(Auth::user()->role_id == 2){
+    $route = 'admin_home';
+  }
+  else {
+    $route = 'player_home';
+  }
+
+  return Redirect::route($route);
+
+});
+
+
+
+// Player routes...
+
+Route::get('player/', [
+  'as' => 'player_home',
 	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
 	'uses' => 'PlayerController@home',
 	'roles' => ['player', 'administrator'] // Only a player role can view this page
 ]);
 
-// Player routes...
 
-Route::get('player/', [
+Route::get('player/trial', [
 	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
 	'uses' => 'PlayerController@getShow',
-	'roles' => ['player'] // Only a player role can view this page
+	'roles' => ['player', 'administrator'] // Only a player role can view this page
 ]);
 
 Route::post('solution', [
@@ -69,26 +86,34 @@ Route::post('reply', [
 
 // Admin routes...
 Route::get('/admin/dashboard', [
+  'as' => 'admin_home',
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@showDashboard',
 	'roles' => ['administrator']
 ]);
 
-Route::get('/admin/trials', [
+Route::get('/admin/trial', [
 	'middleware' => ['auth', 'roles'],
-	'uses' => 'AdminController@showTrials',
+	'uses' => 'TrialController@index',
 	'roles' => ['administrator']
 ]);
 
-Route::get('/admin/trials/new', [
+Route::get('/admin/trial/create', [
 	'middleware' => ['auth', 'roles'],
-	'uses' => 'AdminController@showTrialConfig',
+	'uses' => 'TrialController@create',
 	'roles' => ['administrator']
 ]);
 
-Route::post('/admin/trials/new', [
+Route::post('/admin/trial', [
 	'middleware' => ['auth', 'roles'],
-	'uses' => 'AdminController@postTrialConfig',
+	'uses' => 'TrialController@store',
+	'roles' => ['administrator']
+]);
+
+
+Route::get('/admin/trial/toggle/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@toggle',
 	'roles' => ['administrator']
 ]);
 

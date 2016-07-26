@@ -15,19 +15,18 @@ class AdminController extends Controller
 {
   public function showDashboard()
   {
-    return View::make('layouts.admin.dashboard');
+    //
   }
 
-  public function showTrials()
-  {
-    return View::make('layouts.admin.trials');
-  }
 
   public function showTrialConfig()
   {
     return View::make('layouts.admin.trial-config');
   }
 
+  /**
+   * Creates a new Trial based on the trial config form.
+   */
   public function postTrialConfig(Request $request)
   {
     $trial = new \oceler\Trial();
@@ -37,9 +36,14 @@ class AdminController extends Controller
     $trial->mult_factoid = $request->mult_factoid || 0;
     $trial->pay_correct = $request->pay_correct || 0;
     $trial->num_rounds = $request->num_rounds;
+    $trial->is_active = false;
 
     $trial->save();
 
+    /*
+     * For each forund, the timeout factoidset, countryset, and
+     * nameset are stored.
+     */
     for($i = 0; $i < $trial->num_rounds; $i++){
 
       DB::table('trial_rounds')->insert([
@@ -53,7 +57,7 @@ class AdminController extends Controller
           'nameset_id' => $request->nameset_id[$i],
           ]);
     }
-    //return View::make('layouts.admin.trial-config');
+    return Redirect::to('admin/trials');
   }
 
   public function showConfigFiles()

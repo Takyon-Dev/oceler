@@ -6,6 +6,16 @@ form#trial_config h3 {
   padding: 4px;
 }
 
-.num-input {
+.num-input  {
   width: 40px;
+}
+
+form#trial_config label {
+  margin-top: 6px;
+}
+form#trial_config input {
+  margin-top: 4px;
+}
+table.trials {
+  margin-top: 24px;
 }
