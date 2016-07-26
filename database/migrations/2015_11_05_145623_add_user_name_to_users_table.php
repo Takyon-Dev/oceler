@@ -13,7 +13,7 @@ class AddUserNameToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('player_name')->after('session_id');
+            $table->string('player_name')->after('trial_id');
         });
     }
 

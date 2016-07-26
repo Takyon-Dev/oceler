@@ -14,7 +14,7 @@ class NetworksTableSeeder extends Seeder
 	    DB::table('networks')->insert([
 	        'created_at' => Carbon\Carbon::now()->toDateTimeString(),
 	        'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
-	        'sess_id' => 1
+	        'trial_id' => 1
 	    ]);
 
 	    for($i=1; $i<=5; $i++){
@@ -22,16 +22,16 @@ class NetworksTableSeeder extends Seeder
 		    DB::table('network_nodes')->insert([
 		        'created_at' => Carbon\Carbon::now()->toDateTimeString(),
 		        'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
-		        'net_id' => 1,
+		        'network_id' => 1,
 		        'node' => $i
-		    ]);	
+		    ]);
 
 		    DB::table('user_nodes')->insert([
 		        'created_at' => Carbon\Carbon::now()->toDateTimeString(),
 		        'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
 		        'user_id' => $i,
-		        'node' => $i
-		    ]);		    
+		        'node_id' => $i
+		    ]);
 
 	    }
 
@@ -44,7 +44,7 @@ class NetworksTableSeeder extends Seeder
 				    DB::table('network_edges')->insert([
 				        'created_at' => Carbon\Carbon::now()->toDateTimeString(),
 				        'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
-				        'net_id' => 1,
+				        'network_id' => 1,
 				        'source' => $i,
 				        'target' => $j
 				    ]);
@@ -56,6 +56,6 @@ class NetworksTableSeeder extends Seeder
 	    	}
 
 	    }
-    
+
     }
 }

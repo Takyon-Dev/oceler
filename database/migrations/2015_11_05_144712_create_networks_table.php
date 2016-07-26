@@ -14,7 +14,7 @@ class CreateNetworksTable extends Migration
     {
         Schema::create('networks', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('sess_id');
+            $table->integer('trial_id');
             $table->timestamps();
         });
     }

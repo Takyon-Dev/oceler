@@ -39,16 +39,20 @@ class PlayerController extends Controller
     	// Get the user's ID, the ID of the network, and the user's network node
     	$u_id = Auth::id();
     	$network = DB::table('networks')
-                      ->where('sess_id', '=', Auth::user()->session_id)
+                      ->where('trial_id', '=', Auth::user()->trial_id)
                       ->value('id');
 
-    	$u_node = DB::table('user_nodes')
-                    ->where('user_id', '=', $u_id)
+    	$u_node_id = DB::table('user_nodes')
+                      ->where('user_id', '=', $u_id)
+                      ->value('node_id');
+
+      $u_node = DB::table('network_nodes')
+                    ->where('id', '=', $u_node_id)
                     ->value('node');
 
     	// Get each player that is in the same session as the user
     	$session_players = DB::table('users')
-                              ->where('session_id', '=', Auth::user()->session_id)
+                              ->where('trial_id', '=', Auth::user()->trial_id)
                               ->get();
 
     	// Create two arrays -- one to hold the players the user can see, and another to hold the players that can see the user
@@ -59,20 +63,24 @@ class PlayerController extends Controller
     	foreach ($session_players as $player) {
 
     		// Get the network node for this player
-    		$node = DB::table('user_nodes')
+    		$node_id = DB::table('user_nodes')
                     ->where('user_id', '=', $player->id)
+                    ->value('node_id');
+
+        $node = DB::table('network_nodes')
+                    ->where('id', '=', $node_id)
                     ->value('node');
 
     		// See if their node is a source where the user's node is a target
     		$from = DB::table('network_edges')
-                    ->where('net_id', '=', $network)
+                    ->where('network_id', '=', $network)
                     ->where('source', '=', $node)
                     ->where('target', '=', $u_node)
                     ->value('source');
 
     		// See if their node is a target where the user's node is a source
     		$to = DB::table('network_edges')
-                  ->where('net_id', '=', $network)
+                  ->where('network_id', '=', $network)
                   ->where('target', '=', $u_node)
                   ->where('source', '=', $node)
                   ->value('target');

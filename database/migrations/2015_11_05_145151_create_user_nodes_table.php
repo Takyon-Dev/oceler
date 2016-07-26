@@ -14,9 +14,12 @@ class CreateUserNodesTable extends Migration
     {
         Schema::create('user_nodes', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('node');
+            $table->integer('user_id')->unsigned();
+            $table->integer('node_id')->unsigned();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('node_id')->references('id')->on('network_nodes');
         });
     }
 

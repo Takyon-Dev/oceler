@@ -14,9 +14,11 @@ class CreateNetworkNodesTable extends Migration
     {
         Schema::create('network_nodes', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('net_id');
+            $table->integer('network_id')->unsigned();
             $table->integer('node');
             $table->timestamps();
+
+            $table->foreign('network_id')->references('id')->on('networks');
         });
     }
 
