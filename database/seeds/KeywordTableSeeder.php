@@ -19,10 +19,17 @@ class KeywordTableSeeder extends Seeder
                           'monuments', 'monument', 'banks', 'bank',
                           'skyscrapers', 'skyscraper', 'embassies', 'embassy',
                           'visiting', 'visit', 'dignitaries', 'dignitary',
-                          'own-country', 'own', 'country');
+                          'own-country', 'own', 'country',
+
+                          'Violet', 'Gold', 'group', 'groups', 'use', 'only',
+                          'their', 'own', 'operatives', 'operative', 'never',
+                          'employing', 'employ', 'locals', 'local',
+
+                          'attackers', 'attack', 'focusing', 'focus', 'high',
+                          'visibility','target');
 
         foreach ($keywords as $key => $word) {
-          $k = new \oceler\Keyword();
+          $k = \oceler\Keyword::firstOrNew(['keyword' => $word]);
           $k->keyword = $word;
           $k->save();
         }

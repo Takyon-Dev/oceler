@@ -29,5 +29,22 @@ class FactoidsTableSeeder extends Seeder
                         skyscrapers, embassies, visiting dignitaries, and
                         own-country dignitaries'
       ]);
+
+      DB::table('factoids')->insert([
+          'created_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'id' => 3,
+          'factoidset_id' => 2,
+          'factoid' => 'The Violet and Gold groups use only their own
+                        operatives, never employing locals'
+      ]);
+
+      DB::table('factoids')->insert([
+          'created_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'id' => 4,
+          'factoidset_id' => 2,
+          'factoid' => 'The attackers are focusing on a high visibility target'
+      ]);
     }
 }
