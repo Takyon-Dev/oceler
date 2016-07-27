@@ -36,14 +36,32 @@ Route::get('player/', [
   'as' => 'player_home',
 	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
 	'uses' => 'PlayerController@home',
-	'roles' => ['player', 'administrator'] // Only a player role can view this page
+	'roles' => ['player'] // Only a player role can view this page
 ]);
 
 
 Route::get('player/trial', [
 	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
-	'uses' => 'PlayerController@getShow',
-	'roles' => ['player', 'administrator'] // Only a player role can view this page
+	'uses' => 'PlayerController@playerTrial',
+	'roles' => ['player'] // Only a player role can view this page
+]);
+
+Route::get('player/trial/initialize', [
+	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'PlayerController@initializeTrial',
+	'roles' => ['player'] // Only a player role can view this page
+]);
+
+Route::get('player/trial/queue', [
+	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'TrialController@enterQueue',
+	'roles' => ['player'] // Only a player role can view this page
+]);
+
+Route::get('player/trial/queue/status', [
+	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'TrialController@queue',
+	'roles' => ['player'] // Only a player role can view this page
 ]);
 
 Route::post('solution', [

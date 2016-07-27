@@ -15,6 +15,9 @@
 
       // Adds csrf token to AJAX headers
       $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
+
+      solutionListener(last_solution);
+      messageListener(last_message_time);
     });
 
   </script>
@@ -27,7 +30,7 @@
 
 
 @section('content')
-    <div class="container">
+    <div class="container full-width">
         <div class="row">
             @include('layouts.player.timer')
         </div>

@@ -12,7 +12,7 @@ class CreateTrialRoundsTable extends Migration
      */
     public function up()
     {
-      Schema::create('trial_rounds', function (Blueprint $table) {
+      Schema::create('rounds', function (Blueprint $table) {
           $table->increments('id');
           $table->integer('trial_id')->unsigned();
           $table->integer('round');

@@ -1,15 +1,6 @@
 var last_solution = 0;
 var last_message_time = 0;
 
-
-$(document).ready(function() {
-
-	solutionListener(last_solution);
-	messageListener(last_message_time);
-
-});
-
-
 function solutionListener()
 {
 

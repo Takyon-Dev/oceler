@@ -3,7 +3,7 @@ body {
 	color: #000;
 }
 
-.container {
+.full-width {
 	width: 100%;
 }
 
@@ -262,4 +262,14 @@ div#search_container {
 	width: 90%;
 	font-size: 150%;
 	padding: 4px;
+}
+
+/**
+ * Queue
+ */
+
+.waiting-sm {
+	width: 30%;
+	height: 30%;
+	margin-top: 48px;
 }

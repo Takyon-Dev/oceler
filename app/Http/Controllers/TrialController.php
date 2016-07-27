@@ -22,7 +22,7 @@ class TrialController extends Controller
     public function index()
     {
       $trials = Trial::all();
-      dump($trials);
+
       return View::make('layouts.admin.trials')
                   ->with('trials', $trials);
     }
@@ -62,7 +62,7 @@ class TrialController extends Controller
        */
       for($i = 0; $i < $trial->num_rounds; $i++){
 
-        DB::table('trial_rounds')->insert([
+        DB::table('rounds')->insert([
             'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
             'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             'trial_id' => $trial->id,
@@ -73,7 +73,7 @@ class TrialController extends Controller
             'nameset_id' => $request->nameset_id[$i],
             ]);
       }
-      return Redirect::to('/admin/trial');
+      return \Redirect::to('/admin/trial');
     }
 
     /**
@@ -127,5 +127,70 @@ class TrialController extends Controller
       $trial->is_active = !$trial->is_active;
       $trial->save();
       return \Redirect::to('/admin/trial');
+    }
+
+    public function enterQueue()
+    {
+      return View::make('layouts.player.queue');
+    }
+
+    /**
+     * Manages the queue of players waiting to join an avaialable trial.
+     * @return True when the required number of players for that trial is met
+     */
+    public function queue()
+    {
+      $u_id = Auth::user()->id;
+      $dt = \Carbon\Carbon::now();
+
+      // If this user has been added to trial_user already, return with true
+      if(DB::table('trial_user')->where('user_id', '=', $u_id)->get()) return 1;
+
+      // Add the player to the queue and set updated_at to
+      // current date/time
+      $player = \oceler\Queue::firstOrNew(['user_id' => $u_id]);
+      $player->updated_at = $dt->toDateTimeString();
+      $player->save();
+
+      // Then, delete all players who have been inactive for INACTIVE_TIME
+      $INACTIVE_TIME = 6; // In seconds
+      \oceler\Queue::where('updated_at', '<', $dt->subSeconds($INACTIVE_TIME))->delete();
+
+      // Get all trials that are active but already have been filled
+      // by querying the trial_user table
+      $filled_trials = DB::table('trial_user')->select('trial_id')->get();
+
+      // Get the oldest active, not-already-filled trial
+      $trial = Trial::where('is_active', 1)
+                    ->whereNotIn('id', $filled_trials)
+                    ->orderBy('created_at', 'asc')
+                    ->first();
+
+      // If such a trial exists, see if the # of players in the queue
+      // is equal to the required # of players for the trial
+      if($trial){
+        $queued_players = \oceler\Queue::count();
+
+        if($queued_players >= $trial->num_players){
+
+          $selected = \oceler\Queue::orderBy('created_at', 'asc')
+                                    ->take($trial->num_players)
+                                    ->get();
+
+          foreach ($selected as $user) {
+            DB::table('trial_user')->insert([
+              'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+              'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+              'user_id' => $user->user_id,
+              'trial_id' => $trial->id,
+            ]);
+            // Delete from queue
+            echo $user->user_id;
+            \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
+          }
+
+        }
+      }
+      return 0;
     }
 }
