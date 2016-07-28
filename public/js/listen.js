@@ -6,7 +6,7 @@ function solutionListener()
 
 	$.ajax({
 		type: "GET",
-		url: "listen/solution/"+last_solution,
+		url: "/listen/solution/"+last_solution,
 		success: function(solutions)
 		{
 
@@ -27,7 +27,7 @@ function messageListener()
 {
 	$.ajax({
 		type: "GET",
-		url: "listen/message/"+last_message_time,
+		url: "/listen/message/"+last_message_time,
 		success: function(messages)
 		{
 

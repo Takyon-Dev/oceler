@@ -134,6 +134,26 @@ class TrialController extends Controller
       return View::make('layouts.player.queue');
     }
 
+    public function getTrial($id)
+    {
+
+      $trial = Trial::find($id);
+      $players = array();
+
+      $players_in_trial = DB::table('trial_user')
+                            ->where('trial_id', '=', $trial->id)
+                            ->get();
+
+      foreach ($players_in_trial as $key => $value) {
+        $players[] = \oceler\User::find($value->user_id);
+      }
+
+      return View::make('layouts.admin.trial-view')
+                  ->with('players', $players)
+                  ->with('trial', $trial);
+
+    }
+
     /**
      * Manages the queue of players waiting to join an avaialable trial.
      * @return True when the required number of players for that trial is met

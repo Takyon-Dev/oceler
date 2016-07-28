@@ -37,7 +37,7 @@ function sendMessage()
 
 	// Send the message to the Message Controller
 	$.post(
-		'message',
+		'/message',
 		msgData,
 		function (data) {
     	clearMessageForm(); // On success, reset the form
@@ -238,7 +238,7 @@ Message.prototype.toHTML = function(){
 
 												// Send the message to the Reply Controller
 												$.post(
-													'reply', /* *** NEED TO CREATE A NEW ROUTE! *** */
+													'/reply',
 													msgData,
 													function (data) {
 														//$(this).parent().hide(400);

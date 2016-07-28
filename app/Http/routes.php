@@ -70,25 +70,25 @@ Route::post('solution', [
 	'roles' => ['player']
 ]);
 
-Route::get('listen/solution/{id}', [
+Route::get('/listen/solution/{id}', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@getListenSolution',
 	'roles' => ['player']
 ]);
 
-Route::post('message', [
+Route::post('/message', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'MessageController@postMessage',
 	'roles' => ['player']
 ]);
 
-Route::get('listen/message/{id}', [
+Route::get('/listen/message/{id}', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'MessageController@getListenMessage',
 	'roles' => ['player']
 ]);
 
-Route::post('reply', [
+Route::post('/reply', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'ReplyController@postReply',
 	'roles' => ['player']
@@ -103,10 +103,10 @@ Route::post('reply', [
 //Route::post('reply', 'ReplyController@postReply');
 
 // Admin routes...
-Route::get('/admin/dashboard', [
+Route::get('/admin/players', [
   'as' => 'admin_home',
 	'middleware' => ['auth', 'roles'],
-	'uses' => 'AdminController@showDashboard',
+	'uses' => 'AdminController@showPlayers',
 	'roles' => ['administrator']
 ]);
 
@@ -125,6 +125,12 @@ Route::get('/admin/trial/create', [
 Route::post('/admin/trial', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@store',
+	'roles' => ['administrator']
+]);
+
+Route::get('/admin/trial/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@getTrial',
 	'roles' => ['administrator']
 ]);
 

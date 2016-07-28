@@ -37,7 +37,6 @@
               <th>Players</th>
               <th></th>
               <th></th>
-              <th></th>
             </tr>
             @foreach($trials as $trial)
             <tr>

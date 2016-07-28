@@ -47,6 +47,12 @@ class User extends Model implements AuthenticatableContract,
       return $this->hasMany('\oceler\Message');
     }
 
+    public function trials()
+    {
+    # With timetsamps() will ensure the pivot table has its created_at/updated_at fields automatically maintained
+    return $this->belongsToMany('\oceler\Trial')->withTimestamps();
+    }
+
   public function role()
 	{
 		return $this->hasOne('oceler\Role', 'id', 'role_id');

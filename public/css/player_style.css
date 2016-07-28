@@ -18,6 +18,10 @@ h2, h3 {
 	color: #000;
 }
 
+.huge {
+	font-size: 96px;
+}
+
 /**
 * Timer
 */

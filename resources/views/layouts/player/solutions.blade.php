@@ -22,7 +22,7 @@
 						{{-- This span holds the most recent solution for this user in this solution category --}}
 						<span class="solution-container sol" id="sol_{{ $user->id }}_{{ $cat->id }}"></span>
 						{{-- This span holds the most recent solution's confidence level for this user in this solution category --}}
-						<span class="solution-container conf pull-right" id="conf_{{ $user->id }}_{{ $cat->id }}"></span>	
+						<span class="solution-container conf pull-right" id="conf_{{ $user->id }}_{{ $cat->id }}"></span>
 						<form class="solution-form">
 							<label for="solution">{{ $cat->name }}:</label>
 							<input type="text" name="solution" value=""><br>
@@ -39,9 +39,9 @@
 							{{--<input type="hidden" name="u_id" value="{{ $user->id }}">--}}
 							<input class="sol-save btn btn-primary btn-sm pull-right" type="submit" name="solve_save" value="SAVE">
 							<input class="sol-cancel btn btn-primary btn-sm " type="submit" name="solve_cancel" value="CANCEL">
-						</form>	
+						</form>
 	            	</td>
-	            @endforeach	   
+	            @endforeach
 
 	        </tr>
 
@@ -50,17 +50,16 @@
 		        <tr>
 		            <td>{{ $player->player_name }}</td>
 		            @foreach($solution_categories AS $cat)
-		            	<td>  
+		            	<td>
 		            		{{-- This span holds the most recent solution for this user in this solution category --}}
 							<span class="solution-container" id="sol_{{ $player->id }}_{{ $cat->id }}"></span>
 							{{-- This span holds the most recent solution's confidence level for this user in this solution category --}}
-							<span class="solution-container" id="conf_{{ $player->id }}_{{ $cat->id }}"></span> 
+							<span class="solution-container" id="conf_{{ $player->id }}_{{ $cat->id }}"></span>
 						</td>
-					@endforeach		         
+					@endforeach
 		        </tr>
-		    @endforeach    
+		    @endforeach
 
 	    </tbody>
 	</table>
 </div>
-

@@ -19,4 +19,8 @@ class Queue extends Model
      * @var array
      */
     protected $fillable = ['user_id'];
+
+    public function users() {
+      return $this->belongsTo('\oceler\User', 'user_id', 'id');
+    }
 }

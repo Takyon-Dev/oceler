@@ -13,9 +13,16 @@ use Session;
 
 class AdminController extends Controller
 {
-  public function showDashboard()
+  public function showPlayers()
   {
-    //
+    $queued_players = \oceler\Queue::with('users')
+                        ->get();
+    $trials = \oceler\Trial::with('users')
+                        ->get();
+
+    return View::make('layouts.admin.players')
+                  ->with('queued_players', $queued_players)
+                  ->with('trials', $trials);
   }
 
 

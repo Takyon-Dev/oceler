@@ -39,16 +39,18 @@ class PlayerController extends Controller
     	// Get the user's ID, , the trial ID, the ID of the network, and the user's network node
     	$u_id = Auth::id();
 
+      $curr_round = Session::get('curr_round');
+
       $trial_id = DB::table('trial_user')
                   ->where('user_id', '=', Auth::user()->id)
                   ->value('trial_id');
 
       $trial = \oceler\Trial::where('id', '=', $trial_id)
                             ->with('rounds')
-                            ->get();
+                            ->first();
 
     	$network = DB::table('networks')
-                      ->where('trial_id', '=', $trial_id)
+                      ->where('trial_id', '=', 1)
                       ->value('id');
 
     	$u_node_id = DB::table('user_nodes')
@@ -59,36 +61,43 @@ class PlayerController extends Controller
                     ->where('id', '=', $u_node_id)
                     ->value('node');
 
-      foreach ($trial->rounds as $round) {
-        # code...
-      }
+      $names = array();
 
+      foreach ($trial->rounds as $round) {
+        $nameset = DB::table('names')
+                                  ->where('nameset_id', '=', $round->nameset_id)
+                                  ->get();
+
+        foreach($nameset as $name){
+          $names[$round->round][] = $name->name;
+        }
+      }
     	// Get each player that is in the same session as the user
     	$session_players = DB::table('trial_user')
                               ->where('trial_id', '=', $trial_id)
                               ->get();
 
-
-
     	// Create two arrays -- one to hold the players the user can see, and another to hold the players that can see the user
     	$players_from = array();
     	$players_to = array();
 
-    	// Then, loop through the players in the session
-    	foreach ($session_players as $key => $player) {
+      $nodes = array();
 
-        // If the player in the array is equal to this player
-        // Set the user_node and also generate an array of
-        // names per round
+    	// Then, loop through the players in the session
+    	foreach ($session_players as $key => $session_player) {
+
+        $player = \oceler\User::find($session_player->user_id);
 
     		// Get the network node for this player
     		$node_id = DB::table('user_nodes')
-                    ->where('user_id', '=', $player->user_id)
+                    ->where('user_id', '=', $player->id)
                     ->value('node_id');
 
         $node = DB::table('network_nodes')
                     ->where('id', '=', $node_id)
                     ->value('node');
+
+        $nodes[$player->user_id] = $node;
 
     		// See if their node is a source where the user's node is a target
     		$from = DB::table('network_edges')
@@ -134,7 +143,10 @@ class PlayerController extends Controller
                    ->with('user', Auth::user())
                    ->with('players_from', $players_from)
                    ->with('players_to', $players_to)
-                   ->with('solution_categories', $solution_categories);
+                   ->with('solution_categories', $solution_categories)
+                   ->with('names', $names)
+                   ->with('nodes', $nodes)
+                   ->with('curr_round', $curr_round);
     }
 
     /**
@@ -186,16 +198,42 @@ class PlayerController extends Controller
 
   public function initializeTrial()
   {
+    $curr_round = 1;
+    Session::put('curr_round', $curr_round);
 
     $trial_id = DB::table('trial_user')
                 ->where('user_id', '=', Auth::user()->id)
                 ->value('trial_id');
-                echo $trial_id;
+
     $trial = \oceler\Trial::where('id', '=', $trial_id)
                           ->with('rounds')
                           ->get();
-    dump($trial);
 
+    // Get each player that is in the same session as the user
+    $session_players = DB::table('trial_user')
+                            ->where('trial_id', '=', $trial_id)
+                            ->get();
+
+    // If the player in the array is equal to this player
+    // insert this user into user_node
+
+    foreach ($session_players as $key => $player) {
+      if($player->user_id == Auth::user()->id){
+        DB::table('user_nodes')->insert([
+            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'user_id' => $player->user_id,
+            'node_id' => ($key + 1),
+          ]);
+        $user = User::find(Auth::user()->id);
+        $user->player_name = DB::table('names')
+                                      ->where('nameset_id', '=', $trial->rounds[$curr_round])
+                                      ->get($key + 1);
+        $user->save();
+      }
+    }
+
+    return View::make('layouts.player.initialize');
 
   }
 
