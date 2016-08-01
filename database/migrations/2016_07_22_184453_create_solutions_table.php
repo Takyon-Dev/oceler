@@ -14,11 +14,16 @@ class CreateSolutionsTable extends Migration
     {
         Schema::create('solutions', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id');
-            $table->integer('category_id');
+            $table->integer('trial_id')->unsigned();
+            $table->integer('user_id')->unsigned();
+            $table->integer('category_id')->unsigned();
             $table->text('solution');
             $table->integer('confidence');
             $table->timestamps();
+
+            $table->foreign('trial_id')->references('id')->on('trials');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('category_id')->references('id')->on('solution_categories');
         });
     }
 

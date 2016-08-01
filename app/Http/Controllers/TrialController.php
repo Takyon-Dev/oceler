@@ -118,7 +118,9 @@ class TrialController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $trial = Trial::find($id);
+        $trial->delete();
+        return \Redirect::to('/admin/trial');
     }
 
     public function toggle($id)
@@ -197,6 +199,11 @@ class TrialController extends Controller
                                     ->take($trial->num_players)
                                     ->get();
 
+          // Shuffle the collection of selected players so that
+          // their network node positions will essentially
+          // be randomized
+          $selected = shuffle($selected);
+
           foreach ($selected as $user) {
             DB::table('trial_user')->insert([
               'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
@@ -204,8 +211,7 @@ class TrialController extends Controller
               'user_id' => $user->user_id,
               'trial_id' => $trial->id,
             ]);
-            // Delete from queue
-            echo $user->user_id;
+            // Delete the user from queue
             \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
           }
 

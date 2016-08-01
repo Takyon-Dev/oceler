@@ -9,6 +9,12 @@
 
     $(document).ready(function(){
 
+      $('.data-delete').on('click', function (e) {
+        if (!confirm('Are you sure you want to delete this trial?')) return;
+        e.preventDefault();
+        $('#form_delete_' + $(this).data('form')).submit();
+      });
+
       // Adds csrf token to AJAX headers
       $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
     });
@@ -62,9 +68,17 @@
                 @endif
               </td>
               <td>0/{{ $trial->num_players }}</td>
-              <td><a href="/admin/trial/{{ $trial->id }}">view</a></td>
+              <td><a href="/admin/trial/{{ $trial->id }}">View</a></td>
 
-              <td><a href="/admin/trial/1">delete</a></td>
+              <td>
+                {!! Form::open(['method' => 'DELETE',
+                                'route' => ['trial.delete', $trial->id],
+                                'id' => 'form_delete_trials_' . $trial->id]) !!}
+                  <a href="" class="data-delete" data-form="trials_{{ $trial->id }}">
+                    Delete
+                  </a>
+                {!! Form::close() !!}
+              </td>
             </tr>
             @endforeach
 

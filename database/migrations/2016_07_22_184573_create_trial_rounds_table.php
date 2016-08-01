@@ -22,7 +22,7 @@ class CreateTrialRoundsTable extends Migration
           $table->integer('nameset_id')->unsigned();
           $table->timestamps();
 
-          $table->foreign('trial_id')->references('id')->on('trials');
+          $table->foreign('trial_id')->references('id')->on('trials')->onDelete('cascade');
           $table->foreign('factoidset_id')->references('id')->on('factoidsets');
           $table->foreign('countryset_id')->references('id')->on('countrysets');
           $table->foreign('nameset_id')->references('id')->on('namesets');
@@ -36,6 +36,6 @@ class CreateTrialRoundsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('trial_rounds');
+        Schema::drop('rounds');
     }
 }

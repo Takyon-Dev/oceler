@@ -110,6 +110,12 @@ Route::get('/admin/players', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/listen/queue', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@getListenQueue',
+	'roles' => ['administrator']
+]);
+
 Route::get('/admin/trial', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@index',
@@ -131,6 +137,13 @@ Route::post('/admin/trial', [
 Route::get('/admin/trial/{id}', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@getTrial',
+	'roles' => ['administrator']
+]);
+
+Route::delete('/admin/trial/{id}', [
+  'as' => 'trial.delete',
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@destroy',
 	'roles' => ['administrator']
 ]);
 

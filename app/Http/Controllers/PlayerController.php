@@ -196,11 +196,17 @@ class PlayerController extends Controller
 
 	}
 
+  /**
+   * Runs at the start of a trial. Stores the curr_round as 1,
+   * and sets the user's player_name for the trial.
+   * @return View: A countdown for the start of the trial
+   */
   public function initializeTrial()
   {
     $curr_round = 1;
     Session::put('curr_round', $curr_round);
 
+    // Get the trial ID and the trial
     $trial_id = DB::table('trial_user')
                 ->where('user_id', '=', Auth::user()->id)
                 ->value('trial_id');
@@ -209,14 +215,13 @@ class PlayerController extends Controller
                           ->with('rounds')
                           ->get();
 
-    // Get each player that is in the same session as the user
+    // Get each player in the trial
     $session_players = DB::table('trial_user')
                             ->where('trial_id', '=', $trial_id)
                             ->get();
 
-    // If the player in the array is equal to this player
+    // If the player in the trial array is equal to this player
     // insert this user into user_node
-
     foreach ($session_players as $key => $player) {
       if($player->user_id == Auth::user()->id){
         DB::table('user_nodes')->insert([
@@ -225,10 +230,15 @@ class PlayerController extends Controller
             'user_id' => $player->user_id,
             'node_id' => ($key + 1),
           ]);
-        $user = User::find(Auth::user()->id);
-        $user->player_name = DB::table('names')
-                                      ->where('nameset_id', '=', $trial->rounds[$curr_round])
-                                      ->get($key + 1);
+
+        // Find the name form the nameset that corrosponds with the
+        // user's position in the trial array and set their player_name
+        $user = \oceler\User::find(Auth::user()->id);
+        $names = DB::table('names')
+                  ->where('nameset_id', '=', $trial[0]->rounds[$curr_round]->nameset_id)
+                  ->lists('name');
+
+        $user->player_name = $names[$key + 1];
         $user->save();
       }
     }
@@ -237,15 +247,4 @@ class PlayerController extends Controller
 
   }
 
-    /**
-    * This function ensures that users are authenticated (i.e. logged in)
-    * before showing this page. If they are not, they are taken to a
-    * login page.
-
-    public function __construct()
-    {
-    	$this->middleware('auth');
-
-    }
-    */
 }

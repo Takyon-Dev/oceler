@@ -18,11 +18,41 @@ class AdminController extends Controller
     $queued_players = \oceler\Queue::with('users')
                         ->get();
     $trials = \oceler\Trial::with('users')
+                        ->with('solutions')
                         ->get();
 
+    dump($queued_players);
     return View::make('layouts.admin.players')
                   ->with('queued_players', $queued_players)
                   ->with('trials', $trials);
+  }
+
+  public function getListenQueue()
+	{
+    $queued_players = \oceler\Queue::with('users')
+                        ->get();
+
+		return Response::json($queued_players);
+
+	}
+
+  public function getListenTrialSolution($solution_id)
+  {
+
+    $ids[] = Auth::user()->id;
+
+    foreach (Session::get('players_from') as $player) {
+      $ids[] = $player->id;
+    }
+
+    // Get all solutions more recent than the last solution ID we have
+    $solutions = DB::table('solutions')
+                    ->whereIn('user_id', $ids)
+                    ->where('id', '>', $solution_id)
+                    ->get();
+
+    return Response::json($solutions);
+
   }
 
 

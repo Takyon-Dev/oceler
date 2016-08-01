@@ -5,12 +5,15 @@
 @stop
 
 @section('js')
+  <script type="text/javascript" src="{{ asset('js/listen.js') }}"></script>
   <script>
 
     $(document).ready(function(){
 
-      // Adds csrf token to AJAX headers
-      $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
+      setInterval(function(){
+        queueListener();
+      }, 2000);
+
     });
 
   </script>
@@ -28,39 +31,46 @@
             Currently, you will need to reload the page to see any changes.]</h3>
           <h1 class="text-center">Players</h1>
           <h2 class="text-primary">Players in trial queue</h2>
-          <table class="table table-striped trials">
+          <table id="queued_players" class="table table-striped trials">
             <tr>
               <th>Name</th>
               <th>Email</th>
               <th>IP Address</th>
+              <th>User Agent</th>
               <th>Time Entered</th>
               <th>Last Pinged</th>
             </tr>
-            @foreach($queued_players as $queue)
-            <tr>
-              <td>{{ $queue->users->name }}</td>
-              <td>{{ $queue->users->email }}</td>
-              <td></td>
-              <td>{{ $queue->created_at }}</td>
-              <td>{{ $queue->updated_at }}</td>
-            </tr>
-            @endforeach
+            <tbody class="players">
+              @foreach($queued_players as $queue)
+              <tr>
+                <td>{{ $queue->users->name }}</td>
+                <td>{{ $queue->users->email }}</td>
+                <td>{{ $queue->users->ip_address }}</td>
+                <td>{{ $queue->users->user_agent }}</td>
+                <td>{{ $queue->created_at }}</td>
+                <td>{{ $queue->updated_at }}</td>
+              </tr>
+              @endforeach
+            </tbody>
           </table>
           </div>
         </div>
         <div class="row">
           <div class="col-md-12">
             <h2 class="text-primary">Players in active trials</h2>
-            <table class="table table-striped trials">
+            <table id="trials" class="table table-striped trials">
               <tr>
                 <th>Name</th>
                 <th>Email</th>
                 <th>IP Address</th>
+                <th>User Agent</th>
                 <th>Time Entered</th>
                 <th>Solutions</th>
               </tr>
-              <tr><td colspan="5">[Needs to be added]</td></tr>
-            </table>  
+              <tbody class="players">
+                <tr><td colspan="5">[Needs to be added]</td></tr>
+            </tbody>
+            </table>
         </div>
       </div>
     </div>

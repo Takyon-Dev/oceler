@@ -50,3 +50,33 @@ function messageListener()
 	});
 	setTimeout(messageListener, 2000);
 }
+
+function queueListener()
+{
+
+  $.ajax({
+    type: "GET",
+    url: "/admin/listen/queue/",
+    success: function(queued_players)
+    {
+
+      $("#queued_players>tbody.players").html('');
+
+      $.each(queued_players, function(key, queue){
+
+        var row = $('<tr>');
+        var name = $('<td>' + queue.users.name + '</td>');
+        var email = $('<td>' + queue.users.email + '</td>');
+        var ip = $('<td>' + queue.users.ip_address + '</td>');
+        var user_agent = $('<td>' + queue.users.user_agent + '</td>');
+        var created = $('<td>' + queue.created_at  + '</td>');
+        var updated = ('<td>' + queue.updated_at + '</td>');
+
+        $(row).append(name, email, ip, user_agent, created, updated);
+        $("#queued_players>tbody.players").append(row);
+
+      });
+
+    }
+  });
+}

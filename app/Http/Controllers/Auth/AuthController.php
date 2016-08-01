@@ -66,6 +66,17 @@ class AuthController extends Controller
             'email' => $data['email'],
             'mturk_id' => $data['mturk_id'],
             'password' => bcrypt($data['password']),
+            'ip_address' => $_SERVER['REMOTE_ADDR'],
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
         ]);
+    }
+
+    protected function authenticated()
+    {
+      $user = User::find(\Auth::id());
+      $user->ip_address = $_SERVER['REMOTE_ADDR'];
+      $user->user_agent = $_SERVER['HTTP_USER_AGENT'];
+      $user->save();
+      return redirect()->intended('/home/');
     }
 }
