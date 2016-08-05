@@ -40,17 +40,17 @@ class User extends Model implements AuthenticatableContract,
     public function messages()
     {
     # With timetsamps() will ensure the pivot table has its created_at/updated_at fields automatically maintained
-    return $this->belongsToMany('\oceler\Message')->withTimestamps();
+    return $this->belongsToMany('oceler\Message')->withTimestamps();
     }
 
     public function message() {
-      return $this->hasMany('\oceler\Message');
+      return $this->hasMany('oceler\Message');
     }
 
     public function trials()
     {
     # With timetsamps() will ensure the pivot table has its created_at/updated_at fields automatically maintained
-    return $this->belongsToMany('\oceler\Trial')->withTimestamps();
+    return $this->belongsToMany('oceler\Trial');
     }
 
   public function role()

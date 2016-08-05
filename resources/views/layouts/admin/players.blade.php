@@ -12,8 +12,15 @@
 
       setInterval(function(){
         queueListener();
-      }, 2000);
+      }, 5000);
 
+      playerTrialListener();
+
+      /*
+      setInterval(function(){
+        playerTrialListener();
+      }, 5000);
+      */
     });
 
   </script>
@@ -65,6 +72,7 @@
                 <th>IP Address</th>
                 <th>User Agent</th>
                 <th>Time Entered</th>
+                <th>Last Pinged</th>
                 <th>Solutions</th>
               </tr>
               <tbody class="players">

@@ -116,6 +116,12 @@ Route::get('/admin/listen/queue', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/listen/trial', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@getListenAllTrialPlayers',
+	'roles' => ['administrator']
+]);
+
 Route::get('/admin/trial', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@index',

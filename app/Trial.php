@@ -18,10 +18,11 @@ class Trial extends Model
     }
 
     public function users() {
-      return $this->hasMany('\oceler\User');
+      return $this->belongsToMany('oceler\User')->withTimestamps();
     }
 
     public function solutions() {
-      return $this->hasMany('\oceler\Solution');
+      return $this->hasMany('oceler\Solution');
     }
+
 }

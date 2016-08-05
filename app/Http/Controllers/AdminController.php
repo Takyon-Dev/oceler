@@ -36,25 +36,6 @@ class AdminController extends Controller
 
 	}
 
-  public function getListenTrialSolution($solution_id)
-  {
-
-    $ids[] = Auth::user()->id;
-
-    foreach (Session::get('players_from') as $player) {
-      $ids[] = $player->id;
-    }
-
-    // Get all solutions more recent than the last solution ID we have
-    $solutions = DB::table('solutions')
-                    ->whereIn('user_id', $ids)
-                    ->where('id', '>', $solution_id)
-                    ->get();
-
-    return Response::json($solutions);
-
-  }
-
 
   public function showTrialConfig()
   {

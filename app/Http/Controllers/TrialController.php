@@ -156,6 +156,42 @@ class TrialController extends Controller
 
     }
 
+    public function getListenAllTrialPlayers()
+    {
+      $trials = Trial::with('users')
+                      ->where('is_active', 1)
+                      ->get();
+
+        for($i = 0; $i < count($trials); $i++){
+
+          for($k = 0; $k < count($trials[$i]['users']); $k++){
+
+          $solutions = DB::select(DB::raw('
+                          SELECT m.id, m.user_id, m.category_id, solution_categories.name, m.solution, m.confidence, m.created_at
+                          FROM solutions AS m
+                          JOIN solution_categories
+                          ON m.category_id = solution_categories.id
+                          INNER JOIN (
+                              SELECT user_id, category_id,
+                                MAX(created_at) AS mTime
+                              FROM solutions
+                              WHERE user_id = '.$trials[$i]['users'][$k]['id'].'
+                              AND trial_id = '.$trials[$i]['id'].'
+                              GROUP BY user_id, category_id
+                              )
+                          AS d
+                          ON m.user_id = d.user_id
+                          AND m.category_id = d.category_id
+                          AND m.created_at = d.mTime
+                          ORDER BY m.id ASC
+                          '));
+          $trials[$i]['users'][$k]['solutions'] = $solutions;
+        }
+
+      }
+      return Response::json($trials);
+    }
+
     /**
      * Manages the queue of players waiting to join an avaialable trial.
      * @return True when the required number of players for that trial is met
@@ -202,7 +238,7 @@ class TrialController extends Controller
           // Shuffle the collection of selected players so that
           // their network node positions will essentially
           // be randomized
-          $selected = shuffle($selected);
+          $selected = $selected->shuffle();
 
           foreach ($selected as $user) {
             DB::table('trial_user')->insert([

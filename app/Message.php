@@ -12,11 +12,11 @@ class Message extends Model
   }
 
   public function sender() {
-    return $this->belongsTo('\oceler\User');
+    return $this->belongsTo('oceler\User');
   }
 
   public function replies() {
-    return $this->hasMany('\oceler\Reply')->with('replier');
+    return $this->hasMany('oceler\Reply')->with('replier');
   }
 
 }

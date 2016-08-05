@@ -80,3 +80,53 @@ function queueListener()
     }
   });
 }
+
+function playerTrialListener(trial_id)
+{
+
+	url = (trial_id) ? '/admin/listen/trial/' +trial_id : '/admin/listen/trial/';
+
+  $.ajax({
+    type: "GET",
+    url: url,
+    success: function(trial_players)
+    {
+
+
+      $("#trials>tbody.players").html('');
+
+      $.each(trial_players, function(i, trial){
+
+				$.each(trial.users, function(j, user){
+
+	        var row = $('<tr>');
+	        var name = $('<td>' + user.player_name + '</td>');
+	        var email = $('<td>' + user.email + '</td>');
+	        var ip = $('<td>' + user.ip_address + '</td>');
+	        var user_agent = $('<td>' + user.user_agent + '</td>');
+	        var created = $('<td>' + user.pivot.created_at  + '</td>');
+	        var updated = $('<td>' + user.updated_at + '</td>');
+
+					var solution_table = '<table>';
+
+					$.each(user.solutions, function(k, sol){
+						solution_table += '<tr>';
+						solution_table += '<td>' + sol.name + ':</td>';
+						solution_table += '<td>' + sol.confidence + '%</td>';
+						solution_table += '<td>' + sol.solution + '</td>';
+						solution_table += '</tr>';
+					});
+
+					solution_table += '</table>';
+
+					var solutions = $('<td>' + solution_table + '</td>');
+
+	        $(row).append(name, email, ip, user_agent, created, updated, solutions);
+
+	        $("#trials>tbody.players").append(row);
+				});
+      });
+
+    }
+  });
+}

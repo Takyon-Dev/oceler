@@ -8,6 +8,7 @@ class Solution extends Model
 {
     public function trials()
     {
-      return $this->belongsTo('\oceler\Trial');
+      return $this->belongsTo('oceler\Trial');
     }
+
 }
