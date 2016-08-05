@@ -94,6 +94,12 @@ Route::post('/reply', [
 	'roles' => ['player']
 ]);
 
+Route::post('/search', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'SearchController@postSearch',
+	'roles' => ['player']
+]);
+
 //Route::post('solution', 'PlayerController@postSolution');
 //Route::get('listen/solution/{id}', 'PlayerController@getListenSolution');
 
