@@ -18,14 +18,14 @@ class CreateSearchesTable extends Migration
           $table->integer('user_id')->unsigned();
           $table->integer('trial_id')->unsigned();
           $table->text('search_term');
-          $table->integer('factoid_id')->unsigned();
+          $table->integer('factoid_id')->unsigned()->nullable();
           $table->timestamps();
 
           // Add foreign keys
           $table->foreign('user_id')->references('id')->on('users');
           $table->foreign('trial_id')->references('id')->on('trials');
           $table->foreign('factoid_id')->references('id')->on('factoids');
-          
+
         });
     }
 

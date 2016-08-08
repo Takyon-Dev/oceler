@@ -268,6 +268,20 @@ div#search_container {
 	padding: 4px;
 }
 
+div.search-result span {
+	float: left;
+	clear: both;
+}
+
+div.search-result span.search-term {
+	font-style: italic;
+}
+
+div.search-result span.search-result {
+	font-weight: bold;
+}
+
+
 /**
  * Queue
  */
