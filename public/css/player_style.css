@@ -136,6 +136,13 @@ div#messaging_container form textarea {
 	width: 100%;
 }
 
+div#share_box{
+	display: none;
+	padding: 8px;
+	margin-bottom: 4px;
+	border: 1px dashed #000;
+}
+
 div.share-to {
 	background-color: #fff;
 	padding: 8px;
@@ -256,16 +263,28 @@ div#search_container {
 	width: 100%;
 	border: 1px solid #666666;
 	margin: 0 auto;
-	padding: 4px;
+	padding: 16px;
 	background: #fff;
 	min-height: 400px;
 }
 
+div#search_container h2 {
+	float: left;
+	clear: both;
+}
+
 
 #search_form input#search_term {
-	width: 90%;
+	width: 80%;
 	font-size: 150%;
 	padding: 4px;
+	margin-right: 8px;
+}
+
+#search_container hr {
+	float: left;
+	clear: both;
+	width: 100%;
 }
 
 div.search-result span {
@@ -277,8 +296,14 @@ div.search-result span.search-term {
 	font-style: italic;
 }
 
-div.search-result span.search-result {
+div.search-result span.result {
 	font-weight: bold;
+}
+
+div.search-result a {
+	float: left;
+	margin-left: 8px;
+	cursor: pointer;
 }
 
 

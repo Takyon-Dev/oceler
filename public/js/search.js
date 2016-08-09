@@ -6,6 +6,14 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
+	$(document).on('click', ".search-result a", function(event){
+
+		$("#msg_form #share_box").html($(this).siblings(".result").html());
+		$("#msg_form #share_box").show();
+		$("#msg_form #factoid_id").val($(this).attr('id'));
+
+	});
+
 });
 
 function doSearch()
@@ -50,10 +58,12 @@ function clearCurrentSearch()
 
 function displaySearchResult(result)
 {
+	var share_link = (result.success) ? '<a id="' + result.factoid_id + '">share</a>' : '';
 	var result_container = $('<div class="search-result"></div>');
-	var search_term = $('<span class="search-term">' + result.search_term + '</span>');
-	var results = $('<span class="result">' + result.result + '</span>');
+	var search_term = $('<span class="search-term text-muted">' + result.search_term + '</span>');
+	var results = $('<span class="result">' + result.result + '</span>' + share_link);
 
-	$(result_container).append(search_term, results);
+	$(result_container).prepend(search_term, results);
+
 	$("#curr_result").append(result_container);
 }

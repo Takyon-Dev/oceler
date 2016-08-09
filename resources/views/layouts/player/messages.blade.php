@@ -11,6 +11,7 @@
 						<p id="share_container"></p>
 						<div class="row">
 							<div class="col-md-10">
+								<div id="share_box" class="bg-info"></div>
 								<div class="form-group">
 									<textarea id="message" name="message" rows="6" cols="14"></textarea>
 								</div>

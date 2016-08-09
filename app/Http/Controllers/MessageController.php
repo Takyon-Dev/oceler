@@ -54,7 +54,6 @@ class MessageController extends Controller
 	/**
 	 * Gets the most recent messages sent to the player
 	 * @param  Request $request
-	 * @return [type]           [description]
 	 */
 	public function getListenMessage($last_message_time)
 	{
@@ -66,7 +65,6 @@ class MessageController extends Controller
 		// ** THIS QUERY SHOULD BE MADE MORE EFFICIENT
 		// SO THAT THERE IS NO NEED FOR THE FOREACH BELOW -
 		// e.g. get new messages where sender or a recipient is the user
-		// ALSO NEEDS TO GET ANY REPLIES
 
 		$new_messages = Message::with('users')
 										->with('sender')
@@ -89,7 +87,7 @@ class MessageController extends Controller
 		}
 
 		return Response::json($messages);
-
+    
 	}
 
 	/*

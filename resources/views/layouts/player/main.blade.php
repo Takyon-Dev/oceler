@@ -16,6 +16,14 @@
       // Adds csrf token to AJAX headers
       $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
 
+      // Prevents ENTER key from submitting a form
+      $(window).keydown(function(event){
+        if(event.keyCode == 13) {
+          event.preventDefault();
+          return false;
+        }
+      });
+
       solutionListener(last_solution);
       messageListener(last_message_time);
     });

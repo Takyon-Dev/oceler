@@ -56,6 +56,7 @@ function sendMessage()
 function clearMessageForm()
 {
 	document.getElementById("msg_form").reset();
+	$("#share_box").hide();
 }
 
 /**
