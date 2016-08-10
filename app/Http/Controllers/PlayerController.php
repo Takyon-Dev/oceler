@@ -43,6 +43,7 @@ class PlayerController extends Controller
 
       $trial_id = DB::table('trial_user')
                   ->where('user_id', '=', Auth::user()->id)
+                  ->orderBy('updated_at', 'desc')
                   ->value('trial_id');
 
       $trial = \oceler\Trial::where('id', '=', $trial_id)
@@ -123,7 +124,6 @@ class PlayerController extends Controller
 
     	}
 
-
     	/**
     	* Solution categories are stored in the DB. This makes it
     	*  possible to support different sessions
@@ -163,6 +163,7 @@ class PlayerController extends Controller
 		$sol->solution = $request->solution;
 		$sol->confidence = $request->confidence;
 		$sol->user_id = $user->id;
+    $sol->trial_id = Session::get('trial_id');
 
 		$sol->save();
 	}
@@ -209,7 +210,10 @@ class PlayerController extends Controller
     // Get the trial ID and the trial
     $trial_id = DB::table('trial_user')
                 ->where('user_id', '=', Auth::user()->id)
+                ->orderBy('updated_at', 'desc')
                 ->value('trial_id');
+
+    Session::put('trial_id', $trial_id);
 
     $trial = \oceler\Trial::where('id', '=', $trial_id)
                           ->with('rounds')

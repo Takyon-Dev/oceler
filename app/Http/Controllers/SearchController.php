@@ -15,6 +15,7 @@ class SearchController extends Controller
 
     $trial_id = \DB::table('trial_user')
                 ->where('user_id', '=', $user->id)
+                ->orderBy('updated_at', 'desc')
                 ->value('trial_id');
 
     $curr_round = \Session::get('curr_round');

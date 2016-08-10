@@ -27,28 +27,19 @@ class MessageController extends Controller
 
 		$user = Auth::user();
 
-		/* REPLIES:
-		// If this isn't a new message, but is in fact a reply to a previous message
-		if($request->reply_to != 0){
-			$reply = new oceler\Reply;
-		}
-		*/
-
 		$msg = new Message;
-		$msg->factoid_id = $request->factoid_id;
+		$msg->factoid_id = $request->factoid_id ?: null;
+    $msg->share_id = $request->share_id ?: null;
 		$msg->message = $request->message;
-		$msg->sender_id = $user->id;
+		$msg->user_id = $user->id;
 
 		$msg->save();
 
 		foreach ($request->share_to as $player) {
-			// Add each player to message_user
+			// Add each recipient player to message_user
 			$msg->users()->attach($player);
 		}
 
-		// SHOULD ALSO INSERT OR UPDATE THE TIME IN THE THREADS TABLE
-		// WHICH WILL ALLOW US TO GET ALL THREADS BY TIME MODIFIED
-		// AND THEN ALL MESSAGES PER THREAD (BY TIME)
 	}
 
 	/**
@@ -69,11 +60,13 @@ class MessageController extends Controller
 		$new_messages = Message::with('users')
 										->with('sender')
 										->with('replies')
+                    ->with('factoid')
+                    ->with('sharedFrom')
 										->where('updated_at', '>', $last_message_time)
 										->get();
 
 		foreach($new_messages as $key=>$msg){
-			if($msg->sender_id == $user->id){
+			if($msg->user_id == $user->id){
 				$messages[] = $msg;
 			}
 			else {
@@ -87,7 +80,7 @@ class MessageController extends Controller
 		}
 
 		return Response::json($messages);
-    
+
 	}
 
 	/*

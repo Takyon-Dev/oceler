@@ -143,6 +143,10 @@ div#share_box{
 	border: 1px dashed #000;
 }
 
+div#share_box span {
+	display: none;
+}
+
 div.share-to {
 	background-color: #fff;
 	padding: 8px;
@@ -203,6 +207,7 @@ div.message {
 	width: 100%;
 }
 
+
 div.reply {
 	float: left;
 	clear: both;
@@ -217,8 +222,18 @@ div.message span.header {
 	width: 100%
 }
 
+div.message span.msg-factoid {
+	float: left;
+	clear: both;
+	padding: 4px;
+	border: 1px dashed #000;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
 span.msg-body {
 	float: left;
+	clear: left;
 }
 
 

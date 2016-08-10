@@ -26,7 +26,7 @@ class ReplyController extends Controller
 		$reply = new Reply;
 		$reply->message = $request->message;
     $reply->message_id = $request->message_id;
-		$reply->sender_id = $user->id;
+		$reply->user_id = $user->id;
 
 		$reply->save();
 

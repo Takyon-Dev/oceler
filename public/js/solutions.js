@@ -50,7 +50,7 @@ function saveSolutionForm(self)
 
 	$.ajax({
 		type: "POST",
-		url: "solution",
+		url: "/solution",
 		data: data,
 		success: function()
 		{
@@ -74,7 +74,7 @@ function hideSolutionForm(self)
 
 function addNewSolution(sol)
 {
-	
+
 	key = sol.user_id+'_'+sol.category_id;
 
 	$('#sol_'+key).html(sol.solution);

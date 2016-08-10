@@ -26,6 +26,7 @@ class AddTrialAndRoundColumnsToSearches extends Migration
     public function down()
     {
         Schema::table('searches', function (Blueprint $table) {
+          $table->dropForeign('searches_round_id_foreign');
           $table->dropColumn('round_id');
         });
     }

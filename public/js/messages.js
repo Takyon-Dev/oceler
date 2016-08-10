@@ -7,6 +7,12 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
+	$(document).on('click', '#msg_cancel' , function(event) {
+
+		clearMessageForm();
+		event.preventDefault();
+	});
+
 });
 
 /**
@@ -56,13 +62,24 @@ function sendMessage()
 function clearMessageForm()
 {
 	document.getElementById("msg_form").reset();
+	$("#factoid_id").val('');
+	$("#share_id").val('');
 	$("#share_box").hide();
+}
+
+function shareMessage(id)
+{
+	$("#msg_form #share_id").val(id);
+	var orig_msg = $("#msg_" + id + " .msg-body").html();
+	$("#share_box").html(orig_msg);
+	$("#share_box").show();
 }
 
 /**
 *	Prepends new messages (or messages with new replies) to
 *	the message feed.
 */
+/*
 function updateMessageWindow(msg)
 {
 
@@ -71,7 +88,7 @@ function updateMessageWindow(msg)
 	var div = $('<div>', {id: msg.id, class: 'message'});
 
 	// If the sender == user, we add a class to highlight the header
-	header_class = (msg.sender_id == user_id) ? 'header text-danger' : 'header';
+	header_class = (msg.user_id == user_id) ? 'header text-danger' : 'header';
 
 	header_str = createHeader(msg.sender, msg.users);
 
@@ -107,7 +124,7 @@ function updateMessageWindow(msg)
 		var reply_div = $('<div>', {class: 'message reply'});
 		reply_header_str = createHeader(reply.replier);
 		// If the sender == user, we add a class to highlight the header
-		reply_header_class = (msg.sender_id == user_id) ? 'header text-danger' : 'header';
+		reply_header_class = (msg.user_id == user_id) ? 'header text-danger' : 'header';
 		var reply_header = $('<span>', {class: reply_header_class});
 		$(reply_header).html(reply_header_str);
 
@@ -122,6 +139,7 @@ function updateMessageWindow(msg)
 	$("#msg_feed").append($(div));
 
 }
+*/
 
 function createHeader(from, to)
 {
@@ -130,7 +148,7 @@ function createHeader(from, to)
 
 	// If sender == user header starts with 'You (player_name)' and includes
 	// the recipients names
-	if(from.sender_id == user_id){
+	if(from.user_id == user_id){
 
 		header = 'You (' + user_name + ') to ';
 
@@ -147,12 +165,14 @@ function createHeader(from, to)
 	return header;
 }
 
-var Message = function(to, sender, msg, id)
+var Message = function(to, sender, msg, factoid, share_id, id)
 {
 	this.to = to;
-	this.sender_id = sender.id;
+	this.user_id = sender.id;
 	this.sender_name = sender.player_name;
 	this.msg = msg;
+	this.factoid = factoid;
+	this.share_id = share_id;
 	this.id = id;
 
 }
@@ -163,7 +183,7 @@ Message.prototype.header = function(){
 
 	// If sender == user header starts with 'You (player_name)' and includes
 	// the recipients names
-	if(this.sender_id == user_id){
+	if(this.user_id == user_id){
 
 		var len = this.to.length;
 		header = 'You (' + user_name + ') to ';
@@ -188,7 +208,7 @@ Message.prototype.toHTML = function(){
 
 	// Add the header
 	// (If the sender == user, we add a class to highlight the header)
-	header_class = (this.sender_id == user_id) ? 'header text-danger' : 'header';
+	header_class = (this.user_id == user_id) ? 'header text-danger' : 'header';
 
 	var header_container = $('<span>', {class: header_class});
 	$(header_container).append(this.header());
@@ -196,6 +216,12 @@ Message.prototype.toHTML = function(){
 	// Create span to hold message body
 	var msg_body = $('<span>', {class: 'msg-body'});
 	$(msg_body).append(this.msg);
+
+	// If a factoid is being shared, add it
+	if(this.factoid) {
+		var factoid = $('<span>', {class: 'msg-factoid bg-info'});
+		$(factoid).append(this.factoid.factoid);
+	}
 
 	// Add the reply and share links
 	var reply_link = $('<a>', {id: this.id});
@@ -207,7 +233,7 @@ Message.prototype.toHTML = function(){
 
 	var share_link = $('<a>', {id: this.id});
 	$(share_link).html('share');
-	$(share_link).click(function(){ alert('Clicked share on ' + this.id) });
+	$(share_link).click(function(){ shareMessage(this.id) });
 
 	var links = $('<span>');
 
@@ -268,6 +294,7 @@ Message.prototype.toHTML = function(){
 	$(div).append(reply_form);
 
 	$(div).append(header_container);
+	$(div).append(factoid);
 	$(div).append(msg_body);
 	return $(div);
 }
@@ -300,7 +327,7 @@ Reply.prototype.header = function(){
 
 	// If sender == user header starts with 'You (player_name)' and includes
 	// the recipients names
-	if(this.sender_id == user_id){
+	if(this.user_id == user_id){
 
 		header = 'You (' + user_name + '):';
 
@@ -318,7 +345,7 @@ Reply.prototype.toHTML = function(){
 	var reply_div = $('<div>', {class: 'message reply'});
 
 	// If the sender == user, we add a class to highlight the header
-	reply_header_class = (this.sender_id == user_id) ? 'header text-danger' : 'header';
+	reply_header_class = (this.user_id == user_id) ? 'header text-danger' : 'header';
 	var reply_header = $('<span>', {class: reply_header_class});
 	$(reply_header).append(this.header());
 

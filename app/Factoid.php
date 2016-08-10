@@ -13,6 +13,11 @@ class Factoid extends Model
 
   public function keywords()
   {
-    return $this->belongsToMany('\oceler\Keyword')->withTimestamps();
+    return $this->belongsToMany('oceler\Keyword')->withTimestamps();
+  }
+
+  public function message()
+  {
+    return $this->hasMany('oceler\Message');
   }
 }

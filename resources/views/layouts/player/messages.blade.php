@@ -16,8 +16,8 @@
 									<textarea id="message" name="message" rows="6" cols="14"></textarea>
 								</div>
 							</div>
-							<input type="hidden" id="factoid_id" name="factoid_id" value="0">
-							<input type="hidden" id="reply_to" name="reply_to" value="0">
+							<input type="hidden" id="factoid_id" name="factoid_id" value="">
+							<input type="hidden" id="share_id" name="share_id" value="">
 							<input type="hidden" id="_token" name="_token" value="<?php echo csrf_token(); ?>">
 							<div class="col-md-2 share-to">
 								<h3>share to:</h3>

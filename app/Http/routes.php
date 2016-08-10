@@ -64,7 +64,7 @@ Route::get('player/trial/queue/status', [
 	'roles' => ['player'] // Only a player role can view this page
 ]);
 
-Route::post('solution', [
+Route::post('/solution', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@postSolution',
 	'roles' => ['player']

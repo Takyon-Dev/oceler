@@ -30,11 +30,13 @@ function messageListener()
 		url: "/listen/message/"+last_message_time,
 		success: function(messages)
 		{
-
+			console.log(messages);
 			$.each(messages, function(key, msg)
 			{
+				// If this message was shared, take the message object stored in shared_from
+				if(msg.shared_from) msg = msg.shared_from;
 
-				var m = new Message(msg.users, msg.sender, msg.message, msg.id);
+				var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
 				m.addMessage($("#messages"));
 
 				$.each(msg.replies, function(key, reply){
