@@ -12,6 +12,7 @@ use DB;
 use Response;
 use Session;
 
+
 class TrialController extends Controller
 {
     /**
@@ -166,27 +167,9 @@ class TrialController extends Controller
 
           for($k = 0; $k < count($trials[$i]['users']); $k++){
 
-          $solutions = DB::select(DB::raw('
-                          SELECT m.id, m.user_id, m.category_id, solution_categories.name, m.solution, m.confidence, m.created_at
-                          FROM solutions AS m
-                          JOIN solution_categories
-                          ON m.category_id = solution_categories.id
-                          INNER JOIN (
-                              SELECT user_id, category_id,
-                                MAX(created_at) AS mTime
-                              FROM solutions
-                              WHERE user_id = '.$trials[$i]['users'][$k]['id'].'
-                              AND trial_id = '.$trials[$i]['id'].'
-                              GROUP BY user_id, category_id
-                              )
-                          AS d
-                          ON m.user_id = d.user_id
-                          AND m.category_id = d.category_id
-                          AND m.created_at = d.mTime
-                          ORDER BY m.id ASC
-                          '));
-          $trials[$i]['users'][$k]['solutions'] = $solutions;
-        }
+            $solutions = \oceler\Solution::getCurrentSolutions($trials[$i]['users'][$k]['id'], $trials[$i]['id']);
+            $trials[$i]['users'][$k]['solutions'] = $solutions;
+          }
 
       }
       return Response::json($trials);

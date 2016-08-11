@@ -46,13 +46,15 @@
 			<div class="col-md-12" id="msg_feed">
 				<h2>MESSAGE FEED</h2>
 				<div id="messages">
-					<div id="1" class="message">
-						<span class="header text-danger">You to Casey, Dakota:</span>
-						<span class="msg-body">
-							This is an example of a short message!
-						</span>
-						<span class="">(<a id="1">reply</a> / <a id="1">share</a>)</span>
-					</div>
+					<!--
+						<div id="1" class="message">
+							<span class="header text-danger">You to Casey, Dakota:</span>
+							<span class="msg-body">
+								This is an example of a short message!
+							</span>
+							<span class="">(<a id="1">reply</a> / <a id="1">share</a>)</span>
+						</div>
+					-->
 				</div>
 			</div>
 		</div>

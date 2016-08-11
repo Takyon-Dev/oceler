@@ -64,6 +64,18 @@ Route::get('player/trial/queue/status', [
 	'roles' => ['player'] // Only a player role can view this page
 ]);
 
+Route::get('player/trial/end', [
+	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'PlayerController@endTrialRound',
+	'roles' => ['player'] // Only a player role can view this page
+]);
+
+Route::get('player/trial/new-round', [
+	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'PlayerController@startTrialRound',
+	'roles' => ['player'] // Only a player role can view this page
+]);
+
 Route::post('/solution', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@postSolution',

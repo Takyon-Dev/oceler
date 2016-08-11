@@ -21,7 +21,6 @@ class AdminController extends Controller
                         ->with('solutions')
                         ->get();
 
-    dump($queued_players);
     return View::make('layouts.admin.players')
                   ->with('queued_players', $queued_players)
                   ->with('trials', $trials);

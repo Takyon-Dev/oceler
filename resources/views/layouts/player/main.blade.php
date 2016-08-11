@@ -33,6 +33,7 @@
 	<script type="text/javascript" src="{{ asset('js/messages.js') }}"></script>
   <script type="text/javascript" src="{{ asset('js/search.js') }}"></script>
 	<script type="text/javascript" src="{{ asset('js/listen.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/timer.js') }}"></script>
 
 @stop
 
