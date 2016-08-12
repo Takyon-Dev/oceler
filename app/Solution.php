@@ -11,7 +11,7 @@ class Solution extends Model
       return $this->belongsTo('oceler\Trial');
     }
 
-    public static function getCurrentSolutions($user_id, $trial_id)
+    public static function getCurrentSolutions($user_id, $trial_id, $round)
     {
 
       $solutions = \DB::select(\DB::raw('
@@ -25,6 +25,7 @@ class Solution extends Model
                           FROM solutions
                           WHERE user_id = '.$user_id.'
                           AND trial_id = '.$trial_id.'
+                          AND round = '.$round.'
                           GROUP BY user_id, category_id
                           )
                       AS d

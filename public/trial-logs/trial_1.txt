@@ -1,0 +1,11 @@
+2016-08-12 15:49:07 :: MESSAGE-- FROM: 1(Chris) T0: 2(Dale) Hey its a test
+2016-08-12 15:49:13 :: REPLY-- FROM: 1(Chris) ORIG MSG ID: 7 Hi
+2016-08-12 15:50:55 :: MESSAGE-- ID: 8 FROM: 1(Chris) T0: 2(Dale) whoa
+2016-08-12 15:55:25 :: SOLUTION-- FROM: 1 (Chris) CATEGORY: 1 SOLUTION: Jimmy CONFIDENCE: 20
+2016-08-12 15:56:48 :: MESSAGE-- ID: 9 FROM: 1(Chris) T0: 2(Dale) Check this out...
+2016-08-12 16:02:56 :: MESSAGE-- ID: 10 FROM: 1(Chris) T0: 2(Dale) Check this out
+2016-08-12 16:06:01 :: SEARCH BY: 1 (Chris) SEARCH TERM: target RESULT: High visibility targets include monuments, banks,
+                        skyscrapers, embassies, visiting dignitaries, and
+                        own-country dignitaries
+2016-08-12 16:07:13 :: SEARCH BY: 1 (Chris) SEARCH TERM: what RESULT: No results were found for your search 'what'
+2016-08-12 16:58:56 :: Trial 1 is now active

@@ -96,6 +96,9 @@ class SearchController extends Controller
     $search->factoid_id = $result['factoid_id'];
     $search->save();
 
+    $log = "SEARCH BY: ".$user->id." (".$user->player_name.") ";
+    $log .= "SEARCH TERM: ".$search->search_term." RESULT: ".$result['result'];
+    \oceler\Log::trialLog($trial_id, $log);
 
     return \Response::json($result);
 

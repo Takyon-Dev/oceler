@@ -28,6 +28,8 @@ class MessageController extends Controller
 		$user = Auth::user();
 
 		$msg = new Message;
+    $msg->trial_id = \Session::get('trial_id');
+    $msg->round = \Session::get('curr_round');
 		$msg->factoid_id = $request->factoid_id ?: null;
     $msg->share_id = $request->share_id ?: null;
 		$msg->message = $request->message;
@@ -35,10 +37,18 @@ class MessageController extends Controller
 
 		$msg->save();
 
+    $log = "MESSAGE-- ID: " .$msg->id. " FROM: ". $user->id . "(". $user->player_name .") ";
+
 		foreach ($request->share_to as $player) {
 			// Add each recipient player to message_user
 			$msg->users()->attach($player);
+      $player = \oceler\User::find($player);
+      $log .= 'TO: ' .$player->id . "(". $player->player_name .") ";
+
 		}
+
+    $log .= $msg->message;
+    \oceler\Log::trialLog($msg->trial_id, $log);
 
 	}
 
@@ -63,6 +73,8 @@ class MessageController extends Controller
                     ->with('factoid')
                     ->with('sharedFrom')
 										->where('updated_at', '>', $last_message_time)
+                    ->where('trial_id', \Session::get('trial_id'))
+                    ->where('round', \Session::get('curr_round'))
 										->get();
 
 		foreach($new_messages as $key=>$msg){
@@ -78,6 +90,7 @@ class MessageController extends Controller
 			}
 
 		}
+
 
 		return Response::json($messages);
 

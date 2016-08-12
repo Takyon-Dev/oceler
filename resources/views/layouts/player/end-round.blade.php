@@ -4,6 +4,13 @@
     <link rel="stylesheet" href="{{ URL::asset('css/player_style.css') }}">
 @stop
 
+@section('js')
+  <script type="text/javascript" src="{{ asset('js/timer.js') }}"></script>
+  <script>
+    deleteCookie('OcelerTime');
+  </script>
+@stop
+
 @section('content')
 <div class="container">
   @include('layouts.player.menu')

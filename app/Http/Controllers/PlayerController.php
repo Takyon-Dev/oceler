@@ -154,6 +154,11 @@ class PlayerController extends Controller
     {
       $curr_round = Session::get('curr_round');
       Session::put('curr_round', $curr_round + 1);
+
+      $trial = \oceler\Trial::find(Session::get('trial_id'));
+      $trial->curr_round = $curr_round;
+      $trial->save();
+
       return redirect('/player/trial');
     }
 
@@ -174,7 +179,7 @@ class PlayerController extends Controller
                             ->first();
 
 
-      $solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial_id);
+      $solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial_id, $curr_round);
 
       $check_solutions = \oceler\Solution::checkSolutions($solutions, $trial->rounds[$curr_round]->factoidset_id);
 
@@ -210,8 +215,15 @@ class PlayerController extends Controller
   		$sol->confidence = $request->confidence;
   		$sol->user_id = $user->id;
       $sol->trial_id = Session::get('trial_id');
+      $sol->round = Session::get('curr_round');
 
   		$sol->save();
+
+      $log = "SOLUTION-- FROM: ".$user->id." (". $user->player_name .") ";
+      $log .= "CATEGORY: ".$sol->category_id;
+      $log .= " SOLUTION: ".$sol->solution." CONFIDENCE: ".$sol->confidence;
+      \oceler\Log::trialLog($sol->trial_id, $log);
+
   	}
 
       /**
@@ -237,6 +249,8 @@ class PlayerController extends Controller
   		$solutions = DB::table('solutions')
                       ->whereIn('user_id', $ids)
                       ->where('id', '>', $solution_id)
+                      ->where('trial_id', Session::get('trial_id'))
+                      ->where('round', Session::get('curr_round'))
                       ->get();
 
   		return Response::json($solutions);
@@ -263,7 +277,10 @@ class PlayerController extends Controller
 
       $trial = \oceler\Trial::where('id', '=', $trial_id)
                             ->with('rounds')
-                            ->get();
+                            ->first();
+
+      $trial->curr_round = $curr_round;
+      $trial->save();
 
       // Get each player in the trial
       $session_players = DB::table('trial_user')
@@ -285,7 +302,7 @@ class PlayerController extends Controller
           // user's position in the trial array and set their player_name
           $user = \oceler\User::find(Auth::user()->id);
           $names = DB::table('names')
-                    ->where('nameset_id', '=', $trial[0]->rounds[$curr_round]->nameset_id)
+                    ->where('nameset_id', '=', $trial->rounds[$curr_round]->nameset_id)
                     ->lists('name');
 
           $user->player_name = $names[$key + 1];

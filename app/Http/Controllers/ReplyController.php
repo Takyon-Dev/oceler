@@ -34,6 +34,11 @@ class ReplyController extends Controller
     $parent_msg->updated_at = date('Y-m-d G:i:s');
     $parent_msg->save();
 
+    $log = "REPLY-- FROM: ". $user->id . "(". $user->player_name .") ";
+    $log .= 'ORIG MSG ID: '.$reply->message_id.' ';
+    $log .= $reply->message;
+    \oceler\Log::trialLog(\Session::get('trial_id'), $log);
+
 	}
 
 }

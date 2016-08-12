@@ -37,6 +37,7 @@ function messageListener()
 				if(msg.shared_from) msg = msg.shared_from;
 
 				var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
+				console.log(msg.users);
 				m.addMessage($("#messages"));
 
 				$.each(msg.replies, function(key, reply){

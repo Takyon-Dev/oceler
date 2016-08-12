@@ -178,6 +178,12 @@ Route::get('/admin/trial/toggle/{id}', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/log', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@showLogs',
+	'roles' => ['administrator']
+]);
+
 Route::get('/admin/config-files', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@showConfigFiles',

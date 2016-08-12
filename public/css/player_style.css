@@ -276,6 +276,8 @@ form.reply-form .btn-sm {
 
 div#search_container {
 	width: 100%;
+	height: auto;
+	overflow: auto;
 	border: 1px solid #666666;
 	margin: 0 auto;
 	padding: 16px;

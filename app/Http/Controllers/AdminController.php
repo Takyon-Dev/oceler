@@ -82,6 +82,20 @@ class AdminController extends Controller
     return View::make('layouts.admin.config-files');
   }
 
+  public function showLogs()
+  {
+
+    $logs = array();
+    $files = scandir(public_path()."/trial-logs/");
+    foreach ($files as $f) {
+      if($f != '.' && $f != '..') $logs[] = $f;
+    }
+
+    return View::make('layouts.admin.logs')
+                ->with('logs', $logs);
+
+  }
+
 
 
 }

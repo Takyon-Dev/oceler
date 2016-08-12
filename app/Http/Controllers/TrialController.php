@@ -22,7 +22,8 @@ class TrialController extends Controller
      */
     public function index()
     {
-      $trials = Trial::all();
+      $trials = Trial::orderBy('id', 'desc')
+                      ->get();
 
       return View::make('layouts.admin.trials')
                   ->with('trials', $trials);
@@ -129,6 +130,11 @@ class TrialController extends Controller
       $trial = Trial::find($id);
       $trial->is_active = !$trial->is_active;
       $trial->save();
+
+      $msg = 'Trial '.$id;
+      $msg .= ($trial->is_active) ? ' is now active' : ' is not active';
+      \oceler\Log::trialLog($id, $msg);
+
       return \Redirect::to('/admin/trial');
     }
 
@@ -167,7 +173,11 @@ class TrialController extends Controller
 
           for($k = 0; $k < count($trials[$i]['users']); $k++){
 
-            $solutions = \oceler\Solution::getCurrentSolutions($trials[$i]['users'][$k]['id'], $trials[$i]['id']);
+            $solutions = \oceler\Solution::getCurrentSolutions(
+                                                $trials[$i]['users'][$k]['id'],
+                                                $trials[$i]['id'],
+                                                $trials[$i]['curr_round']
+                                            );
             $trials[$i]['users'][$k]['solutions'] = $solutions;
           }
 

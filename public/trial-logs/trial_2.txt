@@ -1,0 +1,17 @@
+2016-08-12 17:37:09 :: Trial 2 is now active
+2016-08-12 17:38:10 :: SEARCH BY: 1 (Dale) SEARCH TERM: attack RESULT: The Amber, Brown, Coral, Violet, or Charcoal groups may
+                        be planning an attack
+2016-08-12 17:38:22 :: MESSAGE-- ID: 11 FROM: 1(Dale) T0: 2(Chris) Hey check this out...
+2016-08-12 17:40:59 :: MESSAGE-- ID: 12 FROM: 1(Dale) T0: 2(Chris) Hello?
+2016-08-12 17:42:10 :: REPLY-- FROM: 2(Chris) ORIG MSG ID: 12 Yes?
+2016-08-12 17:42:32 :: SEARCH BY: 1 (Dale) SEARCH TERM: What are the possible targets? RESULT: High visibility targets include monuments, banks,
+                        skyscrapers, embassies, visiting dignitaries, and
+                        own-country dignitaries
+2016-08-12 17:42:46 :: SEARCH BY: 2 (Chris) SEARCH TERM: Are there any targets? RESULT: High visibility targets include monuments, banks,
+                        skyscrapers, embassies, visiting dignitaries, and
+                        own-country dignitaries
+2016-08-12 17:42:59 :: MESSAGE-- ID: 13 FROM: 2(Chris) T0: 1(Dale) This might be important
+2016-08-12 17:43:12 :: REPLY-- FROM: 1(Dale) ORIG MSG ID: 13 Yep, I think so too...
+2016-08-12 17:43:35 :: SOLUTION-- FROM: 2 (Chris) CATEGORY: 2 SOLUTION: Skyscrapers CONFIDENCE: 70
+2016-08-12 17:44:12 :: SOLUTION-- FROM: 1 (Dale) CATEGORY: 2 SOLUTION: banks CONFIDENCE: 40
+2016-08-12 17:51:49 :: Trial 2 is not active

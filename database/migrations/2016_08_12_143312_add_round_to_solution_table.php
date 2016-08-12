@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddNullableToMessagesFactoidIdForeign extends Migration
+class AddRoundToSolutionTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,9 +12,11 @@ class AddNullableToMessagesFactoidIdForeign extends Migration
      */
     public function up()
     {
-        Schema::table('messages', function (Blueprint $table) {
-          $table->integer('factoid_id')->nullable()->change();
-        });
+      Schema::table('solutions', function (Blueprint $table) {
+
+        $table->integer('round')->after('trial_id');
+
+      });
     }
 
     /**
@@ -24,6 +26,10 @@ class AddNullableToMessagesFactoidIdForeign extends Migration
      */
     public function down()
     {
-        //
+      Schema::table('solutions', function (Blueprint $table) {
+
+        $table->dropColumn('round');
+
+      });
     }
 }

@@ -7,7 +7,7 @@ function addTimer(min){
 
 		var startTime = currentTime.getTime();
 		var endTime = new Date(currentTime.getTime() + time);
-    
+
     if(!readCookie('OcelerTime')){
       createCookie('OcelerTime', endTime);
     }
@@ -104,6 +104,9 @@ function readCookie(name) {
 	return false;
 }
 
+function deleteCookie(name) {
+  document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
 
 
 function display_time(timer){
