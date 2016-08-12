@@ -16,7 +16,8 @@ use Session;
 class TrialController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Gets all trials (in order from
+     * latest to earliest) and displays them.
      *
      * @return \Illuminate\Http\Response
      */
@@ -30,7 +31,8 @@ class TrialController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Displays the New Trial form, in which the
+     * trial configuration is set.
      *
      * @return \Illuminate\Http\Response
      */
@@ -40,7 +42,8 @@ class TrialController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Processes the New Trial form, saving all config
+     * data to the appropriate tables.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -56,11 +59,12 @@ class TrialController extends Controller
       $trial->num_rounds = $request->num_rounds;
       $trial->is_active = false;
 
-      $trial->save();
+      $trial->save(); // Saves the trial to the trial table
 
       /*
-       * For each forund, the timeout factoidset, countryset, and
-       * nameset are stored.
+       * For each trial round (set in the config), the trial timeout,
+       * factoidsets, countrysets, and namesets (selected in the config)
+       * are stored in the rounds table.
        */
       for($i = 0; $i < $trial->num_rounds; $i++){
 
@@ -75,45 +79,16 @@ class TrialController extends Controller
             'nameset_id' => $request->nameset_id[$i],
             ]);
       }
+
       return \Redirect::to('/admin/trial');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Removes the specified trial from the database.
+     * We are actually using soft-deletes with trials,
+     * so the trial remains in the db, but will not
+     * be included in any queries.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -125,12 +100,18 @@ class TrialController extends Controller
         return \Redirect::to('/admin/trial');
     }
 
+    /**
+     * Toggles a trial between active / inactive.
+     * Only active trials can be filled, making it possible
+     * for multiple trials to be set up in advance.
+     */
     public function toggle($id)
     {
       $trial = Trial::find($id);
       $trial->is_active = !$trial->is_active;
       $trial->save();
 
+      // Writes active status to the trial's log file
       $msg = 'Trial '.$id;
       $msg .= ($trial->is_active) ? ' is now active' : ' is not active';
       \oceler\Log::trialLog($id, $msg);
@@ -138,11 +119,20 @@ class TrialController extends Controller
       return \Redirect::to('/admin/trial');
     }
 
+    /**
+     * Displays the Trial Queue layout to the player
+     * @return [type] [description]
+     */
     public function enterQueue()
     {
       return View::make('layouts.player.queue');
     }
 
+    /**
+     * Displays the admin page view of a trial, including all the players
+     * that have been assigned to it.
+     *
+     */
     public function getTrial($id)
     {
 
@@ -160,7 +150,6 @@ class TrialController extends Controller
       return View::make('layouts.admin.trial-view')
                   ->with('players', $players)
                   ->with('trial', $trial);
-
     }
 
     public function getListenAllTrialPlayers()
@@ -187,7 +176,9 @@ class TrialController extends Controller
 
     /**
      * Manages the queue of players waiting to join an avaialable trial.
-     * @return True when the required number of players for that trial is met
+     * @return True when the required number of players for that trial is met.
+     *         False when the number of players in queue is less than the
+     *         trial's required amount.
      */
     public function queue()
     {
@@ -222,8 +213,10 @@ class TrialController extends Controller
       if($trial){
         $queued_players = \oceler\Queue::count();
 
+        // If there are enough players...
         if($queued_players >= $trial->num_players){
 
+          // ... Take the required amount
           $selected = \oceler\Queue::orderBy('created_at', 'asc')
                                     ->take($trial->num_players)
                                     ->get();
@@ -233,6 +226,7 @@ class TrialController extends Controller
           // be randomized
           $selected = $selected->shuffle();
 
+          // Insert each selected player into the trial_user table...
           foreach ($selected as $user) {
             DB::table('trial_user')->insert([
               'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
@@ -240,7 +234,7 @@ class TrialController extends Controller
               'user_id' => $user->user_id,
               'trial_id' => $trial->id,
             ]);
-            // Delete the user from queue
+            // ... And delete that user from the queue
             \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
           }
 

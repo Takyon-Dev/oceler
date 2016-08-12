@@ -41,39 +41,39 @@ Route::get('player/', [
 
 
 Route::get('player/trial', [
-	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@playerTrial',
-	'roles' => ['player'] // Only a player role can view this page
+	'roles' => ['player']
 ]);
 
 Route::get('player/trial/initialize', [
-	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@initializeTrial',
-	'roles' => ['player'] // Only a player role can view this page
+	'roles' => ['player']
 ]);
 
 Route::get('player/trial/queue', [
-	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@enterQueue',
-	'roles' => ['player'] // Only a player role can view this page
+	'roles' => ['player']
 ]);
 
 Route::get('player/trial/queue/status', [
-	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@queue',
-	'roles' => ['player'] // Only a player role can view this page
+	'roles' => ['player']
 ]);
 
 Route::get('player/trial/end', [
-	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@endTrialRound',
-	'roles' => ['player'] // Only a player role can view this page
+	'roles' => ['player']
 ]);
 
 Route::get('player/trial/new-round', [
-	'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@startTrialRound',
-	'roles' => ['player'] // Only a player role can view this page
+	'roles' => ['player']
 ]);
 
 Route::post('/solution', [
@@ -112,15 +112,8 @@ Route::post('/search', [
 	'roles' => ['player']
 ]);
 
-//Route::post('solution', 'PlayerController@postSolution');
-//Route::get('listen/solution/{id}', 'PlayerController@getListenSolution');
-
-//Route::post('message', 'MessageController@postMessage');
-//Route::get('listen/message/{id}', 'MessageController@getListenMessage');
-
-//Route::post('reply', 'ReplyController@postReply');
-
 // Admin routes...
+
 Route::get('/admin/players', [
   'as' => 'admin_home',
 	'middleware' => ['auth', 'roles'],

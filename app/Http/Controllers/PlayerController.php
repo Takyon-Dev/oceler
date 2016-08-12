@@ -78,7 +78,8 @@ class PlayerController extends Controller
                               ->where('trial_id', '=', $trial_id)
                               ->get();
 
-    	// Create two arrays -- one to hold the players the user can see, and another to hold the players that can see the user
+    	// Create two arrays -- one to hold the players the user can see,
+    	// and another to hold the players that can see the user
     	$players_from = array();
     	$players_to = array();
 
@@ -260,6 +261,7 @@ class PlayerController extends Controller
     /**
      * Runs at the start of a trial. Stores the curr_round as 1,
      * and sets the user's player_name for the trial.
+     * Stores current round and trial ID in Session for access later.
      * @return View: A countdown for the start of the trial
      */
     public function initializeTrial()
@@ -298,8 +300,9 @@ class PlayerController extends Controller
               'node_id' => ($key + 1),
             ]);
 
-          // Find the name form the nameset that corrosponds with the
+          // Find the name from the nameset that corrosponds with the
           // user's position in the trial array and set their player_name
+          // in the User table
           $user = \oceler\User::find(Auth::user()->id);
           $names = DB::table('names')
                     ->where('nameset_id', '=', $trial->rounds[$curr_round]->nameset_id)
