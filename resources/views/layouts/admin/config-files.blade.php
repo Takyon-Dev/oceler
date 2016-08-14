@@ -9,6 +9,8 @@
 
     $(document).ready(function(){
 
+
+
       // Adds csrf token to AJAX headers
       $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
     });
@@ -25,22 +27,25 @@
         <div class="col-md-12">
           <h1 class="text-center">Configuration files</h1>
 
-          <div class="secure">Upload form</div>
-            {!! Form::open(['url'=>'/admin/config-files/upload','method'=>'POST',
-                                  'files'=>true, 'class'=>'form-inline']) !!}
+          @if (count($errors) > 0)
+            <div class="text-danger">
+                <p>There was a problem with your upload...</p>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>ERROR: {{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+          @endif
 
-              <div class="form-group">
-                {!! Form::file('file', ['class'=>'form-control input-lg']) !!}
-                <p class="errors">{!!$errors->first('image')!!}</p>
-                @if(Session::has('error'))
-                  <p class="errors">{!! Session::get('error') !!}</p>
-                @endif
-              </div>
-
-
-          {!! Form::button('UPLOAD', ['class'=>'btn btn-primary btn-large']) !!}
+          {!! Form::open(array('url'=>'/admin/config-files/upload',
+                               'method'=>'POST', 'files'=>true)) !!}
+            <label class="btn btn-success btn-file">
+                Upload Config
+                <input type="file" style="display: none;"
+                      name="config_file"  onchange="this.form.submit()">
+            </label>
           {!! Form::close() !!}
-          <div id="success"> </div>
         </div>
       </div>
       <div class="row">

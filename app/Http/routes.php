@@ -183,6 +183,12 @@ Route::get('/admin/config-files', [
 	'roles' => ['administrator']
 ]);
 
+Route::post('/admin/config-files/upload', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'ConfigController@uploadConfig',
+	'roles' => ['administrator']
+]);
+
 
 // Authentication routes...
 Route::get('/login', 'Auth\AuthController@getLogin');
