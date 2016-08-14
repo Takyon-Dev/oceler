@@ -16,7 +16,9 @@ class ConfigController extends Controller
     ]);
     $file = file_get_contents($request->config_file);
     echo $file;
-    $config_json = json_decode(file_get_contents($request->config_file), true);
+    $file = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $file);
+    $config_json = json_decode($file, true);
     dump($config_json);
+    echo json_last_error();
   }
 }
