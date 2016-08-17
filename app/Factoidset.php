@@ -12,7 +12,17 @@ class Factoidset extends Model
 
   public static function addFactoidset($config)
   {
+    foreach ($config['solutions'] as $key => $sol) {
+      if(is_array($sol)){
+          foreach ($sol as $s) {
+            echo $key .' :::: '.$s.'<br>';
+          }
+      }
+      else echo  $key .' :::: '.$sol.'<br>';
 
+
+    }
+    return;
     // Save the new Factoidset
     $factoidset = new Factoidset();
     $factoidset->name = $config['name'];
@@ -25,7 +35,7 @@ class Factoidset extends Model
       $fact->factoid = $factoid['factoid'];
       $fact->save();
 
-      // Then store each keyword, first checking to see if it
+      // Store each keyword, with firstOrNew checking to see if it
       // already exists
       foreach ($factoid['keywords'] as $keyword) {
 
@@ -33,10 +43,11 @@ class Factoidset extends Model
         $k->keyword = $keyword;
         $k->save();
 
-        // Finally, connect the keyword and the factoid
+        // Connect the keyword and the factoid by ID
         $fact->keywords()->save($k);
       }
     }
+
 
 
   }
