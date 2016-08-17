@@ -21,9 +21,17 @@ class CreateSolutionsTable extends Migration
             $table->integer('confidence');
             $table->timestamps();
 
-            $table->foreign('trial_id')->references('id')->on('trials');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('category_id')->references('id')->on('solution_categories');
+            $table->foreign('trial_id')
+                  ->references('id')->on('trials')
+                  ->onDelete('cascade');
+
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
+                  ->onDelete('cascade');
+
+            $table->foreign('category_id')
+                  ->references('id')->on('solution_categories')
+                  ->onDelete('cascade');
         });
     }
 

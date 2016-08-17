@@ -79,7 +79,14 @@ class AdminController extends Controller
 
   public function showConfigFiles()
   {
-    return View::make('layouts.admin.config-files');
+    $factoidsets = \oceler\Factoidset::all();
+    $networks = \oceler\Network::all();
+    $namesets = \oceler\Nameset::all();
+
+    return View::make('layouts.admin.config-files')
+                ->with('factoidsets', $factoidsets)
+                ->with('networks', $networks)
+                ->with('namesets', $namesets);
   }
 
   public function showLogs()

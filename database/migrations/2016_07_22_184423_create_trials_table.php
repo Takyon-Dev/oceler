@@ -22,6 +22,8 @@ class CreateTrialsTable extends Migration
             $table->integer('num_rounds');
             $table->boolean('is_active');
             $table->timestamps();
+
+            $table->softDeletes();
         });
     }
 

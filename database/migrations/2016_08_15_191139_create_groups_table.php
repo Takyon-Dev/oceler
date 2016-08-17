@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMessageUserTable extends Migration
+class CreateGroupsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,22 +12,22 @@ class CreateMessageUserTable extends Migration
      */
     public function up()
     {
-      Schema::create('message_user', function (Blueprint $table) {
+      Schema::create('groups', function (Blueprint $table) {
 
         $table->increments('id');
+        $table->integer('trial_id')->unsigned();
+        $table->integer('network_id')->unsigned();
+        $table->text('survey_url');
         $table->timestamps();
 
-        $table->integer('message_id')->unsigned();
-        $table->integer('user_id')->unsigned();
+        $table->foreign('trial_id')
+              ->references('id')->on('trials')
+              ->onDelete('cascade');
 
-        # Make foreign keys
-        $table->foreign('message_id')
-              ->references('id')->on('messages')
+        $table->foreign('network_id')
+              ->references('id')->on('networks')
               ->onDelete('cascade');
-;
-        $table->foreign('user_id')
-              ->references('id')->on('users')
-              ->onDelete('cascade');
+
       });
     }
 
@@ -38,6 +38,6 @@ class CreateMessageUserTable extends Migration
      */
     public function down()
     {
-        Schema::drop('message_user');
+        Schema::drop('groups');
     }
 }

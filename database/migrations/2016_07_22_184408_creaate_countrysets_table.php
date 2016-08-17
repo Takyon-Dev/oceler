@@ -18,6 +18,8 @@ class CreaateCountrysetsTable extends Migration
              $table->text('location');
              $table->timestamps();
 
+             $table->softDeletes();
+
          });
      }
 

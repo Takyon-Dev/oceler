@@ -18,6 +18,8 @@ class CreateFactoidsetsTable extends Migration
              $table->text('location');
              $table->timestamps();
 
+             $table->softDeletes();
+
          });
      }
 

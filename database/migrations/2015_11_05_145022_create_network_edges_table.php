@@ -19,7 +19,9 @@ class CreateNetworkEdgesTable extends Migration
             $table->integer('target');
             $table->timestamps();
 
-            $table->foreign('network_id')->references('id')->on('networks');
+            $table->foreign('network_id')
+                  ->references('id')->on('networks')
+                  ->onDelete('cascade');
 
         });
     }

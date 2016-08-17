@@ -30,6 +30,7 @@
     <div class="col-md-12">
       <div class="text-center">
         <h1 class="text-primary">Please wait for all players to join...</h1>
+        <h2 class="text-muted collapse" id="players_needed">Waiting for <span class="text-primary"></span> more players</h2>
         <img src="/img/waiting_1.gif" class="waiting-sm">
       </div>
     </div>

@@ -18,6 +18,8 @@ class CreateNamesetsTable extends Migration
              $table->text('location');
              $table->timestamps();
 
+             $table->softDeletes();
+
          });
      }
 

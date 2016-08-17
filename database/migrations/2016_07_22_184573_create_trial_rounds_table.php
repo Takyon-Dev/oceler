@@ -22,10 +22,21 @@ class CreateTrialRoundsTable extends Migration
           $table->integer('nameset_id')->unsigned();
           $table->timestamps();
 
-          $table->foreign('trial_id')->references('id')->on('trials')->onDelete('cascade');
-          $table->foreign('factoidset_id')->references('id')->on('factoidsets');
-          $table->foreign('countryset_id')->references('id')->on('countrysets');
-          $table->foreign('nameset_id')->references('id')->on('namesets');
+          $table->foreign('trial_id')
+                ->references('id')->on('trials')
+                ->onDelete('cascade');
+
+          $table->foreign('factoidset_id')
+                ->references('id')->on('factoidsets')
+                ->onDelete('cascade');
+
+          $table->foreign('countryset_id')
+                ->references('id')->on('countrysets')
+                ->onDelete('cascade');
+
+          $table->foreign('nameset_id')
+                ->references('id')->on('namesets')
+                ->onDelete('cascade');
       });
     }
 

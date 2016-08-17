@@ -28,7 +28,7 @@ class AddCurrRoundToTrialsTable extends Migration
   {
     Schema::table('trials', function (Blueprint $table) {
 
-      $table->dropColumn('round');
+      $table->dropColumn('curr_round');
 
     });
   }

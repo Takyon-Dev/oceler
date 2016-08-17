@@ -15,15 +15,24 @@ class AddForeignKeysToMessagesTable extends Migration
       Schema::table('messages', function (Blueprint $table) {
 
         $table->integer('share_id')->after('factoid_id')->unsigned()->nullable();
-        $table->foreign('share_id')->references('id')->on('messages');
+        $table->foreign('share_id')
+              ->references('id')->on('messages')
+              ->onDelete('cascade');
 
         $table->integer('trial_id')->after('user_id')->unsigned();
-        $table->foreign('trial_id')->references('id')->on('trials');
+        $table->foreign('trial_id')
+              ->references('id')->on('trials')
+              ->onDelete('cascade');
 
         $table->integer('round')->after('trial_id');
 
-        $table->foreign('factoid_id')->references('id')->on('factoids');
-        $table->foreign('user_id')->references('id')->on('users');
+        $table->foreign('factoid_id')
+              ->references('id')->on('factoids')
+              ->onDelete('cascade');
+
+        $table->foreign('user_id')
+              ->references('id')->on('users')
+              ->onDelete('cascade');
       });
     }
 

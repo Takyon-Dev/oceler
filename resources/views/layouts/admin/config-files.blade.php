@@ -41,6 +41,7 @@
           {!! Form::open(array('url'=>'/admin/config-files/upload',
                                'method'=>'POST', 'files'=>true)) !!}
             <label class="btn btn-success btn-file">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                 Upload Config
                 <input type="file" style="display: none;"
                       name="config_file"  onchange="this.form.submit()">
@@ -49,17 +50,38 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-3 config-container">
-          <h3 class="bg-info">Factoid sets</h3>
+        <div class="col-md-4 config-container">
+          <h3 class="bg-info text-center">Factoid sets</h3>
+          @foreach($factoidsets as $factoidset)
+            <li>
+              {{ $factoidset->name }}
+              <span class="text-muted pull-right">
+                {{ $factoidset->created_at }}
+              </span>
+            </li>
+          @endforeach
         </div>
-        <div class="col-md-3 config-container">
-          <h3 class="bg-info">Names</h3>
+        <div class="col-md-4 config-container">
+          <h3 class="bg-info text-center">Networks</h3>
+          @foreach($networks as $network)
+            <li>
+              {{ $network->name }}
+              <span class="text-muted pull-right">
+                {{ $network->created_at }}
+              </span>
+            </li>
+          @endforeach
         </div>
-        <div class="col-md-3 config-container">
-          <h3 class="bg-info">Countries</h3>
-        </div>
-        <div class="col-md-3 config-container">
-          <h3 class="bg-info">Organizations</h3>
+        <div class="col-md-4 config-container">
+          <h3 class="bg-info text-center">Names</h3>
+          @foreach($namesets as $nameset)
+            <li>
+              {{ $nameset->name }}
+              <span class="text-muted pull-right">
+                {{ $nameset->created_at }}
+              </span>
+            </li>
+          @endforeach
         </div>
       </div>
     </div>

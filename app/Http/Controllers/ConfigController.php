@@ -14,11 +14,30 @@ class ConfigController extends Controller
     $this->validate($request, [
         'config_file' => 'required|max:1024',
     ]);
-    $file = file_get_contents($request->config_file);
-    echo $file;
-    $file = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $file);
-    $config_json = json_decode($file, true);
-    dump($config_json);
-    echo json_last_error();
+
+    $config_json = json_decode(file_get_contents($request->config_file), true);
+
+    foreach ($config_json as $config) {
+
+      switch($config['type']){
+        case 'network':
+          \oceler\Network::addNetwork($config);
+          break;
+
+        case 'factoid':
+          \oceler\Factoidset::addFactoidset($config);
+          break;
+
+        case 'names':
+          \oceler\Nameset::addNameset($config);
+          break;
+      }
+    }
+
+
+  return redirect('\admin\config-files');
+
   }
+
+
 }

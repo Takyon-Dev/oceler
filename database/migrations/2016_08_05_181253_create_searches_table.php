@@ -21,10 +21,17 @@ class CreateSearchesTable extends Migration
           $table->integer('factoid_id')->unsigned()->nullable();
           $table->timestamps();
 
-          // Add foreign keys
-          $table->foreign('user_id')->references('id')->on('users');
-          $table->foreign('trial_id')->references('id')->on('trials');
-          $table->foreign('factoid_id')->references('id')->on('factoids');
+          $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+
+          $table->foreign('trial_id')
+                ->references('id')->on('trials')
+                ->onDelete('cascade');
+
+          $table->foreign('factoid_id')
+                ->references('id')->on('factoids')
+                ->onDelete('cascade');
 
         });
     }

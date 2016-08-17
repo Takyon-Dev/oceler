@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNetworksTable extends Migration
+class AddNumGroupsToTrialsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,10 @@ class CreateNetworksTable extends Migration
      */
     public function up()
     {
-        Schema::create('networks', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('trial_id');
-            $table->timestamps();
-            $table->softDeletes();
+        Schema::table('trials', function(Blueprint $table){
+
+            $table->integer('num_groups')->after('num_rounds');
+
         });
     }
 
@@ -27,6 +26,10 @@ class CreateNetworksTable extends Migration
      */
     public function down()
     {
-        Schema::drop('networks');
+      Schema::table('trials', function (Blueprint $table) {
+
+        $table->dropColumn('num_groups');
+
+      });
     }
 }

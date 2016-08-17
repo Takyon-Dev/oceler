@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->integer('trial_id');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

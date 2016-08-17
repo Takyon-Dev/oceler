@@ -31,7 +31,7 @@
         <div class="col-md-12">
           <h1 class="text-center">Trials</h1>
 
-          <a href="/admin/trial/create" class="btn btn-primary" role="button">
+          <a href="/admin/trial/create" class="btn btn-success" role="button">
             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             New Trial
           </a>

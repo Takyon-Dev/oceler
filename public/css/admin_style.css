@@ -19,3 +19,13 @@ form#trial_config input {
 table.trials {
   margin-top: 24px;
 }
+
+/* Trial Config */
+.round-container h3, .group-container h3 {
+  margin-bottom: 0;
+}
+
+.round-container .form-group, .group-container .form-group {
+  padding: 8px;
+  border: 1px solid #eee;
+}

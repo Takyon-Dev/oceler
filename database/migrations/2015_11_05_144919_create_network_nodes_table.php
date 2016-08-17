@@ -18,7 +18,9 @@ class CreateNetworkNodesTable extends Migration
             $table->integer('node');
             $table->timestamps();
 
-            $table->foreign('network_id')->references('id')->on('networks');
+            $table->foreign('network_id')
+                  ->references('id')->on('networks')
+                  ->onDelete('cascade');
         });
     }
 

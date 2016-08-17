@@ -21,3 +21,14 @@
 2016-08-12 18:07:01 :: REPLY-- FROM: 1(Dale) ORIG MSG ID: 11 ok
 2016-08-12 18:07:21 :: SOLUTION-- FROM: 1 (Dale) CATEGORY: 3 SOLUTION: test CONFIDENCE: 40
 2016-08-12 18:08:42 :: MESSAGE-- ID: 15 FROM: 1(Dale) TO: 2(Chris) test
+2016-08-17 14:46:38 :: Trial 2 is now active
+2016-08-17 15:50:55 :: SOLUTION-- FROM: 3 (Chris) CATEGORY: 1 SOLUTION: violet CONFIDENCE: 40
+2016-08-17 15:51:09 :: MESSAGE-- ID: 1 FROM: 1(Dale) TO: 3(Chris) Howdy, Chris!
+2016-08-17 15:51:19 :: REPLY-- FROM: 3(Chris) ORIG MSG ID: 1 Hey Dale :)
+2016-08-17 15:51:27 :: SEARCH BY: 1 (Dale) SEARCH TERM: attack RESULT: No results were found for your search 'attack'
+2016-08-17 15:51:35 :: SEARCH BY: 1 (Dale) SEARCH TERM: who attack they RESULT: No results were found for your search 'who attack they'
+2016-08-17 15:52:09 :: SEARCH BY: 3 (Chris) SEARCH TERM: target RESULT: Word has it that an unprotected target is preferred to ensure the likelihood of success (can assume is true)
+2016-08-17 15:52:15 :: MESSAGE-- ID: 2 FROM: 3(Chris) TO: 1(Dale) 
+2016-08-17 15:52:21 :: SEARCH BY: 3 (Chris) SEARCH TERM: target RESULT: High visibility targets include monuments, banks, skyscrapers, embassies, visiting dignitaries, and own-country dignitaries
+2016-08-17 15:52:30 :: SEARCH BY: 3 (Chris) SEARCH TERM: target RESULT: Only some groups have the capacity to hit protected targets
+2016-08-17 15:52:46 :: SEARCH BY: 3 (Chris) SEARCH TERM: target RESULT: No results were found for your search 'target'

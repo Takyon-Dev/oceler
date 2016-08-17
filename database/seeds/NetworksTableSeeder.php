@@ -13,8 +13,7 @@ class NetworksTableSeeder extends Seeder
     {
 	    DB::table('networks')->insert([
 	        'created_at' => Carbon\Carbon::now()->toDateTimeString(),
-	        'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
-	        'trial_id' => 1
+	        'updated_at' => Carbon\Carbon::now()->toDateTimeString()
 	    ]);
 
 	    for($i=1; $i<=5; $i++){

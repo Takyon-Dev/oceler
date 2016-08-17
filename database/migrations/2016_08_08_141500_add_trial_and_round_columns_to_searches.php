@@ -14,7 +14,10 @@ class AddTrialAndRoundColumnsToSearches extends Migration
     {
         Schema::table('searches', function (Blueprint $table) {
           $table->integer('round_id')->after('trial_id')->unsigned();
-          $table->foreign('round_id')->references('id')->on('rounds');
+
+          $table->foreign('round_id')
+                ->references('id')->on('rounds')
+                ->onDelete('cascade');
         });
     }
 

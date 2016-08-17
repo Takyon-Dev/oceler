@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddSoftDeletesToTrialsTable extends Migration
+class RemoveCountrysetFromRoundsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,9 +12,10 @@ class AddSoftDeletesToTrialsTable extends Migration
      */
     public function up()
     {
-        Schema::table('trials', function(Blueprint $table)
-        {
-          $table->softDeletes();
+        Schema::table('rounds', function (Blueprint $table) {
+          $table->dropForeign('rounds_countryset_id_foreign');
+          $table->dropColumn('countryset_id');
+
         });
     }
 
@@ -25,9 +26,6 @@ class AddSoftDeletesToTrialsTable extends Migration
      */
     public function down()
     {
-        Schema::table('trials', function(Blueprint $table)
-    		{
-          $table->dropSoftDeletes();
-    		});
+        //
     }
 }

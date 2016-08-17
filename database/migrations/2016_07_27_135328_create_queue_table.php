@@ -18,8 +18,9 @@ class CreateQueueTable extends Migration
           $table->integer('user_id')->unsigned();
           $table->timestamps();
 
-          // Add foreign key on id field in messages table
-          $table->foreign('user_id')->references('id')->on('users');
+          $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
       });
     }
 

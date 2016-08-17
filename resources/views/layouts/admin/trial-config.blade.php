@@ -5,9 +5,18 @@
 @stop
 
 @section('js')
+  <script type="text/javascript" src="{{ asset('js/trial-config.js') }}"></script>
   <script>
 
     $(document).ready(function(){
+
+      $("#num_rounds").change(function(){
+        showConfigBoxes('round', $(this).val());
+      }).change();
+
+      $("#num_groups").change(function(){
+        showConfigBoxes('group', $(this).val());
+      }).change();
 
       // Adds csrf token to AJAX headers
       $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
@@ -25,102 +34,70 @@
         <div class="row">
           <div class="col-md-12">
             <h1 class="text-center">New Trial</h1>
-                <div class="col-md-3">
+                <div class="col-md-6">
                   <div class="form-group">
-                    {!! Form::label('distribution_interval', 'Distribution interval') !!}<br>
-
-                    {!! Form::label('num_waves', 'Number of waves') !!}<br>
-
-                    {!! Form::label('num_players', 'Number of players') !!}<br>
-
-                    {!! Form::label('mult_factoid', 'Multiple factoid selection') !!}<br>
-
-                    {!! Form::label('pay_correct', 'Payment for correct answers') !!}<br>
-
-                    {!! Form::label('num_rounds', 'Number of rounds') !!}<br>
-
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
+                    {!! Form::label('distribution_interval', 'Distribution interval') !!}
 
                     {!! Form::input('number', 'distribution_interval', 0, ['class'=>'num-input']) !!} min.<br>
 
-                    {!! Form::input('number', 'num_waves', 1, ['class'=>'num-input']) !!}<br>
+                    {!! Form::label('num_players', 'Number of players') !!}
 
-                    {!! Form::input('number', 'num_players', 4, ['class'=>'num-input']) !!}<br>
+                    {!! Form::input('number', 'num_players', 4, ['class'=>'num-input', 'id'=>'num_players']) !!}<br>
+
+                    {!! Form::label('num_groups', 'Number of groups') !!}
+
+                    {!! Form::input('number', 'num_groups', 1, ['class'=>'num-input', 'id'=>'num_groups']) !!}<br>
+
+                    {!! Form::label('mult_factoid', 'Multiple factoid selection') !!}
 
                     {!! Form::checkbox('mult_factoid', '1') !!}<br>
 
+                    {!! Form::label('pay_correct', 'Payment for correct answers') !!}
+
                     {!! Form::checkbox('pay_correct', '1') !!}<br>
 
-                    {!! Form::input('number', 'num_rounds', 4, ['class'=>'num-input']) !!}<br>
+                    {!! Form::label('num_rounds', 'Number of rounds') !!}
+
+                    {!! Form::input('number', 'num_rounds', 1, ['class'=>'num-input', 'id'=>'num_rounds']) !!}<br>
+
                   </div>
                 </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-md-4 round-container">
-            <h3>&nbsp;</h3>
-            <div class="form-group">
-              {!! Form::label('round_timeout', 'Round timeout') !!}<br>
+        <div class="row" id="rounds">
+          <h2 class="bg-info text-center">Rounds</h2>
 
-              {!! Form::label('factoidset_id', 'Factoid set') !!}<br>
+          <div class="col-md-3 round-container">
+            <h3 class="bg-info">Round #<span>1</span></h3>
+            <div class="form-group bg-muted">
+              {!! Form::label('round_timeout', 'Time:') !!}
+              {!! Form::input('number', 'round_timeout[]', 20, ['class'=>'num-input']) !!} min.<br>
 
-              {!! Form::label('countryset_id', 'Countries') !!}<br>
+              {!! Form::label('factoidset_id', 'Factoids:') !!}
+              {!! Form::select('factoidset_id[]', $factoidsets) !!}<br>
 
-              {!! Form::label('nameset_id', 'Names') !!}<br>
+
+              {!! Form::label('nameset_id', 'Names:') !!}
+              {!! Form::select('nameset_id[]', $namesets) !!}<br>
+
             </div>
           </div>
 
-          @for($i = 1; $i <= 4; $i++)
-            <div class="col-md-2 round-container">
-              <h3 class="bg-info">Round #{{$i}}</h3>
-              <div class="form-group">
-
-                {!! Form::input('number', 'round_timeout[]', 20, ['class'=>'num-input']) !!} min.<br>
-
-                {!! Form::select('factoidset_id[]', ['1'=>'factoidset1ha1-17.txt', '2'=>'factoidset1ha2-17.txt']) !!}<br>
-
-                {!! Form::select('countryset_id[]', ['1'=>'countries1.txt']) !!}<br>
-
-                {!! Form::select('nameset_id[]', ['1'=>'names17.txt', '2'=>'names20.txt']) !!}<br>
-
-              </div>
-            </div>
-          @endfor
 
         </div>
         <div class="row">
+          <div id="groups">
+            <h2 class="bg-info text-center">Groups</h2>
+            <div class="col-md-6 group-container">
+              <h3 class="bg-info">Group #<span>1</span></h3>
+              <div class="form-group">
+                {!! Form::label('network', 'Network:') !!}<br>
+                {!! Form::select('network[]', $networks) !!}<br>
 
-          <div class="col-md-2">
-            <h3>&nbsp;</h3>
-            <div class="form-group">
-              {!! Form::label('organization', 'Organizations') !!}<br>
+                {!! Form::label('survey_url', 'Survey URL:') !!}<br>
+                {!! Form::text('survey_url[]', null, ['class'=>'form-control']) !!}<br>
 
-              {!! Form::label('survey_url', 'Survey URL') !!}<br>
-
-            </div>
-          </div>
-
-          <div class="col-md-5">
-            <h3 class="bg-info">Group 1</h3>
-            <div class="form-group">
-
-              {!! Form::select('organization[]', ['1' => 'organizationTest1.txt']) !!}<br>
-
-              {!! Form::text('survey_url[]', null, ['class'=>'form-control']) !!}<br>
-
-            </div>
-          </div>
-          <div class="col-md-5">
-            <h3 class="bg-info">Group 2</h3>
-            <div class="form-group">
-
-              {!! Form::select('organization[]', ['1' => 'organizationTest1.txt']) !!}<br>
-
-              {!! Form::text('survey_url[]', null, ['class'=>'form-control']) !!}<br>
-
+              </div>
             </div>
           </div>
         </div>

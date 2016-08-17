@@ -19,8 +19,10 @@ class CreateFactoidsTable extends Migration
             $table->text('factoid');
             $table->timestamps();
 
-            // Add foreign key on id field in messages table
-            $table->foreign('factoidset_id')->references('id')->on('factoidsets');
+
+            $table->foreign('factoidset_id')
+                  ->references('id')->on('factoidsets')
+                  ->onDelete('cascade');
 
         });
     }

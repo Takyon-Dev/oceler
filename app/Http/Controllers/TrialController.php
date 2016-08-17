@@ -38,7 +38,14 @@ class TrialController extends Controller
      */
     public function create()
     {
-      return View::make('layouts.admin.trial-config');
+      $factoidsets = \oceler\Factoidset::lists('name', 'id');
+      $networks = \oceler\Network::lists('name', 'id');
+      $namesets = \oceler\Nameset::lists('name', 'id');
+
+      return View::make('layouts.admin.trial-config')
+                  ->with('factoidsets', $factoidsets)
+                  ->with('networks', $networks)
+                  ->with('namesets', $namesets);
     }
 
     /**
@@ -52,11 +59,11 @@ class TrialController extends Controller
     {
       $trial = new Trial();
       $trial->distribution_interval = $request->distribution_interval;
-      $trial->num_waves = $request->num_waves;
       $trial->num_players = $request->num_players;
       $trial->mult_factoid = $request->mult_factoid || 0;
       $trial->pay_correct = $request->pay_correct || 0;
       $trial->num_rounds = $request->num_rounds;
+      $trial->num_groups = $request->num_groups;
       $trial->is_active = false;
 
       $trial->save(); // Saves the trial to the trial table
@@ -75,9 +82,25 @@ class TrialController extends Controller
             'round' => ($i + 1),
             'round_timeout' => $request->round_timeout[$i],
             'factoidset_id' => $request->factoidset_id[$i],
-            'countryset_id' => $request->countryset_id[$i],
             'nameset_id' => $request->nameset_id[$i],
             ]);
+      }
+
+      /*
+       *	For each group (set in the config) store the group's
+       *	network and end-of-experiment survey URL
+       */
+      for($i = 0; $i < $trial->num_groups; $i++){
+
+        DB::table('groups')->insert([
+          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'group' => $i + 1,
+          'trial_id' => $trial->id,
+          'network_id' => $request->network[$i],
+          'survey_url' => $request->survey_url[$i],
+        ]);
+
       }
 
       return \Redirect::to('/admin/trial');
@@ -176,9 +199,10 @@ class TrialController extends Controller
 
     /**
      * Manages the queue of players waiting to join an avaialable trial.
-     * @return True when the required number of players for that trial is met.
-     *         False when the number of players in queue is less than the
-     *         trial's required amount.
+     * @return 0 when the required number of players for that trial is met.
+     *         Otherwise, if there is an available trial it returns the
+     *         remaining number of players needed before the trial can start.
+     *         If no trial is available, returns -1.
      */
     public function queue()
     {
@@ -186,7 +210,7 @@ class TrialController extends Controller
       $dt = \Carbon\Carbon::now();
 
       // If this user has been added to trial_user already, return with true
-      if(DB::table('trial_user')->where('user_id', '=', $u_id)->get()) return 1;
+      if(DB::table('trial_user')->where('user_id', '=', $u_id)->get()) return 0;
 
       // Add the player to the queue and set updated_at to
       // current date/time
@@ -226,20 +250,31 @@ class TrialController extends Controller
           // be randomized
           $selected = $selected->shuffle();
 
-          // Insert each selected player into the trial_user table...
+          // Insert each selected player into the trial_user table
+          // along with the group they are part of
+
+          $group = 1;
+          $count = 0; // Counts the users added so far
           foreach ($selected as $user) {
             DB::table('trial_user')->insert([
               'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
               'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
               'user_id' => $user->user_id,
               'trial_id' => $trial->id,
+              'group_id' => \DB::table('groups')
+                            ->where('trial_id', $trial->id)
+                            ->where('group', $group)
+                            ->value('id')
             ]);
+            $count++;
+            if($count >= $trial->num_players / $trial->num_groups) $group++;
             // ... And delete that user from the queue
             \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
           }
-
+          return 0;
         }
+        else return $trial->num_players - $queued_players;
       }
-      return 0;
+      return -1;
     }
 }

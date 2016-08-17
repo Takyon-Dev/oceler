@@ -41,21 +41,26 @@ class PlayerController extends Controller
 
       $curr_round = Session::get('curr_round');
 
-      $trial_id = DB::table('trial_user')
-                  ->where('user_id', '=', Auth::user()->id)
+      $trial_user = DB::table('trial_user')
+                  ->where('user_id', Auth::user()->id)
                   ->orderBy('updated_at', 'desc')
-                  ->value('trial_id');
+                  ->first();
 
-      $trial = \oceler\Trial::where('id', '=', $trial_id)
+      $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
                             ->first();
 
+      $group = DB::table('groups')
+                  ->where('id', $trial_user->group_id)
+                  ->first();
+
     	$network = DB::table('networks')
-                      ->where('trial_id', '=', 1)
+                      ->where('id', $group->network_id)
                       ->value('id');
 
     	$u_node_id = DB::table('user_nodes')
-                      ->where('user_id', '=', $u_id)
+                      ->where('user_id', $u_id)
+                      ->where('group_id', $group->id)
                       ->value('node_id');
 
       $u_node = DB::table('network_nodes')
@@ -66,7 +71,7 @@ class PlayerController extends Controller
 
       foreach ($trial->rounds as $round) {
         $nameset = DB::table('names')
-                                  ->where('nameset_id', '=', $round->nameset_id)
+                                  ->where('nameset_id', $round->nameset_id)
                                   ->get();
 
         foreach($nameset as $name){
@@ -75,7 +80,8 @@ class PlayerController extends Controller
       }
     	// Get each player that is in the same session as the user
     	$session_players = DB::table('trial_user')
-                              ->where('trial_id', '=', $trial_id)
+                              ->where('trial_id', $trial->id)
+                              ->where('group_id', $group->id)
                               ->get();
 
     	// Create two arrays -- one to hold the players the user can see,
@@ -93,6 +99,7 @@ class PlayerController extends Controller
     		// Get the network node for this player
     		$node_id = DB::table('user_nodes')
                     ->where('user_id', '=', $player->id)
+                    ->where('group_id', $group->id)
                     ->value('node_id');
 
         $node = DB::table('network_nodes')
@@ -168,12 +175,12 @@ class PlayerController extends Controller
       $user = Auth::user();
       $curr_round = Session::get('curr_round');
 
-      $trial_id = DB::table('trial_user')
+      $trial_user = DB::table('trial_user')
                   ->where('user_id', '=', Auth::user()->id)
                   ->orderBy('updated_at', 'desc')
-                  ->value('trial_id');
+                  ->first();
 
-      $trial = \oceler\Trial::where('id', '=', $trial_id)
+      $trial = \oceler\Trial::where('id', '=', $trial_user->trial_id)
                             ->with('rounds')
                             ->with('users')
                             ->with('solutions')
@@ -270,23 +277,28 @@ class PlayerController extends Controller
       Session::put('curr_round', $curr_round);
 
       // Get the trial ID and the trial
-      $trial_id = DB::table('trial_user')
+      $trial_user = DB::table('trial_user')
                   ->where('user_id', '=', Auth::user()->id)
                   ->orderBy('updated_at', 'desc')
-                  ->value('trial_id');
+                  ->first();
 
-      Session::put('trial_id', $trial_id);
+      Session::put('trial_id', $trial_user->trial_id);
 
-      $trial = \oceler\Trial::where('id', '=', $trial_id)
+      $trial = \oceler\Trial::where('id', '=', $trial_user->trial_id)
                             ->with('rounds')
                             ->first();
 
       $trial->curr_round = $curr_round;
       $trial->save();
 
+      $group = DB::table('groups')
+                  ->where('id', $trial_user->group_id)
+                  ->first();
+
       // Get each player in the trial
       $session_players = DB::table('trial_user')
-                              ->where('trial_id', '=', $trial_id)
+                              ->where('trial_id', '=', $trial->id)
+                              ->where('group_id', $trial_user->group_id)
                               ->get();
 
       // If the player in the trial array is equal to this player
@@ -297,7 +309,11 @@ class PlayerController extends Controller
               'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
               'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
               'user_id' => $player->user_id,
-              'node_id' => ($key + 1),
+              'group_id' => $trial_user->group_id,
+              'node_id' => DB::table('network_nodes')
+                              ->where('network_id', $group->network_id)
+                              ->where('node', $key + 1)
+                              ->value('id')
             ]);
 
           // Find the name from the nameset that corrosponds with the
@@ -305,7 +321,7 @@ class PlayerController extends Controller
           // in the User table
           $user = \oceler\User::find(Auth::user()->id);
           $names = DB::table('names')
-                    ->where('nameset_id', '=', $trial->rounds[$curr_round]->nameset_id)
+                    ->where('nameset_id', '=', $trial->rounds[$curr_round - 1]->nameset_id)
                     ->lists('name');
 
           $user->player_name = $names[$key + 1];

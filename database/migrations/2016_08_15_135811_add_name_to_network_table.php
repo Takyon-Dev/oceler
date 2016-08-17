@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNetworksTable extends Migration
+class AddNameToNetworkTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,11 @@ class CreateNetworksTable extends Migration
      */
     public function up()
     {
-        Schema::create('networks', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('trial_id');
-            $table->timestamps();
-            $table->softDeletes();
+        Schema::table('networks', function (Blueprint $table) {
+
+          $table->integer('name')->after('id');
+          $table->dropColumn('trial_id');
+
         });
     }
 
@@ -27,6 +27,11 @@ class CreateNetworksTable extends Migration
      */
     public function down()
     {
-        Schema::drop('networks');
+        Schema::table('networks', function (Blueprint $table) {
+
+          $table->dropColumn('name');
+
+
+        });
     }
 }

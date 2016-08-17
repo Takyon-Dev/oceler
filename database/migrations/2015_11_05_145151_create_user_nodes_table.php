@@ -18,8 +18,13 @@ class CreateUserNodesTable extends Migration
             $table->integer('node_id')->unsigned();
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('node_id')->references('id')->on('network_nodes');
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
+                  ->onDelete('cascade');
+
+            $table->foreign('node_id')
+                  ->references('id')->on('network_nodes')
+                  ->onDelete('cascade');
         });
     }
 

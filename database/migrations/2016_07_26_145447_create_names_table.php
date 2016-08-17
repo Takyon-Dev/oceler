@@ -19,8 +19,9 @@ class CreateNamesTable extends Migration
             $table->text('name');
             $table->timestamps();
 
-            // Add foreign key on id field in messages table
-            $table->foreign('nameset_id')->references('id')->on('namesets');
+            $table->foreign('nameset_id')
+                  ->references('id')->on('namesets')
+                  ->onDelete('cascade');
 
         });
     }

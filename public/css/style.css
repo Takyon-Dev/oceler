@@ -1,10 +1,8 @@
-body {
-	color: #212121;
-    font-family: "Open Sans", Helvetica, Arial, sans;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    color: #666;
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+    font-weight: 500;
+    line-height: 1.1;
+    color: inherit;
 }
 
 /* Row and column behavior */
@@ -73,7 +71,7 @@ form fieldset{
 }
 
 input.form-control {
-    width: 36%;
+    /*width: 36%;*/
 }
 
 .btn-default, .btn-default:hover {

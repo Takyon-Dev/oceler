@@ -21,8 +21,13 @@ class CreateRepliesTable extends Migration
             $table->timestamps();
 
             // Add foreign key on id field in messages table
-            $table->foreign('message_id')->references('id')->on('messages');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('message_id')
+                  ->references('id')->on('messages')
+                  ->onDelete('cascade');
+
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
+                  ->onDelete('cascade');
 
         });
     }

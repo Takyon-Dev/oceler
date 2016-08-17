@@ -7,13 +7,13 @@ body {
 	width: 100%;
 }
 
-h1 {
+.full-width h1 {
 	text-align: center;
 	font-size: 150%;
 	color: #000;
 }
 
-h2, h3 {
+.full-width h2, .full-width h3 {
 	font-size: 110%;
 	color: #000;
 }
