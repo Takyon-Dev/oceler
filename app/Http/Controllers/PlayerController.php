@@ -180,6 +180,10 @@ class PlayerController extends Controller
                   ->orderBy('updated_at', 'desc')
                   ->first();
 
+      $group = DB::table('groups')
+                  ->where('id', $trial_user->group_id)
+                  ->first();
+
       $trial = \oceler\Trial::where('id', '=', $trial_user->trial_id)
                             ->with('rounds')
                             ->with('users')
@@ -187,9 +191,9 @@ class PlayerController extends Controller
                             ->first();
 
 
-      $solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial_id, $curr_round);
+      $solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial->id, $curr_round);
 
-      $check_solutions = \oceler\Solution::checkSolutions($solutions, $trial->rounds[$curr_round]->factoidset_id);
+      $check_solutions = \oceler\Solution::checkSolutions($solutions, $trial->rounds[$curr_round - 1]->factoidset_id);
 
       $num_correct = 0;
       foreach ($check_solutions as $key => $check) {
@@ -202,10 +206,16 @@ class PlayerController extends Controller
 
       return View::make('layouts.player.end-round')
                   ->with('trial', $trial)
+                  ->with('group', $group)
                   ->with('curr_round', $curr_round)
                   ->with('check_solutions', $check_solutions)
                   ->with('num_correct', $num_correct)
                   ->with('amt_earned', $amt_earned);
+    }
+
+    public function endTrial()
+    {
+      return View::make('layouts.player.end-trial');
     }
 
     /**

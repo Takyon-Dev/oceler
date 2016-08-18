@@ -47,7 +47,7 @@ function timerTick(){
 
 		timer.innerHTML = '00:00';
 
-    window.location.href = '/player/trial/end';
+    window.location.href = '/player/trial/end-round';
 		return;
 	}
 

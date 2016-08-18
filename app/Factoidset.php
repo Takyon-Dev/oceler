@@ -12,17 +12,7 @@ class Factoidset extends Model
 
   public static function addFactoidset($config)
   {
-    foreach ($config['solutions'] as $key => $sol) {
-      if(is_array($sol)){
-          foreach ($sol as $s) {
-            echo $key .' :::: '.$s.'<br>';
-          }
-      }
-      else echo  $key .' :::: '.$sol.'<br>';
 
-
-    }
-    return;
     // Save the new Factoidset
     $factoidset = new Factoidset();
     $factoidset->name = $config['name'];
@@ -48,8 +38,37 @@ class Factoidset extends Model
       }
     }
 
+    // Then store the solutions
+    foreach ($config['solutions'] as $key => $sol) {
+
+      // Find the solution category ID
+      $cat = \DB::table('solution_categories')
+                ->where('name', $key)
+                ->value('id');
+
+      // If there is an array of solutions for a category,
+      // i.e. a category has more than one accepted solution
+      // process each of them
+      if(is_array($sol)){
+          foreach ($sol as $s) {
+            Factoidset::saveAnswerKey($cat, $s, $factoidset->id);
+          }
+      }
+      else Factoidset::saveAnswerKey($cat, $sol, $factoidset->id);
 
 
+    }
+  }
+
+  public static function saveAnswerKey($category, $solution, $factoidset_id)
+  {
+      \DB::table('answer_keys')->insert([
+        'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+        'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+        'solution_category_id' => $category,
+        'factoidset_id' => $factoidset_id,
+        'solution' => $solution
+      ]);
   }
 
 }

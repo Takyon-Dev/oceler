@@ -64,7 +64,7 @@ Route::get('player/trial/queue/status', [
 	'roles' => ['player']
 ]);
 
-Route::get('player/trial/end', [
+Route::get('player/trial/end-round', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@endTrialRound',
 	'roles' => ['player']
@@ -73,6 +73,12 @@ Route::get('player/trial/end', [
 Route::get('player/trial/new-round', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@startTrialRound',
+	'roles' => ['player']
+]);
+
+Route::get('player/trial/end', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@endTrial',
 	'roles' => ['player']
 ]);
 
