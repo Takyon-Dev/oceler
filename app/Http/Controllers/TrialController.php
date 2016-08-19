@@ -62,11 +62,15 @@ class TrialController extends Controller
       $trial->num_players = $request->num_players;
       $trial->mult_factoid = $request->mult_factoid || 0;
       $trial->pay_correct = $request->pay_correct || 0;
+      $trial->pay_time_factor = $request->pay_time_factor || 0;
+      $trial->payment_per_solution = $request->payment_per_solution;
+      $trial->payment_base = $request->payment_base;
       $trial->num_rounds = $request->num_rounds;
       $trial->num_groups = $request->num_groups;
       $trial->is_active = false;
 
       $trial->save(); // Saves the trial to the trial table
+
 
       /*
        * For each trial round (set in the config), the trial timeout,

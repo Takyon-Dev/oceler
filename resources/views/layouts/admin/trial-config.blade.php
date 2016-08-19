@@ -38,15 +38,15 @@
                   <div class="form-group">
                     {!! Form::label('distribution_interval', 'Distribution interval') !!}
 
-                    {!! Form::input('number', 'distribution_interval', 0, ['class'=>'num-input']) !!} min.<br>
+                    {!! Form::input('number', 'distribution_interval', 0, ['class'=>'num-input', 'min'=>'0']) !!} min.<br>
 
                     {!! Form::label('num_players', 'Number of players') !!}
 
-                    {!! Form::input('number', 'num_players', 4, ['class'=>'num-input', 'id'=>'num_players']) !!}<br>
+                    {!! Form::input('number', 'num_players', 4, ['class'=>'num-input', 'id'=>'num_players', 'min'=>'1']) !!}<br>
 
                     {!! Form::label('num_groups', 'Number of groups') !!}
 
-                    {!! Form::input('number', 'num_groups', 1, ['class'=>'num-input', 'id'=>'num_groups']) !!}<br>
+                    {!! Form::input('number', 'num_groups', 1, ['class'=>'num-input', 'id'=>'num_groups', 'min'=>'1']) !!}<br>
 
                     {!! Form::label('mult_factoid', 'Multiple factoid selection') !!}
 
@@ -55,6 +55,18 @@
                     {!! Form::label('pay_correct', 'Payment for correct answers') !!}
 
                     {!! Form::checkbox('pay_correct', '1') !!}<br>
+
+                    {!! Form::label('pay_time_factor', 'Payment per minutes correct') !!}
+
+                    {!! Form::checkbox('pay_time_factor', '1') !!}<br>
+
+                    {!! Form::label('payment_per_solution', 'Payment per solution') !!}
+
+                    {!! Form::input('number', 'payment_per_solution', .05, ['class'=>'num-input', 'step'=>'.01', 'min'=>'0']) !!}<br>
+
+                    {!! Form::label('payment_base', 'Base pay') !!}
+
+                    {!! Form::input('number', 'payment_base', 5, ['class'=>'num-input', 'step'=>'.01', 'min'=>'0']) !!}<br>
 
                     {!! Form::label('num_rounds', 'Number of rounds') !!}
 
