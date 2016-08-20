@@ -36,7 +36,8 @@ class PlayerController extends Controller
     	*   that can see the user in another array ($players_to).
     	*/
 
-    	// Get the user's ID, , the trial ID, the ID of the network, and the user's network node
+    	// Get the user's ID, , the trial ID, the ID of the network, and the
+    	// user's network node
     	$u_id = Auth::id();
 
       $curr_round = Session::get('curr_round');
@@ -69,15 +70,17 @@ class PlayerController extends Controller
 
       $names = array();
 
+      // Load the player names for each round
       foreach ($trial->rounds as $round) {
         $nameset = DB::table('names')
-                                  ->where('nameset_id', $round->nameset_id)
-                                  ->get();
+                      ->where('nameset_id', $round->nameset_id)
+                      ->get();
 
         foreach($nameset as $name){
           $names[$round->round][] = $name->name;
         }
       }
+
     	// Get each player that is in the same session as the user
     	$session_players = DB::table('trial_user')
                               ->where('trial_id', $trial->id)
@@ -132,6 +135,10 @@ class PlayerController extends Controller
 
     	}
 
+      // Store the player arrays in Session so we can access them later
+      Session::put('players_from', $players_from);
+      Session::put('players_to', $players_to);
+
     	/**
     	* Solution categories are stored in the DB. This makes it
     	*  possible to support different sessions
@@ -141,8 +148,6 @@ class PlayerController extends Controller
     	*/
     	$solution_categories = SolutionCategory::all();
 
-    	Session::put('players_from', $players_from);
-    	Session::put('players_to', $players_to);
 
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
@@ -190,10 +195,7 @@ class PlayerController extends Controller
                             ->with('solutions')
                             ->first();
 
-
-      $solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial->id, $curr_round);
-
-      $check_solutions = \oceler\Solution::checkSolutions($solutions, $trial->rounds[$curr_round - 1]->factoidset_id);
+      $check_solutions = \oceler\Solution::checkSolutions($user, $trial, $curr_round);
 
       $num_correct = 0;
       foreach ($check_solutions as $key => $check) {

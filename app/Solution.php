@@ -39,8 +39,11 @@ class Solution extends Model
 
     }
 
-    public static function checkSolutions($solutions, $factoidset_id)
+    public static function checkSolutions($user, $trial, $curr_round)
     {
+
+      //$solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial->id, $curr_round);
+      //$trial->rounds[$curr_round - 1]->factoidset_id
 
       $key = array();
       $key['Who'] = array(' ', false);
@@ -48,6 +51,39 @@ class Solution extends Model
       $key['Where'] = array(' ', false);
       $key['When'] = array(' ', false);
       $key['How'] = array(' ', false);
+
+      $answer_key = \oceler\AnswerKey::where('factoidset_id', $trial->rounds[$curr_round - 1]->factoidset_id)
+                        ->with('solution_categories')
+                        ->get();
+      dump($answer_key);
+
+
+      if($trial->pay_time_factor){
+
+        $solutions = \DB::table('solutions')
+                        ->where('trial_id', $trial->id)
+                        ->where('round', $curr_round)
+                        ->where('user_id', $user->id)
+                        ->whereIn('solution', $answer_key->pluck('solution'))
+                        ->get();
+
+        dump($solutions);
+
+        foreach ($solutions as $key => $solution) {
+          // Compare the created_at for the solution with the
+          // created_at time of the next highest solution id where:
+          //  ->where('trial_id', $trial->id)
+          //  ->where('round', $curr_round)
+          //  ->where('user_id', $user->id)
+        }
+
+        return;
+        /*
+        foreach ($answer_key as $key => $answer) {
+          $solutions[] = \DB::
+        }
+        */
+      }
 
       if($factoidset_id == 1){
 
