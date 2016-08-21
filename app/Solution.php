@@ -45,30 +45,42 @@ class Solution extends Model
       //$solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial->id, $curr_round);
       //$trial->rounds[$curr_round - 1]->factoidset_id
 
-      $key = array();
-      $key['Who'] = array(' ', false);
-      $key['What'] = array(' ', false);
-      $key['Where'] = array(' ', false);
-      $key['When'] = array(' ', false);
-      $key['How'] = array(' ', false);
+      $solution_answers = array();
+
 
       $answer_key = \oceler\AnswerKey::where('factoidset_id', $trial->rounds[$curr_round - 1]->factoidset_id)
-                        ->with('solution_categories')
+                        ->with('solutionCategories')
                         ->get();
       dump($answer_key);
 
 
       if($trial->pay_time_factor){
-
+        /*
         $solutions = \DB::table('solutions')
                         ->where('trial_id', $trial->id)
                         ->where('round', $curr_round)
                         ->where('user_id', $user->id)
                         ->whereIn('solution', $answer_key->pluck('solution'))
                         ->get();
+        */
 
+        $solutions = \DB::table('solutions')
+                        ->where('trial_id', $trial->id)
+                        ->where('round', $curr_round)
+                        ->where('user_id', $user->id)
+                        ->orderBy('category_id', 'asc')
+                        ->orderBy('id', 'asc')
+                        ->get();
         dump($solutions);
 
+
+        foreach ($answer_key as $key => $answer) {
+          $solution_answers[$answer->solution_category_id]['name'] = $answer->solutionCategories->name;
+          $solution_answers[$answer->solution_category_id]['answer'] = [$answer->solution];
+        }
+
+        dump($solution_answers);
+        return;
         foreach ($solutions as $key => $solution) {
           // Compare the created_at for the solution with the
           // created_at time of the next highest solution id where:
