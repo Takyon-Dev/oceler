@@ -80,13 +80,14 @@ class Solution extends Model
         }
 
         dump($solution_answers);
-        return;
+
         foreach ($solutions as $key => $solution) {
-          // Compare the created_at for the solution with the
-          // created_at time of the next highest solution id where:
-          //  ->where('trial_id', $trial->id)
-          //  ->where('round', $curr_round)
-          //  ->where('user_id', $user->id)
+
+          if(in_array($solution->solution, $solution_answers[$solution->category_id]['answer'])){
+              $solution_answers[$solution->category_id];
+              echo 'FOUND ONE! ::: ';
+              echo $solution->category_id.'::'.$solution->solution.'<br>';
+            }
         }
 
         return;
