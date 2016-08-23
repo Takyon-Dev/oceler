@@ -42,168 +42,52 @@ class Solution extends Model
     public static function checkSolutions($user, $trial, $curr_round)
     {
 
-      //$solutions = \oceler\Solution::getCurrentSolutions($user->id, $trial->id, $curr_round);
-      //$trial->rounds[$curr_round - 1]->factoidset_id
 
-      $solution_answers = array();
-
-
-      $answer_key = \oceler\AnswerKey::where('factoidset_id', $trial->rounds[$curr_round - 1]->factoidset_id)
-                        ->with('solutionCategories')
-                        ->get();
-      dump($answer_key);
+      $answers = \oceler\AnswerKey::where('factoidset_id',
+                                              $trial->rounds[$curr_round - 1]
+                                              ->factoidset_id)
+                                      ->with('solutionCategories')
+                                      ->get();
 
 
-      if($trial->pay_time_factor){
-        /*
-        $solutions = \DB::table('solutions')
-                        ->where('trial_id', $trial->id)
-                        ->where('round', $curr_round)
-                        ->where('user_id', $user->id)
-                        ->whereIn('solution', $answer_key->pluck('solution'))
-                        ->get();
+
+      $solutions = Solution::where('trial_id', $trial->id)
+                            ->where('round', $curr_round)
+                            ->where('user_id', $user->id)
+                            ->orderBy('category_id', 'asc')
+                            ->orderBy('id', 'asc')
+                            ->get();
+
+        /* Build an array of correct answers, with a flag to indicate if user's
+         answer is correct, and a placeholder to store the length of time
+         the answer was correct.
         */
 
-        $solutions = \DB::table('solutions')
-                        ->where('trial_id', $trial->id)
-                        ->where('round', $curr_round)
-                        ->where('user_id', $user->id)
-                        ->orderBy('category_id', 'asc')
-                        ->orderBy('id', 'asc')
-                        ->get();
-        dump($solutions);
+        $solution_answers = array();
 
-
-        foreach ($answer_key as $key => $answer) {
-          $solution_answers[$answer->solution_category_id]['name'] = $answer->solutionCategories->name;
-          $solution_answers[$answer->solution_category_id]['answer'] = [$answer->solution];
+        foreach ($answers as $key => $answer) {
+          echo $answer->solution.'<br>';
+          $i = $answer->solution_category_id;
+          $solution_answers[$i]['name'] = $answer->solutionCategories->name;
+          $solution_answers[$i]['answer'][] = strtolower($answer->solution); // array - one solution can have multiple correct answers
+          $solution_answers[$i]['is_correct'] = false;
+          $solution_answers[$i]['time_correct'] = 0;
         }
 
-        dump($solution_answers);
-
+        /* For each of the user's solutions compare them with the solution for
+        that particular category. If they match, update the is_correct flag
+         and add the time correct (diff between the solutions timestamps).
+        */
         foreach ($solutions as $key => $solution) {
 
-          if(in_array($solution->solution, $solution_answers[$solution->category_id]['answer'])){
-              $solution_answers[$solution->category_id];
-              echo 'FOUND ONE! ::: ';
-              echo $solution->category_id.'::'.$solution->solution.'<br>';
+          if(in_array(strtolower($solution->solution), $solution_answers[$solution->category_id]['answer'])){
+              $solution_answers[$solution->category_id]['is_correct'] = true;
+              $solution_answers[$solution->category_id]['time_correct'] += abs(strtotime($solution->updated_at) - strtotime($solution->created_at));;
             }
         }
 
-        return;
-        /*
-        foreach ($answer_key as $key => $answer) {
-          $solutions[] = \DB::
-        }
-        */
-      }
 
-      if($factoidset_id == 1){
-
-        foreach ($solutions as $sol) {
-
-          $solution = $sol->solution;
-          if($sol->category_id == 1){
-            if(strtolower($solution) == 'violet'){
-              $key['Who'] = array($solution, true);
-            }
-            else {
-              $key['Who'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 2){
-            if(strtolower($solution) == 'bank' || strtolower($solution) == 'banks'){
-              $key['What'] = array($solution, true);
-            }
-            else {
-              $key['What'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 3){
-            if(strtolower($solution) == 'psiland'){
-              $key['Where'] = array($solution, true);
-            }
-            else {
-              $key['Where'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 4){
-            if(strtolower($solution) == 'april'){
-              $key['When'] = array($solution, true);
-            }
-            else {
-              $key['When'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 5){
-            if(strtolower($solution) == 'TEST'){
-              $key['How'] = array($solution, true);
-            }
-            else {
-              $key['How'] = array($solution, false);
-            }
-          }
-        }
-
-      }
-
-      if($factoidset_id == 2){
-
-        foreach ($solutions as $key => $sol) {
-          $solution = $solution;
-          if($sol->category_id == 1){
-            if(strtolower($solution) == 'gold'){
-              $key['Who'] = array($solution, true);
-            }
-            else {
-              $key['Who'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 2){
-            if(strtolower($solution) == 'skyscraper' || strtolower($solution) == 'skyscrapers'){
-              $key['What'] = array($solution, true);
-            }
-            else {
-              $key['What'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 3){
-            if(strtolower($solution) == 'tauland'){
-              $key['Where'] = array($solution, true);
-            }
-            else {
-              $key['Where'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 4){
-            if(strtolower($solution) == 'may'){
-              $key['When'] = array($solution, true);
-            }
-            else {
-              $key['When'] = array($solution, false);
-            }
-          }
-
-          if($sol->category_id == 5){
-            if(strtolower($solution) == 'TEST'){
-              $key['How'] = array($solution, true);
-            }
-            else {
-              $key['How'] = array($solution, false);
-            }
-          }
-        }
-
-      }
-
-      return $key;
+      return $solution_answers;
 
     }
 

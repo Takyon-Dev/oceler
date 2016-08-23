@@ -198,12 +198,23 @@ class PlayerController extends Controller
       $check_solutions = \oceler\Solution::checkSolutions($user, $trial, $curr_round);
 
       $num_correct = 0;
+      $time_correct = 0;
       foreach ($check_solutions as $key => $check) {
-
-        if($check[1]) $num_correct++;
+        if($check['is_correct']) $num_correct++;
+        $time_correct += $check['time_correct'];
       }
+
       $amt_earned = 0;
-      if($trial->pay_correct) $amt_earned = $num_correct * .05;
+
+      if($trial->pay_correct){
+        if($trial->pay_time_factor){
+            $time_correct / 60 * $trial->payment_per_solution;
+          }
+          
+        else {
+          $amt_earned = $num_correct * $trial->payment_per_solution;
+        }
+      }
 
 
       return View::make('layouts.player.end-round')
@@ -229,6 +240,23 @@ class PlayerController extends Controller
 
   		$user = Auth::user();
 
+      /* First, update the updated_at timestamp of the
+        most recent previous solution (if any) that is
+        the same category as the incoming $request solution.
+        This way, by comparing the created_at and updated_at
+        timestamps, we can determine the amount of time a solution
+        was 'active' for.
+      */
+      $last_solution = Solution::where('user_id', $user->id)
+                                ->where('trial_id', Session::get('trial_id'))
+                                ->where('round', Session::get('curr_round'))
+                                ->where('category_id', $request->category_id)
+                                ->orderBy('id', 'desc')
+                                ->first();
+
+      if($last_solution) $last_solution->touch();
+
+      // Then, store the new solution
   		$sol = new Solution;
   		$sol->category_id = $request->category_id;
   		$sol->solution = $request->solution;
@@ -239,6 +267,7 @@ class PlayerController extends Controller
 
   		$sol->save();
 
+      // And log it
       $log = "SOLUTION-- FROM: ".$user->id." (". $user->player_name .") ";
       $log .= "CATEGORY: ".$sol->category_id;
       $log .= " SOLUTION: ".$sol->solution." CONFIDENCE: ".$sol->confidence;
