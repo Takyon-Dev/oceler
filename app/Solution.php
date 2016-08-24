@@ -58,6 +58,7 @@ class Solution extends Model
                             ->orderBy('id', 'asc')
                             ->get();
 
+
         /* Build an array of correct answers, with a flag to indicate if user's
          answer is correct, and a placeholder to store the length of time
          the answer was correct.
@@ -66,7 +67,6 @@ class Solution extends Model
         $solution_answers = array();
 
         foreach ($answers as $key => $answer) {
-          echo $answer->solution.'<br>';
           $i = $answer->solution_category_id;
           $solution_answers[$i]['name'] = $answer->solutionCategories->name;
           $solution_answers[$i]['answer'][] = strtolower($answer->solution); // array - one solution can have multiple correct answers
@@ -76,19 +76,55 @@ class Solution extends Model
 
         /* For each of the user's solutions compare them with the solution for
         that particular category. If they match, update the is_correct flag
-         and add the time correct (diff between the solutions timestamps).
+        and add the time correct (diff between the solutions timestamps).
         */
         foreach ($solutions as $key => $solution) {
 
           if(in_array(strtolower($solution->solution), $solution_answers[$solution->category_id]['answer'])){
+
               $solution_answers[$solution->category_id]['is_correct'] = true;
-              $solution_answers[$solution->category_id]['time_correct'] += abs(strtotime($solution->updated_at) - strtotime($solution->created_at));;
-            }
+              $time_correct = abs(strtotime($solution->updated_at) - strtotime($solution->created_at));
+
+              // If there is no difference in time, use the end of round time
+              if($time_correct == 0){
+                $time_correct = abs(strtotime($trial->rounds[$curr_round - 1]->updated_at) - strtotime($solution->created_at));
+              }
+              $solution_answers[$solution->category_id]['time_correct'] += $time_correct;
+          }
         }
 
 
       return $solution_answers;
 
+    }
+
+    public static function dateTimeArray()
+    {
+      $datetime = [];
+
+      $minutes = [];
+      for($i = 0; $i<=60; $i++){
+        $formatted_min = str_pad($i, 2, '0', STR_PAD_LEFT);
+        $minutes[$formatted_min] = $formatted_min;
+      }
+
+      $datetime['months'] = [
+                  "January" => "January",
+                  "February" => "February",
+                  "March" => "March",
+                  "April" => "April",
+                  "May" => "May",
+                  "June" => "June",
+                  "July" => "July",
+                  "August" => "August",
+                  "September" => "September",
+                  "October" => "October",
+                  "November" => "November",
+                  "December" => "December"
+                ];
+
+      $datetime['minutes'] = $minutes;
+      return $datetime;
     }
 
 }

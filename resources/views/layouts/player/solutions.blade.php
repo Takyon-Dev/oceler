@@ -25,7 +25,19 @@
 						<span class="solution-container conf pull-right" id="conf_{{ $user->id }}_{{ $cat->id }}"></span>
 						<form class="solution-form">
 							<label for="solution">{{ $cat->name }}:</label>
-							<input type="text" name="solution" value=""><br>
+
+							@if(strtolower($cat->name) == 'when')
+								<br>
+								{!! Form::select('month', $months) !!}
+								{!! Form::selectRange('day', 1, 31) !!}
+								<br>
+								{!! Form::selectRange('hour', 1, 12) !!} :
+								{!! Form::select('min', $minutes) !!}
+								{!! Form::select('ampm', array('AM'=>'AM', 'PM'=>'PM')) !!}
+								<br>
+							@else
+								<input type="text" name="solution" value=""><br>
+							@endif
 							<label for="confidence">Confidence:</label>
 							<select name="confidence">
 								<option value="">----</option>

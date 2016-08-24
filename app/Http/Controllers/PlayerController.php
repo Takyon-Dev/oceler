@@ -148,6 +148,9 @@ class PlayerController extends Controller
     	*/
     	$solution_categories = SolutionCategory::all();
 
+      // And for the datepicker in the solutions entry form,
+      // we'll call a helper function to get an array of months and minutes
+      $datetime = Solution::dateTimeArray();
 
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
@@ -158,6 +161,8 @@ class PlayerController extends Controller
                    ->with('players_from', $players_from)
                    ->with('players_to', $players_to)
                    ->with('solution_categories', $solution_categories)
+                   ->with('minutes', $datetime['minutes'])
+                   ->with('months', $datetime['months'])
                    ->with('names', $names)
                    ->with('nodes', $nodes)
                    ->with('curr_round', $curr_round);
@@ -195,6 +200,9 @@ class PlayerController extends Controller
                             ->with('solutions')
                             ->first();
 
+      // Update the timestamp to reflect when the round ended
+      $trial->rounds[$curr_round - 1]->touch();
+
       $check_solutions = \oceler\Solution::checkSolutions($user, $trial, $curr_round);
 
       $num_correct = 0;
@@ -208,14 +216,35 @@ class PlayerController extends Controller
 
       if($trial->pay_correct){
         if($trial->pay_time_factor){
-            $time_correct / 60 * $trial->payment_per_solution;
+          $amt_earned = $time_correct / 60 * $trial->payment_per_solution;
           }
-          
+
         else {
           $amt_earned = $num_correct * $trial->payment_per_solution;
         }
       }
 
+      // Add the earnings for this round to the round_earnings table
+      /*
+      DB::table('round_earnings')->insert([
+        'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+        'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+        'trial_id' => $trial->id,
+        'user_id' => $user->id,
+        'round_id' => $trial->rounds[$curr_round - 1]->id,
+        'earnings' => $amt_earned,
+      ]);
+      */
+    $dt = \Carbon\Carbon::now()->toDateTimeString();
+    $dt = '2016-08-24 18:42:11';
+     $sql = DB::statement('
+                          INSERT IGNORE INTO `round_earnings`
+                            (`created_at`, `updated_at`, `trial_id`, `user_id`,
+                            `round_id`, `earnings`)
+                            VALUES
+                            ("'.$dt.'","'.$dt.'",'.$trial->id.', '.$user->id.',
+                            '.$trial->rounds[$curr_round - 1]->id.',
+                            '.$amt_earned.');');
 
       return View::make('layouts.player.end-round')
                   ->with('trial', $trial)
@@ -257,6 +286,19 @@ class PlayerController extends Controller
       if($last_solution) $last_solution->touch();
 
       // Then, store the new solution
+
+      // If the solution is for the 'when' category, format the
+      // date using each component
+      if($request->month){
+        $datetime = $request->month.' ';
+        $datetime .= $request->day.' ';
+        $datetime .= $request->hour.':';
+        $datetime .= $request->min.' ';
+        $datetime .= $request->ampm;
+
+        $request->solution = $datetime;
+      }
+
   		$sol = new Solution;
   		$sol->category_id = $request->category_id;
   		$sol->solution = $request->solution;

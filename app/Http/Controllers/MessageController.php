@@ -22,9 +22,6 @@ class MessageController extends Controller
 	public function  postMessage(Request $request)
 	{
 
-
-    //$this->validate($request, ['message' => 'required_unless:factoid_id']);
-
 		$user = Auth::user();
 
 		$msg = new Message;
@@ -37,6 +34,7 @@ class MessageController extends Controller
 
 		$msg->save();
 
+
     $log = "MESSAGE-- ID: " .$msg->id. " FROM: ". $user->id . "(". $user->player_name .") ";
 
 		foreach ($request->share_to as $player) {
@@ -46,6 +44,10 @@ class MessageController extends Controller
       $log .= 'TO: ' .$player->id . "(". $player->player_name .") ";
 
 		}
+
+    if($factoid = \oceler\Factoid::find($request->factoid_id)){
+      $log .= ' WITH FACTOID-- '.$factoid->factoid;
+    }
 
     $log .= $msg->message;
     \oceler\Log::trialLog($msg->trial_id, $log);
@@ -96,13 +98,5 @@ class MessageController extends Controller
 
 	}
 
-	/*
-	public function updateTime()
-	{
-		$dt = new DateTime;
-		$this->updated_at = $dt->format('m-d-y H:i:s');
-		$this->save();
-	}
-	*/
 
 }
