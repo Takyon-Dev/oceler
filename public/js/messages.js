@@ -13,6 +13,12 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
+	$(document).on('click', '#share_check_all' , function(event) {
+		var share_names = $('input.share-name');
+		share_names.prop('checked', true);
+		event.preventDefault();
+	});
+
 });
 
 /**

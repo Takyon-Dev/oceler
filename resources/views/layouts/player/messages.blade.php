@@ -21,6 +21,9 @@
 							<input type="hidden" id="_token" name="_token" value="<?php echo csrf_token(); ?>">
 							<div class="col-md-2 share-to">
 								<h3>share to:</h3>
+								<p class="text-center"><small><a href="" id="share_check_all">
+									check all
+								</a></small></p>
 								<div class="form-group">
 									@foreach($players_to AS $player)
 										<label for="share_to" class="share-name">{{ $player->player_name }}</label>
