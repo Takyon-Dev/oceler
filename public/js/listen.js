@@ -25,6 +25,10 @@ function solutionListener()
 
 function messageListener()
 {
+	
+	// If the player is typing a reply, just return
+	if($(".reply-form").is(":visible")) return;
+
 	$.ajax({
 		type: "GET",
 		url: "/listen/message/"+last_message_time,
@@ -51,7 +55,6 @@ function messageListener()
 
 		}
 	});
-	setTimeout(messageListener, 2000);
 }
 
 function queueListener()

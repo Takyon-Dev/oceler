@@ -8,11 +8,13 @@
   <script>
 
     // Stores the user ID as vars accessible by all other javascript files
-    var user_id = "<?php echo Auth::user()->id;?>";
-    var user_name = "<?php echo Auth::user()->player_name;?>";
+    var user_id = "<?php echo Auth::user()->id; ?>";
+    var user_name = "<?php echo Auth::user()->player_name; ?>";
+    var players_to = <?php echo json_encode($players_to); ?>;
+    var players_from = <?php echo json_encode($players_from); ?>;
 
     $(document).ready(function(){
-
+      
       // Adds csrf token to AJAX headers
       $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
 
