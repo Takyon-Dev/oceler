@@ -43,6 +43,7 @@
               <th>Players</th>
               <th></th>
               <th></th>
+              <th></th>
             </tr>
             @foreach($trials as $trial)
             <tr>
@@ -67,7 +68,10 @@
 
                 @endif
               </td>
-              <td>0/{{ $trial->num_players }}</td>
+              <td>{{ $trial->num_players }}</td>
+
+              <!--<td><a href="/admin/trial/config/{{ $trial->id }}">Edit</a></td>-->
+
               <td><a href="/admin/trial/{{ $trial->id }}">View</a></td>
 
               <td>
@@ -76,6 +80,16 @@
                                 'id' => 'form_delete_trials_' . $trial->id]) !!}
                   <a href="" class="data-delete" data-form="trials_{{ $trial->id }}">
                     Delete
+                  </a>
+                {!! Form::close() !!}
+              </td>
+
+              <td>
+                {!! Form::open(['method' => 'POST',
+                                'route' => ['trial.stop', $trial->id],
+                                'id' => 'form_delete_trials_' . $trial->id]) !!}
+                  <a href="" class="text-danger">
+                    Stop
                   </a>
                 {!! Form::close() !!}
               </td>

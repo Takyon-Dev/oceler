@@ -14,13 +14,10 @@
         queueListener();
       }, 5000);
 
-      playerTrialListener();
-
-      /*
       setInterval(function(){
         playerTrialListener();
       }, 5000);
-      */
+
     });
 
   </script>

@@ -25,7 +25,8 @@ function solutionListener()
 
 function messageListener()
 {
-	
+	setTimeout(messageListener, 2000);
+
 	// If the player is typing a reply, just return
 	if($(".reply-form").is(":visible")) return;
 

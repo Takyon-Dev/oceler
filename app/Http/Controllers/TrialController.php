@@ -58,6 +58,7 @@ class TrialController extends Controller
     public function store(Request $request)
     {
       $trial = new Trial();
+      $trial->name = $request->name;
       $trial->distribution_interval = $request->distribution_interval;
       $trial->num_players = $request->num_players;
       $trial->mult_factoid = $request->mult_factoid || 0;
@@ -147,6 +148,23 @@ class TrialController extends Controller
     }
 
     /**
+     * Stops an in-progress trial by removing
+     * players from the trial_user table.
+     */
+    public function stopTrial($id)
+    {
+      $trial = Trial::find($id);
+      $trial::stopTrial();
+
+      // Writes active status to the trial's log file
+      $msg = 'Trial '.$id;
+      $msg .= ' was stopped by the administrator';
+      \oceler\Log::trialLog($id, $msg);
+
+      return \Redirect::to('/admin/trial');
+    }
+
+    /**
      * Displays the Trial Queue layout to the player
      * @return [type] [description]
      */
@@ -177,6 +195,98 @@ class TrialController extends Controller
       return View::make('layouts.admin.trial-view')
                   ->with('players', $players)
                   ->with('trial', $trial);
+    }
+
+    /**
+     * Displays the edit config page of a trial. Checks if
+     * trial is in progress.
+     *
+     */
+    public function editTrial($id)
+    {
+
+      $trial = Trial::where('id', $id)
+                    ->with('rounds')
+                    ->with('groups')
+                    ->first();
+
+      $factoidsets = \oceler\Factoidset::lists('name', 'id');
+      $networks = \oceler\Network::lists('name', 'id');
+      $namesets = \oceler\Nameset::lists('name', 'id');
+
+
+      $in_progress = DB::table('trial_user')
+                         ->where('trial_id', $id)
+                         ->first();
+
+      return View::make('layouts.admin.trial-config')
+                  ->with('trial', $trial)
+                  ->with('factoidsets', $factoidsets)
+                  ->with('networks', $networks)
+                  ->with('namesets', $namesets)
+                  ->with('in_progress', $in_progress);
+
+    }
+
+    /**
+     * Processes the New Trial form, saving all config
+     * data to the appropriate tables.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateTrial($id, Request $request)
+    {
+      $trial = Trial::find($id);
+      $trial->distribution_interval = $request->distribution_interval;
+      $trial->num_players = $request->num_players;
+      $trial->mult_factoid = $request->mult_factoid || 0;
+      $trial->pay_correct = $request->pay_correct || 0;
+      $trial->pay_time_factor = $request->pay_time_factor || 0;
+      $trial->payment_per_solution = $request->payment_per_solution;
+      $trial->payment_base = $request->payment_base;
+      $trial->num_rounds = $request->num_rounds;
+      $trial->num_groups = $request->num_groups;
+
+      $trial->save(); // Saves the trial to the trial table
+
+
+      /*
+       * For each trial round (set in the config), the trial timeout,
+       * factoidsets, countrysets, and namesets (selected in the config)
+       * are stored in the rounds table.
+       */
+      for($i = 0; $i < $trial->num_rounds; $i++){
+
+        DB::table('rounds')->insert([
+            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'trial_id' => $trial->id,
+            'round' => ($i + 1),
+            'round_timeout' => $request->round_timeout[$i],
+            'factoidset_id' => $request->factoidset_id[$i],
+            'nameset_id' => $request->nameset_id[$i],
+            ]);
+      }
+
+      /*
+       *	For each group (set in the config) store the group's
+       *	network and end-of-experiment survey URL
+       */
+      for($i = 0; $i < $trial->num_groups; $i++){
+
+        DB::table('groups')->insert([
+          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'group' => $i + 1,
+          'trial_id' => $trial->id,
+          'network_id' => $request->network[$i],
+          'survey_url' => $request->survey_url[$i],
+        ]);
+
+      }
+
+      return \Redirect::to('/admin/trial');
     }
 
     public function getListenAllTrialPlayers()

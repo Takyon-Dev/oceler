@@ -23,7 +23,12 @@ class Message extends Model
 
   public function replies()
   {
-    return $this->hasMany('oceler\Reply')->with('replier');
+    $players_from = \Session::get('players_from');
+    $players_from[] = \Auth::user();
+
+    return $this->hasMany('oceler\Reply')
+                ->whereIn('user_id', $players_from)
+                ->with('replier');
   }
 
   public function sharedFrom()

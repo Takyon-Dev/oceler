@@ -30,23 +30,39 @@
 @section('content')
     <div class="container">
       @include('layouts.admin.menu')
-      {!! Form::open(['url'=>'/admin/trial','method'=>'POST', 'id'=>'trial_config']) !!}
+
+      @if(isset($trial))
+        {!! Form::model($trial, ['route' => ['trial.update', $trial->id], 'method' => 'patch']) !!}
+      @else
+        {!! Form::open(['url'=>'/admin/trial','method'=>'POST', 'id'=>'trial_config']) !!}
+      @endif
+
         <div class="row">
           <div class="col-md-12">
-            <h1 class="text-center">New Trial</h1>
+
+            @if(isset($trial))
+              <h1 class="text-center">Editing Trial</h1>
+            @else
+              <h1 class="text-center">New Trial</h1>
+            @endif
+
                 <div class="col-md-6">
                   <div class="form-group">
+                    {!! Form::label('name', 'Trial name') !!}
+
+                    {!! Form::input('text', 'name') !!}<br>
+
                     {!! Form::label('distribution_interval', 'Distribution interval') !!}
 
-                    {!! Form::input('number', 'distribution_interval', 0, ['class'=>'num-input', 'min'=>'0']) !!} min.<br>
+                    {!! Form::input('number', 'distribution_interval', null, ['class'=>'num-input', 'min'=>'0']) !!} min.<br>
 
                     {!! Form::label('num_players', 'Number of players') !!}
 
-                    {!! Form::input('number', 'num_players', 4, ['class'=>'num-input', 'id'=>'num_players', 'min'=>'1']) !!}<br>
+                    {!! Form::input('number', 'num_players', null, ['class'=>'num-input', 'id'=>'num_players', 'min'=>'1']) !!}<br>
 
                     {!! Form::label('num_groups', 'Number of groups') !!}
 
-                    {!! Form::input('number', 'num_groups', 1, ['class'=>'num-input', 'id'=>'num_groups', 'min'=>'1']) !!}<br>
+                    {!! Form::input('number', 'num_groups', null, ['class'=>'num-input', 'id'=>'num_groups', 'min'=>'1']) !!}<br>
 
                     {!! Form::label('mult_factoid', 'Multiple factoid selection') !!}
 
@@ -62,11 +78,16 @@
 
                     {!! Form::label('payment_per_solution', 'Payment per solution') !!}
 
-                    {!! Form::input('number', 'payment_per_solution', .05, ['class'=>'num-input', 'step'=>'.01', 'min'=>'0']) !!}<br>
+                    {!! Form::input('number', 'payment_per_solution', null,
+                                    ['class'=>'num-input',
+                                    'placeholder' => '.05', 'step'=>'.01',
+                                    'min'=>'0']) !!}<br>
 
                     {!! Form::label('payment_base', 'Base pay') !!}
 
-                    {!! Form::input('number', 'payment_base', 5, ['class'=>'num-input', 'step'=>'.01', 'min'=>'0']) !!}<br>
+                    {!! Form::input('number', 'payment_base', 5,
+                                    ['class'=>'num-input', 'step'=>'.01',
+                                    'min'=>'0']) !!}<br>
 
                     {!! Form::label('num_rounds', 'Number of rounds') !!}
 

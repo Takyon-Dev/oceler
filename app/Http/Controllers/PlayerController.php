@@ -255,8 +255,14 @@ class PlayerController extends Controller
                   ->with('amt_earned', $amt_earned);
     }
 
+    /**
+     * Removes the player from the trial and displays the
+     * end-trial page.
+     */
     public function endTrial()
     {
+      Trial::removePlayerFromTrial(Auth::id());
+
       return View::make('layouts.player.end-trial');
     }
 

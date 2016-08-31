@@ -163,6 +163,26 @@ Route::get('/admin/trial/{id}', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/trial/config/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@editTrial',
+	'roles' => ['administrator']
+]);
+
+Route::post('/admin/trial/stop/{id}', [
+  'as' => 'trial.stop',
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@stopTrial',
+	'roles' => ['administrator']
+]);
+
+Route::patch('/admin/trial/{id}', [
+  'as' => 'trial.update',
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@updateTrial',
+	'roles' => ['administrator']
+]);
+
 Route::delete('/admin/trial/{id}', [
   'as' => 'trial.delete',
 	'middleware' => ['auth', 'roles'],

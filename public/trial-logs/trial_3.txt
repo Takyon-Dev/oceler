@@ -29,3 +29,4 @@
 2016-08-27 16:33:28 :: SEARCH BY: 1 (Chris) SEARCH TERM: attack RESULT: The attack will not occur during the first 3 days of the month
 2016-08-27 16:33:31 :: MESSAGE-- ID: 2 FROM: 1(Chris) TO: 2(Dale)  WITH FACTOID-- The attack will not occur during the first 3 days of the month
 2016-08-29 16:55:55 :: MESSAGE-- ID: 3 FROM: 1(Chris) TO: 2(Dale) HI
+2016-08-31 13:44:46 :: Trial 3 is not active
