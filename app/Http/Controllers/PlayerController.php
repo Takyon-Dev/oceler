@@ -262,6 +262,8 @@ class PlayerController extends Controller
      */
     public function endTrial()
     {
+      // If the user hasn't already been unassigned from the
+      // trial by some other method, remove them here
       $trial = \oceler\Trial::find(Session::get('trial_id'));
       if($trial->users->contains(Auth::id())){
         \oceler\Trial::removePlayerFromTrial(Auth::id());
