@@ -10,6 +10,10 @@ function solutionListener()
 		success: function(solutions)
 		{
 
+			if(solutions == -1){
+				window.location = '/player/trial/end';
+			}
+
 			$.each(solutions, function(key, sol)
 			{
 				addNewSolution(sol);
@@ -38,8 +42,12 @@ function messageListener()
 			console.log(messages);
 			$.each(messages, function(key, msg)
 			{
-				// If this message was shared, take the message object stored in shared_from
-				if(msg.shared_from) msg = msg.shared_from;
+				console.log(':::');
+				console.log(msg);
+				console.log(':::');
+				// If this message was shared, use the message object which represents
+				// the original message, which is found in shared_from
+				//if(msg.shared_from) msg = msg.shared_from;
 
 				var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
 				console.log(msg.users);
@@ -49,6 +57,11 @@ function messageListener()
 					var r = new Reply(msg.users, reply.replier, reply.message, msg.id);
 					r.addMessage($("#msg_" + msg.id));
 				});
+
+				if(msg.shared_from){
+					var shared = new Reply(msg.shared_from.users, msg.shared_from.sender, msg.shared_from.message, msg.shared_from.id);
+					shared.addMessage($("#msg_" + msg.id));
+				}
 
 				last_message_time = msg.updated_at;
 			});

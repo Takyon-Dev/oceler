@@ -125,7 +125,9 @@ Message.prototype.header = function(){
 	// If sender == user header starts with 'You (player_name)' and includes
 	// the recipients names
 	if(this.user_id == user_id){
-
+		console.log('---this---');
+		console.log(this);
+		console.log('---this---');
 		var len = this.to.length;
 		header = 'You (' + user_name + ') to ';
 

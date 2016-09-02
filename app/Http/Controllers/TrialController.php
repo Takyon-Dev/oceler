@@ -24,6 +24,7 @@ class TrialController extends Controller
     public function index()
     {
       $trials = Trial::orderBy('id', 'desc')
+                      ->with('users')
                       ->get();
 
       return View::make('layouts.admin.trials')
@@ -154,7 +155,7 @@ class TrialController extends Controller
     public function stopTrial($id)
     {
       $trial = Trial::find($id);
-      $trial::stopTrial();
+      $trial->stopTrial();
 
       // Writes active status to the trial's log file
       $msg = 'Trial '.$id;

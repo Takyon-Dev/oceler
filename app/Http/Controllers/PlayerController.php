@@ -40,12 +40,14 @@ class PlayerController extends Controller
     	// user's network node
     	$u_id = Auth::id();
 
-      $curr_round = Session::get('curr_round');
-
       $trial_user = DB::table('trial_user')
                   ->where('user_id', Auth::user()->id)
                   ->orderBy('updated_at', 'desc')
                   ->first();
+
+      /* If the user is not currently assigned to a trial, send them to
+      their home screen */
+      if(!$trial_user) return \Redirect::to('/player/');
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
@@ -135,8 +137,18 @@ class PlayerController extends Controller
 
     	}
 
+      // We build an array of user IDs for each player
+      //  the user can see (including themselves)
+      //  to use in queries for Solutions and Messages
+      $players_from_ids[] = Auth::user()->id;
+
+      foreach ($players_from as $player) {
+        $players_from_ids[] = $player->id;
+      }
+
       // Store the player arrays in Session so we can access them later
       Session::put('players_from', $players_from);
+      Session::put('players_from_ids', $players_from_ids);
       Session::put('players_to', $players_to);
 
     	/**
@@ -164,8 +176,7 @@ class PlayerController extends Controller
                    ->with('minutes', $datetime['minutes'])
                    ->with('months', $datetime['months'])
                    ->with('names', $names)
-                   ->with('nodes', $nodes)
-                   ->with('curr_round', $curr_round);
+                   ->with('nodes', $nodes);
     }
 
     public function startTrialRound()
@@ -224,20 +235,10 @@ class PlayerController extends Controller
         }
       }
 
-      // Add the earnings for this round to the round_earnings table
-      /*
-      DB::table('round_earnings')->insert([
-        'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'trial_id' => $trial->id,
-        'user_id' => $user->id,
-        'round_id' => $trial->rounds[$curr_round - 1]->id,
-        'earnings' => $amt_earned,
-      ]);
-      */
+    // Add the earnings for this round to the round_earnings table
+
     $dt = \Carbon\Carbon::now()->toDateTimeString();
-    $dt = '2016-08-24 18:42:11';
-     $sql = DB::statement('
+    $sql = DB::statement('
                           INSERT IGNORE INTO `round_earnings`
                             (`created_at`, `updated_at`, `trial_id`, `user_id`,
                             `round_id`, `earnings`)
@@ -261,7 +262,11 @@ class PlayerController extends Controller
      */
     public function endTrial()
     {
-      Trial::removePlayerFromTrial(Auth::id());
+      $trial = \oceler\Trial::find(Session::get('trial_id'));
+      if($trial->users->contains(Auth::id())){
+        \oceler\Trial::removePlayerFromTrial(Auth::id());
+      }
+
 
       return View::make('layouts.player.end-trial');
     }
@@ -331,16 +336,15 @@ class PlayerController extends Controller
       */
   	public function getListenSolution($solution_id)
   	{
+      // First, check that the trial is still in progress (that it hasn't
+      // been stopped). Return -1 if stopped
+      $trial_in_progress = DB::table('trial_user')
+                              ->where('user_id', Auth::id())
+                              ->first();
 
-  		// We build an array of user IDs for each player
-  		//  the user can see (including themselves)
-  		//  to use in our query
+      if(!$trial_in_progress) return -1;
 
-  		$ids[] = Auth::user()->id;
-
-  		foreach (Session::get('players_from') as $player) {
-  			$ids[] = $player->id;
-  		}
+  		$ids = Session::get('players_from_ids');
 
   		// Get all solutions more recent than the last solution ID we have
   		$solutions = DB::table('solutions')

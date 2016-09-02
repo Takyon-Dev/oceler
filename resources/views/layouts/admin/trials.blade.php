@@ -68,7 +68,7 @@
 
                 @endif
               </td>
-              <td>{{ $trial->num_players }}</td>
+              <td>{{ count($trial->users) }} / {{ $trial->num_players }}</td>
 
               <!--<td><a href="/admin/trial/config/{{ $trial->id }}">Edit</a></td>-->
 
@@ -85,14 +85,15 @@
               </td>
 
               <td>
+              @if(count($trial->users) > 0)
+
                 {!! Form::open(['method' => 'POST',
-                                'route' => ['trial.stop', $trial->id],
-                                'id' => 'form_delete_trials_' . $trial->id]) !!}
-                  <a href="" class="text-danger">
-                    Stop
-                  </a>
+                                'route' => ['trial.stop', $trial->id]]) !!}
+                  <button class="btn btn-link">Stop Trial</button>
                 {!! Form::close() !!}
+              @endif
               </td>
+
             </tr>
             @endforeach
 

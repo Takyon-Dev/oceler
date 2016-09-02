@@ -1,7 +1,7 @@
 <script>
 
 	$(document).ready(function() {
-		var round_timeout = "{{ $trial->rounds[($curr_round - 1)]->round_timeout }}";
+		var round_timeout = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->round_timeout }}";
 		addTimer(round_timeout);
 		timerTick();
 	});

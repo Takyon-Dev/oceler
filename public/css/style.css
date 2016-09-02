@@ -38,28 +38,6 @@
     align-items: center;
 }
 
-
-
-/* Sticky footer styles */
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-body {
-  /* Margin bottom by footer height */
-  margin-bottom: 200px;
-}
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 200px;
-  background-color: #BDBDBD;
-  padding-top: 24px;
-}
-
 /* Forms and input */
 
 form fieldset{
@@ -137,4 +115,8 @@ input.form-control {
 .btn-info {
 	background-image: none;
 	background-color: #4FC3F7;
+}
+
+.btn-link {
+  padding: 0;
 }

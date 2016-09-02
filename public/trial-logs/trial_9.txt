@@ -1,0 +1,21 @@
+2016-09-01 20:02:42 :: Trial 9 is now active
+2016-09-01 20:07:31 :: MESSAGE-- ID: 4 FROM: 5(Dale) TO: 1(Chris) TO: 2(Francis) Hi guys!
+2016-09-01 20:13:22 :: REPLY-- FROM: 1(Chris) ORIG MSG ID: 4 Hey Dale, it's Chris!
+2016-09-01 20:13:40 :: REPLY-- FROM: 2(Francis) ORIG MSG ID: 4 Hi Dale it's Francis!
+2016-09-01 20:14:22 :: MESSAGE-- ID: 5 FROM: 5(Dale) TO: 1(Chris) Sharing this to you, Chris...
+2016-09-02 14:00:05 :: MESSAGE-- ID: 6 FROM: 2(Francis) TO: 5(Dale) Hi Dale!
+2016-09-02 14:00:20 :: MESSAGE-- ID: 7 FROM: 5(Dale) TO: 1(Chris) Hey check this out, Chris...
+2016-09-02 14:49:11 :: REPLY-- FROM: 1(Chris) ORIG MSG ID: 7 Thanks for sharing, Dale!
+2016-09-02 15:30:55 :: Trial 9 was stopped by the administrator
+2016-09-02 16:12:07 :: Trial 9 is not active
+2016-09-02 16:12:08 :: Trial 9 is now active
+2016-09-02 16:12:28 :: Trial 9 is not active
+2016-09-02 16:12:30 :: Trial 9 is now active
+2016-09-02 16:12:34 :: Trial 9 is not active
+2016-09-02 16:12:35 :: Trial 9 is now active
+2016-09-02 17:54:33 :: Trial 9 was stopped by the administrator
+2016-09-02 17:56:49 :: Trial 9 was stopped by the administrator
+2016-09-02 18:29:39 :: Trial 9 was stopped by the administrator
+2016-09-02 18:30:46 :: SEARCH BY: 1 (Francis) SEARCH TERM: attack RESULT: The attackers are focusing on a high-visibility target
+2016-09-02 18:30:58 :: MESSAGE-- ID: 8 FROM: 1(Francis) TO: 5(Chris)  WITH FACTOID-- The attackers are focusing on a high-visibility targetYo chris
+2016-09-02 18:31:34 :: Trial 9 was stopped by the administrator

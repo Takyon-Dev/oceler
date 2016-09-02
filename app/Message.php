@@ -23,8 +23,8 @@ class Message extends Model
 
   public function replies()
   {
-    $players_from = \Session::get('players_from');
-    $players_from[] = \Auth::user();
+    $players_from = \Session::get('players_from_ids');
+
 
     return $this->hasMany('oceler\Reply')
                 ->whereIn('user_id', $players_from)
@@ -36,7 +36,8 @@ class Message extends Model
     return $this->belongsTo('oceler\Message', 'share_id')
                 ->with('sender')
                 ->with('replies')
-                ->with('factoid');
+                ->with('factoid')
+                ->with('users');
   }
 
   public function shared()
