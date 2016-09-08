@@ -5,3 +5,5 @@
 2016-08-31 18:50:55 :: REPLY-- FROM: 1(Francis) ORIG MSG ID: 3 Hey Dale it's Francis
 2016-08-31 18:51:24 :: MESSAGE-- ID: 4 FROM: 1(Francis) TO: 5(Dale) Hi
 2016-08-31 18:55:05 :: REPLY-- FROM: 2(Chris) ORIG MSG ID: 3 Hi Dale
+2016-09-08 14:16:47 :: Trial 5 was stopped by the administrator
+2016-09-08 15:48:21 :: Trial 5 was stopped by the administrator

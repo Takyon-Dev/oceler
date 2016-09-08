@@ -12,7 +12,7 @@ class Factoidset extends Model
 
   public static function addFactoidset($config)
   {
-    dump($config);
+
     // Save the new Factoidset
     $factoidset = new Factoidset();
     $factoidset->name = $config['name'];
@@ -41,10 +41,10 @@ class Factoidset extends Model
       // distributed to
       if(is_array($factoid['nodes'])){
           foreach ($factoid['nodes'] as $node) {
-            Factoidset::saveFactoidDistribution($fact->id, $node, $factoid['wave']);
+            Factoidset::saveFactoidDistribution($factoidset->id, $fact->id, $node, $factoid['wave']);
           }
       }
-      else Factoidset::saveFactoidDistribution($fact->id, $factoid['nodes'], $factoid['wave']);
+      else Factoidset::saveFactoidDistribution($factoidset->id, $fact->id, $factoid['nodes'], $factoid['wave']);
     }
 
     // Then store the solutions
@@ -80,11 +80,12 @@ class Factoidset extends Model
       ]);
   }
 
-  public static function saveFactoidDistribution($factoid_id, $node, $wave)
+  public static function saveFactoidDistribution($factoidset_id, $factoid_id, $node, $wave)
   {
       \DB::table('factoid_distributions')->insert([
         'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
         'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+        'factoidset_id' => $factoidset_id,
         'factoid_id' => $factoid_id,
         'node' => $node,
         'wave' => $wave

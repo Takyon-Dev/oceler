@@ -104,8 +104,6 @@ function queueListener()
 function playerTrialListener(trial_id)
 {
 
-	url = (trial_id) ? '/admin/listen/trial/' +trial_id : '/admin/listen/trial/';
-
   $.ajax({
     type: "GET",
     url: url,
@@ -149,4 +147,26 @@ function playerTrialListener(trial_id)
 
     }
   });
+}
+
+function distributionListener(node, wave, distribution_interval, factoidset_id)
+{
+
+ console.log("node" + node + " wave" + wave + " factoidset_id" + factoidset_id);
+	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds
+	$.ajax({
+		type: "GET",
+		url: "/listen/system-message/",
+		data: {"node" : node, "wave" : wave, "factoidset_id" : factoidset_id},
+		success: function(system_message)
+		{
+
+			$.each(system_message, function(key, msg){
+				var m = new SystemMessage(msg.factoid, msg.factoid_id);
+				m.addMessage($("#messages"));
+			});
+
+		}
+	});
+
 }

@@ -111,7 +111,7 @@ class PlayerController extends Controller
                     ->where('id', '=', $node_id)
                     ->value('node');
 
-        $nodes[$player->user_id] = $node;
+        $nodes[$player->id] = $node;
 
     		// See if their node is a source where the user's node is a target
     		$from = DB::table('network_edges')

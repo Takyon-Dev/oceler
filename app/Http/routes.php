@@ -106,6 +106,12 @@ Route::get('/listen/message/{id}', [
 	'roles' => ['player']
 ]);
 
+Route::get('/listen/system-message/', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'MessageController@getListenSystemMessage',
+	'roles' => ['player']
+]);
+
 Route::post('/reply', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'ReplyController@postReply',

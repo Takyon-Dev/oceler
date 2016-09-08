@@ -98,5 +98,16 @@ class MessageController extends Controller
 
 	}
 
+  public function getListenSystemMessage(Request $request)
+	{
+    $factoids = \DB::table('factoid_distributions')
+                    ->join('factoids', 'factoid_distributions.factoid_id', '=', 'factoids.id')
+                    ->where('factoid_distributions.factoidset_id', \Input::get('factoidset_id'))
+                    ->where('node', \Input::get('node'))
+                    ->where('wave', \Input::get('wave'))
+                    ->get();
 
+    return Response::json($factoids);
+
+  }
 }
