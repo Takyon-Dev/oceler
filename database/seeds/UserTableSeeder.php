@@ -78,5 +78,16 @@ class UserTableSeeder extends Seeder
           'role_id' => 2,
       ]);
 
+      DB::table('users')->insert([
+          'created_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => Carbon\Carbon::now()->toDateTimeString(),
+          'name' => 'System',
+          'email' => 'system@oceler',
+          'trial_id' => 1,
+          'player_name' => 'System',
+          'password' => Hash::make('OcelerAdmin'),
+          'role_id' => 3,
+      ]);
+
     }
 }

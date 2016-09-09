@@ -1,0 +1,69 @@
+2016-09-09 14:41:33 :: Trial 10 is now active
+2016-09-09 14:56:29 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:56:29 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:56:29 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:56:29 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:56:40 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:56:41 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:56:41 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:56:41 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 14:59:56 :: SEARCH BY: 7 (Francis) SEARCH TERM: Attack RESULT: The Aqua, Red, Maroon, Lime, and Indigo groups always plan large-scale attacks
+2016-09-09 15:03:18 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:03:18 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:03:18 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:03:18 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:21 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:21 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:21 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:21 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:50 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:50 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:50 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:50 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:59 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:59 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:05:59 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:06:00 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:06:16 :: SEARCH BY: 7 (Francis) SEARCH TERM: attack RESULT: The attack will occur in January, May, August, or December
+2016-09-09 15:06:48 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:06:48 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:06:48 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:06:48 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:11 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:11 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:11 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:11 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:35 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:35 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:35 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:07:35 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:23 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:23 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:23 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:23 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:26 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:26 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:26 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:27 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:19:33 :: MESSAGE-- ID: 53 FROM: 7(Francis) TO: 8(Dale) 
+2016-09-09 15:20:02 :: SEARCH BY: 7 (Francis) SEARCH TERM: attack RESULT: The Aqua, Orange, Indigo, Tan or Red groups may be planning an attack
+2016-09-09 15:20:05 :: MESSAGE-- ID: 54 FROM: 7(Francis) TO: 8(Dale)  WITH FACTOID-- The Aqua, Orange, Indigo, Tan or Red groups may be planning an attack
+2016-09-09 15:21:01 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:21:01 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:21:02 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:21:02 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:21:14 :: MESSAGE-- ID: 59 FROM: 8(Dale) TO: 11(Chris) 
+2016-09-09 15:30:27 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:30:27 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:30:27 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 15:30:27 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:44:28 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:44:28 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:44:28 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:44:28 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:45:17 :: MESSAGE-- ID: 68 FROM: 7(Francis) TO: 8(Dale) hi dale
+2016-09-09 18:45:48 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:45:48 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:45:48 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:45:49 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
+2016-09-09 18:45:59 :: REPLY-- FROM: 8(Dale) ORIG MSG ID: 68 hey

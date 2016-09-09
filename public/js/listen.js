@@ -42,12 +42,6 @@ function messageListener()
 			console.log(messages);
 			$.each(messages, function(key, msg)
 			{
-				console.log(':::');
-				console.log(msg);
-				console.log(':::');
-				// If this message was shared, use the message object which represents
-				// the original message, which is found in shared_from
-				//if(msg.shared_from) msg = msg.shared_from;
 
 				var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
 				console.log(msg.users);
@@ -59,7 +53,9 @@ function messageListener()
 				});
 
 				if(msg.shared_from){
-					var shared = new Reply(msg.shared_from.users, msg.shared_from.sender, msg.shared_from.message, msg.shared_from.id);
+					var shared = new Reply(msg.shared_from.users, msg.shared_from.sender,
+																	msg.shared_from.message, msg.shared_from.factoid,
+																	msg.shared_from.share_id, msg.shared_from.id);
 					shared.addMessage($("#msg_" + msg.id));
 				}
 
@@ -151,22 +147,19 @@ function playerTrialListener(trial_id)
 
 function distributionListener(node, wave, distribution_interval, factoidset_id)
 {
+	// Increment wave by one
+	wave++;
 
- console.log("node" + node + " wave" + wave + " factoidset_id" + factoidset_id);
+  console.log("node" + node + " wave" + wave + " factoidset_id" + factoidset_id);
 	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds
 	$.ajax({
 		type: "GET",
 		url: "/listen/system-message/",
-		data: {"node" : node, "wave" : wave, "factoidset_id" : factoidset_id},
-		success: function(system_message)
-		{
-
-			$.each(system_message, function(key, msg){
-				var m = new SystemMessage(msg.factoid, msg.factoid_id);
-				m.addMessage($("#messages"));
-			});
-
-		}
+		data: {"node" : node, "wave" : wave, "factoidset_id" : factoidset_id}
 	});
+
+	setTimeout(function(){
+		distributionListener(node, wave, distribution_interval, factoidset_id);
+	}, delay)
 
 }

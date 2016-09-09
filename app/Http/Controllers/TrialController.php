@@ -61,6 +61,7 @@ class TrialController extends Controller
       $trial = new Trial();
       $trial->name = $request->name;
       $trial->distribution_interval = $request->distribution_interval;
+      $trial->num_waves = $request->num_waves;
       $trial->num_players = $request->num_players;
       $trial->mult_factoid = $request->mult_factoid || 0;
       $trial->pay_correct = $request->pay_correct || 0;

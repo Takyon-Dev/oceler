@@ -56,6 +56,10 @@
 
                     {!! Form::input('number', 'distribution_interval', null, ['class'=>'num-input', 'min'=>'0']) !!} min.<br>
 
+                    {!! Form::label('num_waves', 'Number of waves') !!}
+
+                    {!! Form::input('number', 'num_waves', null, ['class'=>'num-input', 'min'=>'0']) !!}<br>
+
                     {!! Form::label('num_players', 'Number of players') !!}
 
                     {!! Form::input('number', 'num_players', null, ['class'=>'num-input', 'id'=>'num_players', 'min'=>'1']) !!}<br>

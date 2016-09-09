@@ -77,7 +77,11 @@ function shareMessage(id)
 {
 	$("#msg_form #share_id").val(id);
 	var orig_msg = $("#msg_" + id + " .msg-body").html();
-	$("#share_box").html(orig_msg);
+	var factoid = $("#msg_" + id + " .msg-factoid").html();
+
+	if(factoid) $("#share_box").html(factoid);
+	else $("#share_box").html(orig_msg);
+
 	$("#share_box").show();
 }
 
@@ -178,8 +182,13 @@ Message.prototype.toHTML = function(){
 	var links = $('<span>');
 
 	$(links).append('(');
-	$(links).append($(reply_link));
-	$(links).append('/');
+
+	// If the message is from System, don't add the reply link
+	if(this.sender_name != 'System'){
+		$(links).append($(reply_link));
+		$(links).append('/');
+	}
+
 	$(links).append($(share_link));
 	$(links).append(')');
 
@@ -250,9 +259,9 @@ Message.prototype.addMessage = function(target){
 /**
  * Reply extends Message
 */
-function Reply(to, sender, msg, id)
+function Reply(to, sender, msg, factoid, share_id, id)
 {
-	Message.call(this, to, sender, msg, id);
+	Message.call(this, to, sender, msg, factoid, share_id, id);
 }
 
 // Must create a Reply prototype that inherits from Message prototype
@@ -300,62 +309,4 @@ Reply.prototype.toHTML = function(){
 Reply.prototype.addMessage = function(target){
 
 	$(target).append($(this.toHTML()));
-}
-
-/**
- * SystemMessage extends Message
-*/
-function SystemMessage(factoid, factoid_id)
-{
-	this.factoid = factoid;
-	this.factoid_id = factoid_id;
-}
-
-// Must create a SystemMessage prototype that inherits from Message prototype
-SystemMessage.prototype = Object.create(Message.prototype);
-
-// Set the "constructor" property to refer to SystemMessage
-SystemMessage.prototype.constructor = SystemMessage;
-
-SystemMessage.prototype.toHTML = function(){
-
-	// Create div to hold the message
-	var div = $('<div>', {class: 'message'});
-
-	var header_container = $('<span>', {class: 'header'});
-	$(header_container).append('System Message');
-
-	// Create span to hold message body
-	var msg_body = $('<span>', {class: 'msg-body'});
-	$(msg_body).append(this.msg);
-
-	// If a factoid is being shared, add it
-	if(this.factoid) {
-		var msg_factoid = $('<span>', {class: 'msg-factoid bg-info'});
-		$(msg_factoid).append(this.factoid);
-	}
-
-	// Add the share link
-
-	var share_link = $('<a>', {id: this.id});
-	$(share_link).html('share');
-	$(share_link).click(function(){ shareMessage(this.id) });
-
-	var links = $('<span>');
-
-	$(links).append('(');
-	$(links).append($(share_link));
-	$(links).append(')');
-
-	$(msg_body).append(links);
-
-	$(div).append(header_container);
-	$(div).append(msg_factoid);
-	$(div).append(msg_body);
-	return $(div);
-}
-
-SystemMessage.prototype.addMessage = function(target){
-	console.log(this);
-	$(target).prepend($(this.toHTML()));
 }

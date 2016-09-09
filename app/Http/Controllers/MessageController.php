@@ -100,6 +100,8 @@ class MessageController extends Controller
 
   public function getListenSystemMessage(Request $request)
 	{
+    // Get all factoids set for distribution to the player's
+    // assigned network node during this wave
     $factoids = \DB::table('factoid_distributions')
                     ->join('factoids', 'factoid_distributions.factoid_id', '=', 'factoids.id')
                     ->where('factoid_distributions.factoidset_id', \Input::get('factoidset_id'))
@@ -107,7 +109,26 @@ class MessageController extends Controller
                     ->where('wave', \Input::get('wave'))
                     ->get();
 
-    return Response::json($factoids);
+    foreach ($factoids as $factoid) {
+
+      // Create a new message containing the factoid
+      // and set it's sender to be the 'System' account
+      $sys_msg = new Message();
+      $sys_msg->user_id = \oceler\User::where('player_name', 'System')
+                              ->value('id');
+      $sys_msg->trial_id = \Session::get('trial_id');
+      $sys_msg->round = \Session::get('curr_round');
+      $sys_msg->factoid_id = $factoid->factoid_id;
+      $sys_msg->save();
+
+      // Add the user to as a recipient
+      $sys_msg->users()->attach(Auth::user()->id);
+
+      // And log it
+      $log = 'DISTRIBUTED FACTOID TO: ' .Auth::user()->id . "(". Auth::user()->player_name .") ";
+      $log .= ' FACTOID-- '.$factoid->factoid;
+      \oceler\Log::trialLog(\Session::get('trial_id'), $log);
+    }
 
   }
 }
