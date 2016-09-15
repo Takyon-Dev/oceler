@@ -109,17 +109,22 @@ class MessageController extends Controller
                     ->where('wave', \Input::get('wave'))
                     ->get();
 
+    $u_id = \oceler\User::where('player_name', 'System')->value('id');
+    $trial_id = \Session::get('trial_id');
+    $round = \Session::get('curr_round');
+
     foreach ($factoids as $factoid) {
 
       // Create a new message containing the factoid
-      // and set it's sender to be the 'System' account
-      $sys_msg = new Message();
-      $sys_msg->user_id = \oceler\User::where('player_name', 'System')
-                              ->value('id');
-      $sys_msg->trial_id = \Session::get('trial_id');
-      $sys_msg->round = \Session::get('curr_round');
-      $sys_msg->factoid_id = $factoid->factoid_id;
-      $sys_msg->save();
+      // and set it's sender to be the 'System' account.
+      // Using firstOrCreate to avoid duplicate messages
+      // from occuring if the page is reloaded
+      $sys_msg = Message::firstOrCreate([
+        'user_id' => $u_id,
+        'trial_id' => $trial_id,
+        'round' => $round,
+        'factoid_id' => $factoid->factoid_id,
+      ]);
 
       // Add the user to as a recipient
       $sys_msg->users()->attach(Auth::user()->id);

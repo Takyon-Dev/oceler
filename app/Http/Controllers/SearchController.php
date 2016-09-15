@@ -57,13 +57,14 @@ class SearchController extends Controller
                                 (SELECT factoid_distributions.factoid_id
                                  FROM factoid_distributions
                                  WHERE factoid_distributions.factoidset_id = :factoidset_id_2
-                                 AND factoid_distributions.wave >= :wave)
+                                 AND factoid_distributions.wave <= :wave)
                             AND factoids.id NOT IN
                                 (SELECT factoid_id
                                  FROM searches
                                  WHERE trial_id = :trial_id
                                  AND round_id = :round_id
-                                 AND user_id = :user_id)
+                                 AND user_id = :user_id
+                                 AND factoid_id IS NOT NULL)
                     "), array('search_term' => $search_term,
                               'factoidset_id_1' => $factoidset,
                               'factoidset_id_2' => $factoidset,
@@ -72,6 +73,7 @@ class SearchController extends Controller
                               'user_id' => $user->id,
                               'wave' => $request->wave));
       $i++;
+
     } while(count($factoids) == 0 && $i < count($search_terms));
 
     $result = array();

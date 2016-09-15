@@ -58,7 +58,7 @@
                     Make Inactive
                   </a>
 
-                @elseif (!$trial->is_active  && count($trial->users))
+                @elseif (!$trial->is_active)
 
                   <span class="text-danger">Not Active</span>
                   <a href="/admin/trial/toggle/{{ $trial->id }}"

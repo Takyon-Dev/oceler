@@ -23,8 +23,6 @@ function doSearch()
 
 	searchData.push({ name: "wave", value: wave });
 
-	console.log(searchData);
-
 	$.ajaxPrefilter(function(options, originalOptions, xhr) {
 		var token = $('#_token').val();
 
@@ -40,7 +38,6 @@ function doSearch()
 			clearSearchForm(); // On success, reset the form
 			clearCurrentSearch();
 			displaySearchResult(result);
-			console.log(result);
 
 		})
 		.fail(function () {

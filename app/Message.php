@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Message extends Model
 {
+  protected $fillable = ['user_id', 'trial_id', 'round', 'factoid_id'];
+
   public function users()
   {
     return $this->belongsToMany('oceler\User')->withTimestamps();
@@ -31,11 +33,18 @@ class Message extends Model
                 ->with('replier');
   }
 
+  public function sharedReplies()
+  {
+
+
+    return $this->hasMany('oceler\Reply')->with('replier');
+  }
+
   public function sharedFrom()
   {
     return $this->belongsTo('oceler\Message', 'share_id')
                 ->with('sender')
-                ->with('replies')
+                ->with('sharedReplies')
                 ->with('factoid')
                 ->with('users');
   }

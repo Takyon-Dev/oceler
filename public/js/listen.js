@@ -39,24 +39,40 @@ function messageListener()
 		url: "/listen/message/"+last_message_time,
 		success: function(messages)
 		{
-			console.log(messages);
+
 			$.each(messages, function(key, msg)
 			{
-
+				console.log('MESSAGE:::');
+				console.log(msg);
+				console.log(':::MESSAGE');
 				var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
-				console.log(msg.users);
+
 				m.addMessage($("#messages"));
 
 				$.each(msg.replies, function(key, reply){
+					console.log('REPLY:::');
+					console.log(reply);
+					console.log(':::REPLY');
 					var r = new Reply(msg.users, reply.replier, reply.message, msg.id);
 					r.addMessage($("#msg_" + msg.id));
 				});
 
 				if(msg.shared_from){
+					console.log('SHARED:::');
+					console.log(msg.shared_from);
+					console.log(':::SHARED');
 					var shared = new Reply(msg.shared_from.users, msg.shared_from.sender,
 																	msg.shared_from.message, msg.shared_from.factoid,
 																	msg.shared_from.share_id, msg.shared_from.id);
 					shared.addMessage($("#msg_" + msg.id));
+
+					$.each(msg.shared_from.shared_replies, function(key, reply){
+						console.log('REPLY:::');
+						console.log(reply);
+						console.log(':::REPLY');
+						var shared_reply = new Reply(msg.shared_from.users, reply.replier, reply.message, msg.shared_from.id);
+						shared_reply.addMessage($("#msg_" + msg.id));
+					});
 				}
 
 				last_message_time = msg.updated_at;

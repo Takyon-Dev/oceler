@@ -45,9 +45,11 @@ class PlayerController extends Controller
                   ->orderBy('updated_at', 'desc')
                   ->first();
 
-      /* If the user is not currently assigned to a trial, send them to
-      their home screen */
-      if(!$trial_user) return \Redirect::to('/player/');
+      /* If the user is not currently assigned to a trial,
+      or if for some reason the trial has not yet been inititalized
+      (curr_round has not been set)
+      send them to their home screen */
+      if(!$trial_user || !\Session::get('curr_round')) return \Redirect::to('/player/');
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
@@ -340,13 +342,6 @@ class PlayerController extends Controller
   	{
       // First, check that the trial is still in progress (that it hasn't
       // been stopped). Return -1 if stopped
-      /*
-      $trial_in_progress = DB::table('trial_user')
-                              ->where('user_id', Auth::id())
-                              ->first();
-
-      if(!$trial_in_progress) return -1;
-      */
 
       $player = \oceler\User::with('trials')->find(Auth::id());
       if(!$player->trials) return -1;
