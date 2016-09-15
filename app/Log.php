@@ -8,7 +8,7 @@ class Log extends Model
 {
     public static function trialLog($trial_id, $data)
     {
-      $log = public_path()."/trial-logs/trial_".$trial_id.".txt";
+      $log = storage_path()."/logs/trial-logs/trial_".$trial_id.".txt";
       $fh = fopen($log, 'a');
 
       $dt = \Carbon\Carbon::now()->toDateTimeString();

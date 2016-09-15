@@ -93,14 +93,32 @@ class AdminController extends Controller
   {
 
     $logs = array();
-    $files = scandir(public_path()."/trial-logs/");
+    $files = scandir(storage_path()."/logs/trial-logs/");
+
+    $i = 0;
     foreach ($files as $f) {
-      if($f != '.' && $f != '..') $logs[] = $f;
+      if($f != '.' && $f != '..'){
+
+        $id = trim($f, "trial_.txt");
+
+        $logs[$i]['log'] = $f;
+        $logs[$i]['id'] = $id;
+        $logs[$i]['name'] = \oceler\Trial::where('id', $id)
+                                          ->value('name');
+        $i++;
+      }
     }
 
     return View::make('layouts.admin.logs')
                 ->with('logs', $logs);
 
+  }
+
+  public function readLog($id)
+  {
+    $log = \File::get(storage_path()."/logs/trial-logs/trial_".$id.".txt");
+    $response = Response::make($log, 200);
+    return $response;
   }
 
 

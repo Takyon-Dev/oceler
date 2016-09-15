@@ -13,8 +13,8 @@
 
           @foreach($logs as $log)
             <h2>
-              <a href="/trial-logs/{{ $log }}">
-                {{$log}}
+              <a href="/admin/log/{{$log['id']}}">
+                {{$log['name']}}
               </a>
             </h2>
 

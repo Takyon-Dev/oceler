@@ -216,6 +216,12 @@ Route::get('/admin/log', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/log/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@readLog',
+	'roles' => ['administrator']
+]);
+
 Route::get('/admin/config-files', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@showConfigFiles',
