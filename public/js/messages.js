@@ -299,6 +299,15 @@ Reply.prototype.toHTML = function(){
 	$(reply_header).append(this.header());
 
 	var reply_body = $('<span>', {class: 'msg-body'});
+
+	// If a factoid is being shared, add it
+	if(this.factoid.factoid) {
+		var factoid = $('<span>', {class: 'msg-factoid bg-info'});
+		$(factoid).append(this.factoid.factoid);
+		$(reply_body).append($(factoid));
+	}
+
+
 	$(reply_body).append(this.msg);
 	$(reply_div).append($(reply_header));
 	$(reply_div).append(reply_body);

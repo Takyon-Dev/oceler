@@ -67,3 +67,37 @@
 2016-09-09 18:45:48 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
 2016-09-09 18:45:49 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- Mars has been seen with several groups
 2016-09-09 18:45:59 :: REPLY-- FROM: 8(Dale) ORIG MSG ID: 68 hey
+2016-09-13 13:11:25 :: SEARCH BY: 7 (Francis) SEARCH TERM: test search RESULT: No results were found for your search 'test search'
+2016-09-13 13:13:09 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-13 13:13:09 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-13 13:13:09 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-13 13:13:09 :: DISTRIBUTED FACTOID TO: 7(Francis)  FACTOID-- Mars has been seen with several groups
+2016-09-13 13:13:55 :: SEARCH BY: 7 (Francis) SEARCH TERM: test search RESULT: No results were found for your search 'test search'
+2016-09-13 13:15:05 :: SEARCH BY: 7 (Francis) SEARCH TERM: another search RESULT: No results were found for your search 'another search'
+2016-09-13 13:15:57 :: SEARCH BY: 7 (Francis) SEARCH TERM: third test RESULT: No results were found for your search 'third test'
+2016-09-13 14:12:01 :: SEARCH BY: 7 (Francis) SEARCH TERM: test  RESULT: No results were found for your search 'test '
+2016-09-13 14:12:10 :: SEARCH BY: 7 (Francis) SEARCH TERM: attack RESULT: No results were found for your search 'attack'
+2016-09-13 14:12:23 :: SEARCH BY: 7 (Francis) SEARCH TERM: group RESULT: No results were found for your search 'group'
+2016-09-13 14:53:21 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 14:53:21 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 14:53:22 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 14:53:22 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 14:53:22 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 14:53:22 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 14:53:22 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 14:54:09 :: MESSAGE-- ID: 84 FROM: 7(Francis) TO: 8(Dale) 
+2016-09-13 14:54:23 :: SEARCH BY: 7 (Francis) SEARCH TERM: attack RESULT: No results were found for your search 'attack'
+2016-09-13 14:54:29 :: SEARCH BY: 7 (Francis) SEARCH TERM: group RESULT: No results were found for your search 'group'
+2016-09-13 14:55:40 :: SEARCH BY: 7 (Francis) SEARCH TERM: groups RESULT: No results were found for your search 'groups'
+2016-09-13 14:56:50 :: SEARCH BY: 7 (Francis) SEARCH TERM: group RESULT: Mars has been seen with several groups
+2016-09-13 14:56:55 :: MESSAGE-- ID: 85 FROM: 7(Francis) TO: 8(Dale)  WITH FACTOID-- Mars has been seen with several groups
+2016-09-13 14:57:30 :: MESSAGE-- ID: 86 FROM: 7(Francis) TO: 8(Dale) Test
+2016-09-13 15:09:34 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 15:09:34 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 15:09:34 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 15:09:34 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 15:09:35 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 15:09:35 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 15:09:35 :: DISTRIBUTED FACTOID TO: 8(Dale)  FACTOID-- The Red group has been known to use suicide bombers
+2016-09-13 16:06:59 :: REPLY-- FROM: 7(Francis) ORIG MSG ID: 85 Ok then
+2016-09-14 13:53:15 :: SOLUTION-- FROM: 7 (Francis) CATEGORY: 1 SOLUTION: A Test CONFIDENCE: 40

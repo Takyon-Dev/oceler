@@ -19,7 +19,11 @@ $(document).ready(function() {
 function doSearch()
 {
 
-	searchData = $("#search_form").serialize();
+	searchData = $("#search_form").serializeArray();
+
+	searchData.push({ name: "wave", value: wave });
+
+	console.log(searchData);
 
 	$.ajaxPrefilter(function(options, originalOptions, xhr) {
 		var token = $('#_token').val();

@@ -1,4 +1,4 @@
-function addTimer(min){
+function addTimer(min, loc){
 
 		// convert start time from minutes to milliseconds
 		var time = min * 60000;
@@ -10,8 +10,8 @@ function addTimer(min){
 
     if(!readCookie('OcelerTime')){
       createCookie('OcelerTime', endTime);
+			createCookie('OcelerRedirect', loc);
     }
-
 
 }
 
@@ -47,7 +47,8 @@ function timerTick(){
 
 		timer.innerHTML = '00:00';
 
-    window.location.href = '/player/trial/end-round';
+    redirect = readCookie('OcelerRedirect');
+		if(redirect !== 'undefined') window.location.href = redirect;
 		return;
 	}
 
@@ -82,10 +83,10 @@ function restart_timer(){
 }
 
 
-function createCookie(name,value) {
+function createCookie(name, value) {
 
 		var date = new Date();
-		date.setTime(date.getTime()+ (24*60*60*1000) ); // expires in 1 day
+		date.setTime(date.getTime()+ (2*60*60*1000) ); // expires in 2 hours
 		var expires = "; expires="+date.toGMTString();
 
 

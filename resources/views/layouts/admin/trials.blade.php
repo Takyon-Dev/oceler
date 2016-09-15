@@ -39,7 +39,7 @@
             <tr>
               <th>Trial</th>
               <th>Date</th>
-              <th>Active</th>
+              <th></th>
               <th>Players</th>
               <th></th>
               <th></th>
@@ -47,10 +47,10 @@
             </tr>
             @foreach($trials as $trial)
             <tr>
-              <td>{{ $trial->id }}</td>
+              <td>{{ $trial->name }}</td>
               <td>{{ $trial->created_at }}</td>
               <td>
-                @if ($trial->is_active)
+                @if ($trial->is_active  && count($trial->users) <= 0)
 
                   <span class="text-success">Active</span>
                   <a href="/admin/trial/toggle/{{ $trial->id }}"
@@ -58,7 +58,7 @@
                     Make Inactive
                   </a>
 
-                @else
+                @elseif (!$trial->is_active  && count($trial->users))
 
                   <span class="text-danger">Not Active</span>
                   <a href="/admin/trial/toggle/{{ $trial->id }}"

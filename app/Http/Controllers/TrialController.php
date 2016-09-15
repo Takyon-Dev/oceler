@@ -183,19 +183,9 @@ class TrialController extends Controller
     public function getTrial($id)
     {
 
-      $trial = Trial::find($id);
-      $players = array();
-
-      $players_in_trial = DB::table('trial_user')
-                            ->where('trial_id', '=', $trial->id)
-                            ->get();
-
-      foreach ($players_in_trial as $key => $value) {
-        $players[] = \oceler\User::find($value->user_id);
-      }
+      $trial = Trial::with('users')->find($id);
 
       return View::make('layouts.admin.trial-view')
-                  ->with('players', $players)
                   ->with('trial', $trial);
     }
 
@@ -307,10 +297,68 @@ class TrialController extends Controller
                                                 $trials[$i]['curr_round']
                                             );
             $trials[$i]['users'][$k]['solutions'] = $solutions;
+
+            // Get the user's node
+            $group = DB::table('groups')
+                        ->where('id', $trials[$i]['users'][$k]['pivot']['group_id'])
+                        ->first();
+
+            $network = DB::table('networks')
+                            ->where('id', $group->network_id)
+                            ->value('id');
+
+            $u_node_id = DB::table('user_nodes')
+                            ->where('user_id', $trials[$i]['users'][$k]['id'])
+                            ->where('group_id', $group->id)
+                            ->value('node_id');
+
+            $u_node = DB::table('network_nodes')
+                          ->where('id', '=', $u_node_id)
+                          ->value('node');
+            $trials[$i]['users'][$k]['node'] = $u_node;
           }
 
       }
+
       return Response::json($trials);
+    }
+
+    public function getListenTrialPlayers($id)
+    {
+      $trial = Trial::with('users')
+                      ->find($id);
+
+
+      for($k = 0; $k < count($trial['users']); $k++){
+
+        $solutions = \oceler\Solution::getCurrentSolutions(
+                                            $trial['users'][$k]['id'],
+                                            $trial['id'],
+                                            $trial['curr_round']
+                                        );
+        $trial['users'][$k]['solutions'] = $solutions;
+
+        // Get the user's node
+        $group = DB::table('groups')
+                    ->where('id', $trial['users'][$k]['pivot']['group_id'])
+                    ->first();
+
+        $network = DB::table('networks')
+                        ->where('id', $group->network_id)
+                        ->value('id');
+
+        $u_node_id = DB::table('user_nodes')
+                        ->where('user_id', $trial['users'][$k]['id'])
+                        ->where('group_id', $group->id)
+                        ->value('node_id');
+
+        $u_node = DB::table('network_nodes')
+                      ->where('id', '=', $u_node_id)
+                      ->value('node');
+        $trial['users'][$k]['node'] = $u_node;
+      }
+
+      return Response::json($trial);
     }
 
     /**

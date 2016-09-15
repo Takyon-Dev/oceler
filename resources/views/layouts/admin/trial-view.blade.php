@@ -9,12 +9,21 @@
 
     $(document).ready(function(){
 
-      // Adds csrf token to AJAX headers
-      $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
+      if({{ $trial->curr_round }} <= {{ count($trial->rounds) }}){
+        var round_timeout = "{{ $trial->rounds[$trial->curr_round - 1]->round_timeout }}";
+        addTimer(round_timeout);
+        timerTick();
+      }
+
+      setInterval(function(){
+        playerTrialListener({{ $trial->id }});
+      }, 5000);
+
     });
 
   </script>
-
+  <script type="text/javascript" src="{{ asset('js/timer.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/listen.js') }}"></script>
 @stop
 
 
@@ -23,26 +32,24 @@
       @include('layouts.admin.menu')
       <div class="row">
         <div class="col-md-12">
-          <h2 class="text-primary">Trial {{ $trial->id }} :: Trial Time: 00:00</h2>
-          <table class="table table-striped trials">
+          <h2 class="text-primary"><span class="text-muted">Trial:</span> {{ $trial->name }} ::
+            <span class="text-muted">Round:</span> {{ $trial->curr_round }}
+            <span class="text-muted">Time:</span>
+            <span id="timer" class="text-primary"></span>
+          </h2>
+          <table id="trials" class="table table-striped trials">
             <tr>
+              <th>Node</th>
               <th>Name</th>
               <th>Email</th>
-              <th>IP Address</th>
+              <th>IP</th>
+              <th>User Agent</th>
               <th>Time Entered</th>
               <th>Last Ping</th>
-              <th>Solutions</th>
             </tr>
-            @foreach($players as $player)
-            <tr>
-              <td>{{ $player->name }}</td>
-              <td>{{ $player->email }}</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            @endforeach
+            <tbody class="players">
+              <tr><td colspan="7" class="text-center">Loading player data...</td><tr>
+            </tbody>
           </table>
           </div>
         </div>

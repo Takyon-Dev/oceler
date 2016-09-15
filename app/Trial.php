@@ -18,7 +18,7 @@ class Trial extends Model
     }
 
     public function users() {
-      return $this->belongsToMany('oceler\User')->withTimestamps();
+      return $this->belongsToMany('oceler\User')->withPivot('group_id')->withTimestamps();
     }
 
     public function solutions() {

@@ -99,58 +99,81 @@ function queueListener()
 
 function playerTrialListener(trial_id)
 {
+	url =  "/admin/listen/trial";
+
+	if(trial_id) url += "/" + trial_id;
 
   $.ajax({
     type: "GET",
     url: url,
-    success: function(trial_players)
+    success: function(trials)
     {
-
 
       $("#trials>tbody.players").html('');
 
-      $.each(trial_players, function(i, trial){
+			if(trial_id){
 
-				$.each(trial.users, function(j, user){
+				$.each(trials.users, function(i, user){
 
-	        var row = $('<tr>');
-	        var name = $('<td>' + user.player_name + '</td>');
-	        var email = $('<td>' + user.email + '</td>');
-	        var ip = $('<td>' + user.ip_address + '</td>');
-	        var user_agent = $('<td>' + user.user_agent + '</td>');
-	        var created = $('<td>' + user.pivot.created_at  + '</td>');
-	        var updated = $('<td>' + user.updated_at + '</td>');
+					row = buildUserDataRow(user);
+					solutions = (user.solutions.length) ? addSolutionsRow(user.solutions) : '';
 
-					var solution_table = '<table>';
-
-					$.each(user.solutions, function(k, sol){
-						solution_table += '<tr>';
-						solution_table += '<td>' + sol.name + ':</td>';
-						solution_table += '<td>' + sol.confidence + '%</td>';
-						solution_table += '<td>' + sol.solution + '</td>';
-						solution_table += '</tr>';
-					});
-
-					solution_table += '</table>';
-
-					var solutions = $('<td>' + solution_table + '</td>');
-
-	        $(row).append(name, email, ip, user_agent, created, updated, solutions);
-
-	        $("#trials>tbody.players").append(row);
+					$("#trials>tbody.players").append(row, solutions);
 				});
-      });
+			}
 
+			else {
+	      $.each(trials, function(i, trial){
+
+					$.each(trial.users, function(j, user){
+						row = buildUserDataRow(user);
+						solutions = (user.solutions.length) ? addSolutionsRow(user.solutions) : '';
+
+						$("#trials>tbody.players").append(row, solutions);
+					});
+	      });
+
+			}
     }
   });
 }
 
-function distributionListener(node, wave, distribution_interval, factoidset_id)
+function buildUserDataRow(user)
 {
-	// Increment wave by one
+	var row = $('<tr>');
+	var node = $('<td>' + user.node + '</td>');
+	var name = $('<td>' + user.player_name + '</td>');
+	var email = $('<td>' + user.email + '</td>');
+	var ip = $('<td>' + user.ip_address + '</td>');
+	var user_agent = $('<td>' + user.user_agent + '</td>');
+	var created = $('<td>' + user.pivot.created_at  + '</td>');
+	var updated = $('<td>' + user.pivot.updated_at + '</td>');
+
+	$(row).append(node, name, email, ip, user_agent, created, updated);
+
+	return row;
+}
+
+function addSolutionsRow(solutions)
+{
+	var s = '';
+	$.each(solutions, function(k, sol){
+		s += '<span class="text-muted">' + sol.name + ': </span>';
+		s += '<span class="text-info">' + sol.solution + '</span>';
+		s += '<span class="text-info"> ' + sol.confidence + '%</span> ';
+	});
+
+
+	var solutions_row = $('<tr></tr><tr class="solutions"><td></td><td><strong>Solutions:</strong></td><td colspan="5">' + s + '</td></tr>');
+
+	return solutions_row;
+}
+
+function distributionListener(node, distribution_interval, factoidset_id)
+{
+	// Increment wave (global) by one
 	wave++;
 
-  console.log("node" + node + " wave" + wave + " factoidset_id" + factoidset_id);
 	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds
 	$.ajax({
 		type: "GET",

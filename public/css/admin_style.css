@@ -29,3 +29,8 @@ table.trials {
   padding: 8px;
   border: 1px solid #eee;
 }
+
+/* Trial players table */
+tbody.players tr.solutions td{
+  border-top: none;
+}

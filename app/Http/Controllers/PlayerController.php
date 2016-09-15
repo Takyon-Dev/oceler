@@ -340,12 +340,22 @@ class PlayerController extends Controller
   	{
       // First, check that the trial is still in progress (that it hasn't
       // been stopped). Return -1 if stopped
+      /*
       $trial_in_progress = DB::table('trial_user')
                               ->where('user_id', Auth::id())
                               ->first();
 
       if(!$trial_in_progress) return -1;
+      */
 
+      $player = \oceler\User::with('trials')->find(Auth::id());
+      if(!$player->trials) return -1;
+
+      // Update the timestamp in pivot table
+      // (used to determine if player is actively polling server)
+      $player->trials[0]->pivot->touch();
+
+      // The IDs of all players that this player can see
   		$ids = Session::get('players_from_ids');
 
   		// Get all solutions more recent than the last solution ID we have

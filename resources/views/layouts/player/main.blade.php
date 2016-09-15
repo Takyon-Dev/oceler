@@ -30,9 +30,9 @@
 
       solutionListener(last_solution);
       messageListener(last_message_time);
-      distributionListener({{ $nodes[Auth::user()->id]}},
-                           wave, distribution_interval,
-                         {{ $trial->rounds[(Session::get('curr_round') - 1)]->factoidset_id}});
+      distributionListener({{ $nodes[Auth::user()->id]}}, distribution_interval,
+                         {{ $trial->rounds[(Session::get('curr_round') - 1)]
+                                  ->factoidset_id}});
 
     });
 

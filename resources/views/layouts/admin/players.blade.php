@@ -45,16 +45,7 @@
               <th>Last Pinged</th>
             </tr>
             <tbody class="players">
-              @foreach($queued_players as $queue)
-              <tr>
-                <td>{{ $queue->users->name }}</td>
-                <td>{{ $queue->users->email }}</td>
-                <td>{{ $queue->users->ip_address }}</td>
-                <td>{{ $queue->users->user_agent }}</td>
-                <td>{{ $queue->created_at }}</td>
-                <td>{{ $queue->updated_at }}</td>
-              </tr>
-              @endforeach
+              <tr><td colspan="7" class="text-center">Loading player data...</td><tr>
             </tbody>
           </table>
           </div>
@@ -64,17 +55,17 @@
             <h2 class="text-primary">Players in active trials</h2>
             <table id="trials" class="table table-striped trials">
               <tr>
+                <th>Node</th>
                 <th>Name</th>
                 <th>Email</th>
-                <th>IP Address</th>
+                <th>IP</th>
                 <th>User Agent</th>
                 <th>Time Entered</th>
                 <th>Last Pinged</th>
-                <th>Solutions</th>
               </tr>
               <tbody class="players">
-                <tr><td colspan="5">[Needs to be added]</td></tr>
-            </tbody>
+                <tr><td colspan="7" class="text-center">Loading player data...</td><tr>
+              </tbody>
             </table>
         </div>
       </div>
