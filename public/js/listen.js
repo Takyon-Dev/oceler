@@ -179,7 +179,6 @@ function addSolutionsRow(solutions)
 		s += '<span class="text-info"> ' + sol.confidence + '%</span> ';
 	});
 
-
 	var solutions_row = $('<tr></tr><tr class="solutions"><td></td><td><strong>Solutions:</strong></td><td colspan="5">' + s + '</td></tr>');
 
 	return solutions_row;
