@@ -64,8 +64,7 @@ class Factoidset extends Model
           }
       }
       else Factoidset::saveAnswerKey($cat, $sol, $factoidset->id);
-
-
+      
     }
   }
 

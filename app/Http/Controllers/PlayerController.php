@@ -181,14 +181,21 @@ class PlayerController extends Controller
                    ->with('nodes', $nodes);
     }
 
+
     public function startTrialRound()
     {
       $curr_round = Session::get('curr_round');
-      Session::put('curr_round', $curr_round + 1);
+      Session::put('curr_round', $curr_round++);
 
-      $trial = \oceler\Trial::find(Session::get('trial_id'));
+      $trial = \oceler\Trial::where('id', Session::get('trial_id'))
+                            ->with('rounds')
+                            ->first();
+
       $trial->curr_round = $curr_round;
       $trial->save();
+
+      // Update the start time for this round
+      $trial->rounds[$curr_round - 1]->touch();
 
       return redirect('/player/trial');
     }
@@ -212,9 +219,6 @@ class PlayerController extends Controller
                             ->with('users')
                             ->with('solutions')
                             ->first();
-
-      // Update the timestamp to reflect when the round ended
-      $trial->rounds[$curr_round - 1]->touch();
 
       $check_solutions = \oceler\Solution::checkSolutions($user, $trial, $curr_round);
 
@@ -271,6 +275,11 @@ class PlayerController extends Controller
         \oceler\Trial::removePlayerFromTrial(Auth::id());
       }
 
+      // If all users have left the trial, deactivate it
+      if(count($trial->users) == 0){
+        $trial->is_active = 0;
+        $trial->save();
+      }
 
       return View::make('layouts.player.end-trial');
     }
@@ -390,6 +399,12 @@ class PlayerController extends Controller
 
       $trial->curr_round = $curr_round;
       $trial->save();
+
+      // Update the start time of the first round (used for the timer)
+      // We add 5 seconds to account for the countdown before the trial begins
+      $dt = \Carbon\Carbon::now()->addSeconds(5)->toDateTimeString();
+      $trial->rounds[0]->updated_at = $dt;
+      $trial->rounds[0]->save();
 
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)

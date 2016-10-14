@@ -10,8 +10,10 @@
     $(document).ready(function(){
 
       if({{ $trial->curr_round }} <= {{ count($trial->rounds) }}){
+        var start_time = "{{ $trial->rounds[$trial->curr_round - 1]->updated_at }}";
         var round_timeout = "{{ $trial->rounds[$trial->curr_round - 1]->round_timeout }}";
-        addTimer(round_timeout);
+        deleteCookie('OcelerTime'); // Delete any previous timer cookies
+        addTimer(start_time, round_timeout, null);
         timerTick();
       }
 

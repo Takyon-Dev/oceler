@@ -1,8 +1,9 @@
 <script>
 
 	$(document).ready(function() {
+		var start_time = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->updated_at }}";
 		var round_timeout = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->round_timeout }}";
-		addTimer(round_timeout, '/player/trial/end-round');
+		addTimer(start_time, round_timeout, '/player/trial/end-round');
 		timerTick();
 	});
 </script>

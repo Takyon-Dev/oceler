@@ -373,7 +373,7 @@ class TrialController extends Controller
       $u_id = Auth::user()->id;
       $dt = \Carbon\Carbon::now();
 
-      // If this user has been added to trial_user already, return with true
+      // If this user has been added to trial_user already, just return with 0
       if(DB::table('trial_user')->where('user_id', '=', $u_id)->get()) return 0;
 
       // Add the player to the queue and set updated_at to
@@ -398,47 +398,50 @@ class TrialController extends Controller
 
       // If such a trial exists, see if the # of players in the queue
       // is equal to the required # of players for the trial
-      if($trial){
-        $queued_players = \oceler\Queue::count();
-
-        // If there are enough players...
-        if($queued_players >= $trial->num_players){
-
-          // ... Take the required amount
-          $selected = \oceler\Queue::orderBy('created_at', 'asc')
-                                    ->take($trial->num_players)
-                                    ->get();
-
-          // Shuffle the collection of selected players so that
-          // their network node positions will essentially
-          // be randomized
-          $selected = $selected->shuffle();
-
-          // Insert each selected player into the trial_user table
-          // along with the group they are part of
-
-          $group = 1;
-          $count = 0; // Counts the users added so far
-          foreach ($selected as $user) {
-            DB::table('trial_user')->insert([
-              'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-              'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-              'user_id' => $user->user_id,
-              'trial_id' => $trial->id,
-              'group_id' => \DB::table('groups')
-                            ->where('trial_id', $trial->id)
-                            ->where('group', $group)
-                            ->value('id')
-            ]);
-            $count++;
-            if($count >= $trial->num_players / $trial->num_groups) $group++;
-            // ... And delete that user from the queue
-            \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
-          }
-          return 0;
-        }
-        else return $trial->num_players - $queued_players;
+      if(!$trial){
+        return -1;
       }
-      return -1;
+
+      $queued_players = \oceler\Queue::count();
+
+      // If there are enough players...
+      if($queued_players >= $trial->num_players){
+
+        // ... Take the required amount
+        $selected = \oceler\Queue::orderBy('created_at', 'asc')
+                                  ->take($trial->num_players)
+                                  ->get();
+
+        // Shuffle the collection of selected players so that
+        // their network node positions will essentially
+        // be randomized
+        $selected = $selected->shuffle();
+
+        // Insert each selected player into the trial_user table
+        // along with the group they are part of
+
+        $group = 1;
+        $count = 0; // Counts the users added so far
+        foreach ($selected as $user) {
+          DB::table('trial_user')->insert([
+            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'user_id' => $user->user_id,
+            'trial_id' => $trial->id,
+            'group_id' => \DB::table('groups')
+                          ->where('trial_id', $trial->id)
+                          ->where('group', $group)
+                          ->value('id')
+          ]);
+          $count++;
+          if($count >= $trial->num_players / $trial->num_groups) $group++;
+          // ... And delete that user from the queue
+          \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
+        }
+        return 0;
+        }
+
+        else return $trial->num_players - $queued_players;
+
     }
 }

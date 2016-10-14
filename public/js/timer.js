@@ -1,16 +1,15 @@
-function addTimer(min, loc){
+function addTimer(start, end, redirect){
 
 		// convert start time from minutes to milliseconds
-		var time = min * 60000;
+		var time = end * 60000;
 
-		var currentTime = new Date();
-
-		var startTime = currentTime.getTime();
-		var endTime = new Date(currentTime.getTime() + time);
+		var startTime = new Date(start);
+		console.log(startTime);
+		var endTime = new Date(startTime.getTime() + time);
 
     if(!readCookie('OcelerTime')){
       createCookie('OcelerTime', endTime);
-			createCookie('OcelerRedirect', loc);
+			createCookie('OcelerRedirect', redirect);
     }
 
 }
@@ -48,6 +47,7 @@ function timerTick(){
 		timer.innerHTML = '00:00';
 
     redirect = readCookie('OcelerRedirect');
+		deleteCookie('OcelerTime');
 		if(redirect !== 'undefined') window.location.href = redirect;
 		return;
 	}
@@ -59,25 +59,25 @@ function pause_timer(){
 	time_now = new Date();
 	time_num = time_now.getTime();
 
-	the_end = readCookie('qualtrics_timer');
+	the_end = readCookie('OcelerTime');
 	the_end = new Date(the_end);
 	ending = the_end.getTime();
 	remaining = ending - time_num;
 
-	createCookie('qualtrics_pause_time', remaining);
+	createCookie('OcelerPauseTime', remaining);
 
 }
 
 function restart_timer(){
 
-		var remaining = parseInt(readCookie('qualtrics_pause_time'));
+		var remaining = parseInt(readCookie('OcelerPauseTime'));
 
 
 		var currentTime = new Date();
 
 		var endTime = new Date(currentTime.getTime() + remaining);
 
-		createCookie('qualtrics_timer', endTime);
+		createCookie('OcelerTime', endTime);
 
 
 }
@@ -89,8 +89,7 @@ function createCookie(name, value) {
 		date.setTime(date.getTime()+ (2*60*60*1000) ); // expires in 2 hours
 		var expires = "; expires="+date.toGMTString();
 
-
-	document.cookie = name+"="+value+expires+"; path=/";
+		document.cookie = name+"="+value+expires+"; path=/";
 
 }
 
