@@ -5,7 +5,7 @@
 	        <tr>
 	            <th></th>
 	            @foreach($solution_categories AS $cat)
-	            	<th>{{ $cat->name }}</th>
+	            	<th>{{ $cat['name'] }}</th>
 	            @endforeach
 	        </tr>
 	    </thead>
@@ -20,13 +20,13 @@
   							<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
 						</button>
 						{{-- This span holds the most recent solution for this user in this solution category --}}
-						<span class="solution-container sol" id="sol_{{ $user->id }}_{{ $cat->id }}"></span>
+						<span class="solution-container sol" id="sol_{{ $user->id }}_{{ $cat['id'] }}"></span>
 						{{-- This span holds the most recent solution's confidence level for this user in this solution category --}}
-						<span class="solution-container conf pull-right" id="conf_{{ $user->id }}_{{ $cat->id }}"></span>
+						<span class="solution-container conf pull-right" id="conf_{{ $user->id }}_{{ $cat['id'] }}"></span>
 						<form class="solution-form">
-							<label for="solution">{{ $cat->name }}:</label>
+							<label for="solution">{{ $cat['name'] }}:</label>
 
-							@if(strtolower($cat->name) == 'when')
+							@if(strtolower($cat['name']) == 'when')
 								<br>
 								{!! Form::select('month', $months) !!}
 								{!! Form::selectRange('day', 1, 31) !!}
@@ -46,7 +46,7 @@
 								@endfor
 							</select><br>
 							<span class="err_msg"></span>
-							<input type="hidden" name="category_id" value="{{ $cat->id }}">
+							<input type="hidden" name="category_id" value="{{ $cat['id'] }}">
 							<input type="hidden" name="_token" value="{{ csrf_token() }}">
 							{{--<input type="hidden" name="u_id" value="{{ $user->id }}">--}}
 							<input class="sol-save btn btn-primary btn-sm pull-right" type="submit" name="solve_save" value="SAVE">

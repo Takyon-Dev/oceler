@@ -51,6 +51,8 @@ class PlayerController extends Controller
       send them to their home screen */
       if(!$trial_user || !\Session::get('curr_round')) return \Redirect::to('/player/');
 
+      $curr_round = \Session::get('curr_round');
+
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
                             ->first();
@@ -153,14 +155,12 @@ class PlayerController extends Controller
       Session::put('players_from_ids', $players_from_ids);
       Session::put('players_to', $players_to);
 
-    	/**
+    	/*
     	* Solution categories are stored in the DB. This makes it
     	*  possible to support different sessions
-    	*  having different solution categories. At the moment,
-    	*  all sessions use the same categories, so
-    	*  we simply get them all in an array.
+    	*  having different solution categories.
     	*/
-    	$solution_categories = SolutionCategory::all();
+    	$solution_categories = \oceler\Solution::getSolutionCategories($trial->rounds[$curr_round - 1]->factoidset_id);
 
       // And for the datepicker in the solutions entry form,
       // we'll call a helper function to get an array of months and minutes

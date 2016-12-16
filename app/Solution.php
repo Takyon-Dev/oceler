@@ -98,6 +98,26 @@ class Solution extends Model
 
     }
 
+    public static function getSolutionCategories($factoidset_id)
+    {
+      $answers = \oceler\AnswerKey::where('factoidset_id', $factoidset_id)
+                                      ->with('solutionCategories')
+                                      ->groupBy('solution_category_id')
+                                      ->get();
+      $categories = array();
+      $i = 0;
+
+      foreach ($answers as $key => $answer) {
+
+        $categories[$i]['name'] = $answer->solutionCategories->name;
+        $categories[$i]['id'] = $answer->solutionCategories->id;
+        $i++;
+      }
+
+      return $categories;
+
+    }
+
     public static function dateTimeArray()
     {
       $datetime = [];

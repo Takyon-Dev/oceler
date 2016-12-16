@@ -124,7 +124,6 @@ Route::post('/search', [
 	'roles' => ['player']
 ]);
 
-
 // Admin routes...
 
 Route::get('/admin/players', [

@@ -63,7 +63,7 @@ class TrialController extends Controller
       $trial->distribution_interval = $request->distribution_interval;
       $trial->num_waves = $request->num_waves;
       $trial->num_players = $request->num_players;
-      $trial->mult_factoid = $request->mult_factoid || 0;
+      $trial->unique_factoids = $request->unique_factoids || 0;
       $trial->pay_correct = $request->pay_correct || 0;
       $trial->pay_time_factor = $request->pay_time_factor || 0;
       $trial->payment_per_solution = $request->payment_per_solution;
@@ -73,7 +73,6 @@ class TrialController extends Controller
       $trial->is_active = false;
 
       $trial->save(); // Saves the trial to the trial table
-
 
       /*
        * For each trial round (set in the config), the trial timeout,
@@ -109,6 +108,8 @@ class TrialController extends Controller
         ]);
 
       }
+
+      $trial->logConfig();
 
       return \Redirect::to('/admin/trial');
     }

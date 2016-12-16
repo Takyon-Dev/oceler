@@ -55,6 +55,13 @@ class Factoidset extends Model
                 ->where('name', $key)
                 ->value('id');
 
+      // If the category isn't found, add it
+      if(!$cat){
+        $cat = \DB::table('solution_categories')->insertGetId([
+                            'name' => $key,
+                          ]);
+      }
+
       // If there is an array of solutions for a category,
       // i.e. a category has more than one accepted solution
       // process each of them
@@ -64,7 +71,7 @@ class Factoidset extends Model
           }
       }
       else Factoidset::saveAnswerKey($cat, $sol, $factoidset->id);
-      
+
     }
   }
 

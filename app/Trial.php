@@ -68,4 +68,36 @@ class Trial extends Model
       \DB::table('trial_user')->where('id', $trial_user->id)->delete();
     }
 
+    public function logConfig()
+    {
+
+      $config = "\nTrial Config:\n";
+      $config .= "Name: " . $this->name . "\n";
+      $config .= "Dist. Interval: " .$this->distribution_interval . "\n";
+      $config .= "Num Waves: " .$this->num_waves. "\n";
+      $config .= "Num Players: " .$this->num_players. "\n";
+      $config .= "Unique Factoids: " .$this->unique_factoids. "\n";
+      $config .= "Pay Correct Answers: " .$this->pay_correct. "\n";
+      $config .= "Pay Time Factor: " .$this->pay_time_factor. "\n";
+      $config .= "Pay Per Solution: " .$this->payment_per_solution. "\n";
+      $config .= "Base Payment: " .$this->payment_base. "\n";
+      $config .= "Num Rounds: " .$this->num_rounds. "\n";
+      $config .= "Num Groups: " .$this->num_groups. "\n";
+      $config .= "Networks:\n";
+
+      $groups = \oceler\Group::where('trial_id', $this->id)
+                              ->orderBy('group', 'ASC')
+                              ->get();
+
+      foreach ($groups as $group) {
+
+        $config .= "Group " .$group->group.":\n";
+        $config .= \oceler\Network::getAdjacencyMatrix($group->network_id);
+        $config .= "\n";
+      }
+
+      \oceler\Log::trialLog($this->id, $config);
+
+    }
+
 }

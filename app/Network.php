@@ -45,4 +45,39 @@ class Network extends Model
     {
       return $this->hasMany('oceler\NetworkNode');
     }
+
+    public static function getAdjacencyMatrix($network_id)
+    {
+      $nodes = \oceler\NetworkNode::where('network_id', $network_id)
+                                  ->orderBy('node', 'ASC')
+                                  ->get();
+
+      $network = "\t";
+
+      foreach ($nodes as $key => $node) { // Write the column headers
+        $network .= $node->node ."\t";
+      }
+
+      $network .= "\n";
+
+      foreach ($nodes as $key => $node) {
+
+        $network .= $node->node ."\t"; // Write the row
+        $edges = \oceler\NetworkEdge::where('network_id', $network_id)
+                                      ->where('source', $node->node)
+                                      ->get();
+
+          foreach ($nodes as $n) {
+            if($edges->contains('target', $n->node))
+              $network .= "1\t";
+            else
+              $network .= "0\t";
+          }
+
+          $network .= "\n";
+
+      }
+
+      return $network;
+    }
 }

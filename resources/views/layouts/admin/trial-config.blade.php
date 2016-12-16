@@ -68,9 +68,9 @@
 
                     {!! Form::input('number', 'num_groups', null, ['class'=>'num-input', 'id'=>'num_groups', 'min'=>'1']) !!}<br>
 
-                    {!! Form::label('mult_factoid', 'Multiple factoid selection') !!}
+                    {!! Form::label('unique_factoids', 'Unique factoids only') !!}
 
-                    {!! Form::checkbox('mult_factoid', '1') !!}<br>
+                    {!! Form::checkbox('unique_factoids', '1') !!}<br>
 
                     {!! Form::label('pay_correct', 'Payment for correct answers') !!}
 

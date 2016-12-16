@@ -18,6 +18,8 @@ class SearchController extends Controller
                 ->orderBy('updated_at', 'desc')
                 ->value('trial_id');
 
+    $trial = \oceler\Trial::find($trial_id);
+
     $curr_round = \Session::get('curr_round');
 
     $round_id = \DB::table('rounds')
@@ -41,37 +43,52 @@ class SearchController extends Controller
       // Remove any non-alphanumeric chars from the search term
       $search_term = preg_replace("/[^A-Za-z0-9 ]/", '', $search_terms[$i]);
 
-      $factoids = \DB::select(\DB::raw("
-                            SELECT keywords.id, keywords.keyword,
-                            factoid_keyword.factoid_id,
-                            factoids.id, factoids.factoidset_id,
-                            factoids.factoid
-                            FROM keywords
-                            JOIN factoid_keyword ON
-                              factoid_keyword.keyword_id = keywords.id
-                            JOIN factoids ON
-                              factoid_keyword.factoid_id = factoids.id
-                            WHERE keywords.keyword LIKE :search_term
-                            AND factoids.factoidset_id = :factoidset_id_1
-                            AND factoids.id IN
-                                (SELECT factoid_distributions.factoid_id
-                                 FROM factoid_distributions
-                                 WHERE factoid_distributions.factoidset_id = :factoidset_id_2
-                                 AND factoid_distributions.wave <= :wave)
-                            AND factoids.id NOT IN
-                                (SELECT factoid_id
-                                 FROM searches
-                                 WHERE trial_id = :trial_id
-                                 AND round_id = :round_id
-                                 AND user_id = :user_id
-                                 AND factoid_id IS NOT NULL)
-                    "), array('search_term' => $search_term,
+      $query = "
+      SELECT keywords.id, keywords.keyword,
+      factoid_keyword.factoid_id,
+      factoids.id, factoids.factoidset_id,
+      factoids.factoid
+      FROM keywords
+      JOIN factoid_keyword ON
+        factoid_keyword.keyword_id = keywords.id
+      JOIN factoids ON
+        factoid_keyword.factoid_id = factoids.id
+      WHERE keywords.keyword LIKE :search_term
+      AND factoids.factoidset_id = :factoidset_id_1
+      AND factoids.id IN
+          (SELECT factoid_distributions.factoid_id
+           FROM factoid_distributions
+           WHERE factoid_distributions.factoidset_id = :factoidset_id_2
+           AND factoid_distributions.wave <= :wave)";
+
+      $parameters = array('search_term' => $search_term,
                               'factoidset_id_1' => $factoidset,
                               'factoidset_id_2' => $factoidset,
-                              'trial_id' => $trial_id,
-                              'round_id' => $round_id,
-                              'user_id' => $user->id,
-                              'wave' => $request->wave));
+                              'wave' => $request->wave);
+
+      if($trial->unique_factoids){
+
+        // Also add factoids.id NOT IN messages to player
+
+        $query .= "
+        AND factoids.id NOT IN
+            (SELECT factoid_id
+             FROM searches
+             WHERE trial_id = :trial_id
+             AND round_id = :round_id
+             AND user_id = :user_id
+             AND factoid_id IS NOT NULL)";
+
+             $parameters = array('search_term' => $search_term,
+                                     'factoidset_id_1' => $factoidset,
+                                     'factoidset_id_2' => $factoidset,
+                                     'trial_id' => $trial_id,
+                                     'round_id' => $round_id,
+                                     'user_id' => $user->id,
+                                     'wave' => $request->wave);
+      }
+
+      $factoids = \DB::select(\DB::raw($query), $parameters);
       $i++;
 
     } while(count($factoids) == 0 && $i < count($search_terms));
@@ -112,4 +129,5 @@ class SearchController extends Controller
     return \Response::json($result);
 
   }
+
 }
