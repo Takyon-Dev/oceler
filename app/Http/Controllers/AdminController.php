@@ -92,22 +92,8 @@ class AdminController extends Controller
   public function showLogs()
   {
 
-    $logs = array();
-    $files = scandir(storage_path()."/logs/trial-logs/");
 
-    $i = 0;
-    foreach ($files as $f) {
-      if($f != '.' && $f != '..'){
-
-        $id = trim($f, "trial_.txt");
-
-        $logs[$i]['log'] = $f;
-        $logs[$i]['id'] = $id;
-        $logs[$i]['name'] = \oceler\Trial::where('id', $id)
-                                          ->value('name');
-        $i++;
-      }
-    }
+    $logs = \oceler\Log::listAll();
 
     return View::make('layouts.admin.logs')
                 ->with('logs', $logs);
@@ -116,11 +102,27 @@ class AdminController extends Controller
 
   public function readLog($id)
   {
-    $log = \File::get(storage_path()."/logs/trial-logs/trial_".$id.".txt");
-    $response = Response::make($log, 200);
-    return $response;
+    $log = new \oceler\Log($id);
+
+    $fh = fopen($log['path'], 'r');
+    $display = nl2br(fread($fh, 25000));
+
+    return Response::make($display, 200);
+
   }
 
+  public function downloadLog($id)
+  {
 
+    $log = new \oceler\Log($id);
+
+
+    $headers = ['Content-type'=>'text/plain',
+                'Content-Disposition'=>sprintf('attachment; filename="%s"', $log['name']),
+                'Content-Length'=>sizeof($log['path'])];
+
+
+    return Response::download($log['path'], $log['name'], $headers);
+  }
 
 }

@@ -71,7 +71,7 @@ class Trial extends Model
     public function logConfig()
     {
 
-      $config = "\nTrial Config:\n";
+      $config = "\n================================================\nTrial Config:\n";
       $config .= "Name: " . $this->name . "\n";
       $config .= "Dist. Interval: " .$this->distribution_interval . "\n";
       $config .= "Num Waves: " .$this->num_waves. "\n";
@@ -83,7 +83,7 @@ class Trial extends Model
       $config .= "Base Payment: " .$this->payment_base. "\n";
       $config .= "Num Rounds: " .$this->num_rounds. "\n";
       $config .= "Num Groups: " .$this->num_groups. "\n";
-      $config .= "Networks:\n";
+      $config .= "Networks:\n\n";
 
       $groups = \oceler\Group::where('trial_id', $this->id)
                               ->orderBy('group', 'ASC')
@@ -95,6 +95,8 @@ class Trial extends Model
         $config .= \oceler\Network::getAdjacencyMatrix($group->network_id);
         $config .= "\n";
       }
+
+      $config .= "\n================================================\n";
 
       \oceler\Log::trialLog($this->id, $config);
 

@@ -12,11 +12,16 @@
           <h1 class="text-center">Log files</h1>
 
           @foreach($logs as $log)
-            <h2>
+            <h3>
+              {{$log['name']}}
               <a href="/admin/log/{{$log['id']}}">
-                {{$log['name']}}
+                 view
               </a>
-            </h2>
+
+              <a href="/admin/log/download/{{$log['id']}}">
+                download
+              </a>
+            </h3>
 
           @endforeach
         </div>

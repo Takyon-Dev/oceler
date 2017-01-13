@@ -221,6 +221,12 @@ Route::get('/admin/log/{id}', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/log/download/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@downloadLog',
+	'roles' => ['administrator']
+]);
+
 Route::get('/admin/config-files', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@showConfigFiles',
