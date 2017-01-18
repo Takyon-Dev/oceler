@@ -70,10 +70,12 @@
               </td>
               <td>{{ count($trial->users) }} / {{ $trial->num_players }}</td>
 
-              <!--<td><a href="/admin/trial/config/{{ $trial->id }}">Edit</a></td>-->
-
-              <td><a href="/admin/trial/{{ $trial->id }}">View</a></td>
-
+              <td>
+                @if (count($trial->users) > 0)
+                  <a href="/admin/trial/{{ $trial->id }}">View</a>
+                @endif
+              </td>
+              
               <td>
                 {!! Form::open(['method' => 'DELETE',
                                 'route' => ['trial.delete', $trial->id],

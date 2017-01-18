@@ -239,6 +239,18 @@ Route::post('/admin/config-files/upload', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/config-files/delete/{type}/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'ConfigController@deleteConfig',
+	'roles' => ['administrator']
+]);
+
+Route::get('/admin/config-files/view/{name}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'ConfigController@viewConfig',
+	'roles' => ['administrator']
+]);
+
 
 // Authentication routes...
 Route::get('/login', 'Auth\AuthController@getLogin');

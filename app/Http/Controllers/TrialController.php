@@ -127,6 +127,7 @@ class TrialController extends Controller
     public function destroy($id)
     {
         $trial = Trial::find($id);
+        $trial->stopTrial();
         $trial->delete();
         return \Redirect::to('/admin/trial');
     }

@@ -3,9 +3,14 @@
 namespace oceler;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Nameset extends Model
 {
+
+    use SoftDeletes;
+    protected $dates = ['deleted_at'];
+
     public function names()
     {
       return $this->hasMany('\oceler\Name');

@@ -30,9 +30,6 @@
       @include('layouts.admin.menu')
       <div class="row">
         <div class="col-md-12">
-          <h3>[ This page will track in real time the users waiting to join a trial
-            as well as the users that are in trials in progress.
-            Currently, you will need to reload the page to see any changes.]</h3>
           <h1 class="text-center">Players</h1>
           <h2 class="text-primary">Players in trial queue</h2>
           <table id="queued_players" class="table table-striped trials">

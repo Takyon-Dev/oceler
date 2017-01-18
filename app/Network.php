@@ -3,9 +3,14 @@
 namespace oceler;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Network extends Model
 {
+
+    use SoftDeletes;
+    protected $dates = ['deleted_at'];
+
     /**
      * Adds a new network, consisting of
      * a network name and ID, nodes, and targets

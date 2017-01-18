@@ -64,11 +64,11 @@
 		            @foreach($solution_categories AS $cat)
 		            	<td>
 		            		{{-- This span holds the most recent solution for this user in this solution category --}}
-							<span class="solution-container" id="sol_{{ $player->id }}_{{ $cat->id }}"></span>
-							{{-- This span holds the most recent solution's confidence level for this user in this solution category --}}
-							<span class="solution-container" id="conf_{{ $player->id }}_{{ $cat->id }}"></span>
-						</td>
-					@endforeach
+										<span class="solution-container" id="sol_{{ $player->id }}_{{ $cat['id'] }}"></span>
+										{{-- This span holds the most recent solution's confidence level for this user in this solution category --}}
+										<span class="solution-container" id="conf_{{ $player->id }}_{{ $cat['id'] }}"></span>
+									</td>
+								@endforeach
 		        </tr>
 		    @endforeach
 

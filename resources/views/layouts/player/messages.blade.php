@@ -48,7 +48,7 @@
 		<div class="row">
 			<div class="col-md-12" id="msg_feed">
 				<h2>MESSAGE FEED</h2>
-				<div id="messages">
+				<div id="messages" class="pre-scrollable">
 					<!--
 						<div id="1" class="message">
 							<span class="header text-danger">You to Casey, Dakota:</span>

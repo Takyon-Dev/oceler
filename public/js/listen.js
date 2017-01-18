@@ -42,6 +42,7 @@ function messageListener()
 
 			$.each(messages, function(key, msg)
 			{
+
 				console.log('MESSAGE:::');
 				console.log(msg);
 				console.log(':::MESSAGE');

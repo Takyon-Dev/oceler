@@ -55,8 +55,9 @@
           @foreach($factoidsets as $factoidset)
             <li>
               {{ $factoidset->name }}
-              <span class="text-muted pull-right">
-                {{ $factoidset->created_at }}
+              <span class="pull-right">
+                <a href="/admin/config-files/view/{{ $factoidset->name }}">view</a> |
+                <a href="/admin/config-files/delete/factoidset/{{ $factoidset->id }}">delete</a>
               </span>
             </li>
           @endforeach
@@ -66,8 +67,9 @@
           @foreach($networks as $network)
             <li>
               {{ $network->name }}
-              <span class="text-muted pull-right">
-                {{ $network->created_at }}
+              <span class="pull-right">
+                <a href="/admin/config-files/view/{{ $network->name }}">view</a> |
+                <a href="/admin/config-files/delete/network/{{ $network->id }}">delete</a>
               </span>
             </li>
           @endforeach
@@ -77,8 +79,9 @@
           @foreach($namesets as $nameset)
             <li>
               {{ $nameset->name }}
-              <span class="text-muted pull-right">
-                {{ $nameset->created_at }}
+              <span class="pull-right">
+                <a href="/admin/config-files/view/{{ $nameset->name }}">view</a> |
+                <a href="/admin/config-files/delete/nameset/{{ $nameset->id }}">delete</a>
               </span>
             </li>
           @endforeach
