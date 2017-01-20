@@ -11,6 +11,10 @@ class Network extends Model
     use SoftDeletes;
     protected $dates = ['deleted_at'];
 
+    public function group(){
+      return $this->hasMany('\oceler\Group', 'network_id');
+    }
+
     /**
      * Adds a new network, consisting of
      * a network name and ID, nodes, and targets

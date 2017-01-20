@@ -12,11 +12,4 @@ class Round extends Model
                 ->with('nameset');
   }
 
-  public function factoidset(){
-    return $this->hasOne('\oceler\Factoidset');
-  }
-
-  public function nameset(){
-    return $this->hasOne('\oceler\Nameset');
-  }
 }

@@ -52,6 +52,7 @@ class PlayerController extends Controller
       if(!$trial_user || !\Session::get('curr_round')) return \Redirect::to('/player/');
 
       $curr_round = \Session::get('curr_round');
+      $curr_time = \Carbon\Carbon::now();
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
@@ -166,6 +167,9 @@ class PlayerController extends Controller
       // we'll call a helper function to get an array of months and minutes
       $datetime = Solution::dateTimeArray();
 
+      echo $curr_round;
+      dump($trial);
+
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
     	// solution categories array
@@ -178,7 +182,8 @@ class PlayerController extends Controller
                    ->with('minutes', $datetime['minutes'])
                    ->with('months', $datetime['months'])
                    ->with('names', $names)
-                   ->with('nodes', $nodes);
+                   ->with('nodes', $nodes)
+                   ->with('curr_time', $curr_time);
     }
 
 
@@ -401,8 +406,8 @@ class PlayerController extends Controller
       $trial->save();
 
       // Update the start time of the first round (used for the timer)
-      // We add 5 seconds to account for the countdown before the trial begins
-      $dt = \Carbon\Carbon::now()->addSeconds(5)->toDateTimeString();
+      // We add 10 seconds to account for the countdown before the trial begins
+      $dt = \Carbon\Carbon::now()->addSeconds(10)->toDateTimeString();
       $trial->rounds[0]->updated_at = $dt;
       $trial->rounds[0]->save();
 

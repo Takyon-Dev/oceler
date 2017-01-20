@@ -12,6 +12,6 @@ class Group extends Model
   }
 
   public function network(){
-    return $this->hasOne('\oceler\Network');
+    return $this->hasOne('\oceler\Network', 'id', 'network_id');
   }
 }

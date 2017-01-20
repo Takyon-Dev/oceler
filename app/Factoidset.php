@@ -14,6 +14,7 @@ class Factoidset extends Model
     return $this->hasMany('\oceler\Factoid');
   }
 
+
   public static function addFactoidset($config)
   {
 

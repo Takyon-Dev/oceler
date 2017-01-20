@@ -40,10 +40,14 @@ class Log extends Model
 
           $id = trim($f, "trial_.txt");
 
+          $trial = \oceler\Trial::where('id', $id)
+                        ->withTrashed()
+                        ->first();
+
           $logs[$i]['log'] = $f;
           $logs[$i]['id'] = $id;
-          $logs[$i]['name'] = \oceler\Trial::where('id', $id)
-                                            ->value('name');
+          $logs[$i]['name'] = $trial->name;
+          $logs[$i]['date'] = $trial->created_at->toDateTimeString();
           $i++;
         }
       }

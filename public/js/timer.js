@@ -1,4 +1,4 @@
-function addTimer(start, end, redirect){
+function addTimer(curr, start, end, redirect){
 
 		// convert start time from minutes to milliseconds
 		var time = end * 60000;
@@ -7,23 +7,25 @@ function addTimer(start, end, redirect){
 		console.log(startTime);
 		var endTime = new Date(startTime.getTime() + time);
 
+		var countdown = (endTime - startTime) / 1000;
+
     if(!readCookie('OcelerTime')){
-      createCookie('OcelerTime', endTime);
+      createCookie('OcelerTime', countdown);
 			createCookie('OcelerRedirect', redirect);
     }
 
 }
 
-function timerTick(){
+function timerTick(tick){
 
 	// Subtracts the current time from the initial time value stored in the cookie
-	time_now = new Date();
-	time_num = time_now.getTime();
+	//time_now = new Date();
+	//time_num = time_now.getTime();
 
 	the_end = readCookie('OcelerTime');
 	the_end = new Date(the_end);
 	ending = the_end.getTime();
-	remaining = ending - time_num;
+	remaining = ending - tick;
 
 	timer = document.getElementById('timer');
 
@@ -36,7 +38,7 @@ function timerTick(){
 		}
 
 		setTimeout(function() {
-			timerTick();
+			timerTick(tick + 1);
 		}, 1000);
 
 	}

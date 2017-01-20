@@ -13,7 +13,7 @@
 
           @foreach($logs as $log)
             <h3>
-              {{$log['name']}}
+              {{$log['name']}} :: <span class="text-muted">{{ $log['date'] }}</span>
               <a href="/admin/log/{{$log['id']}}">
                  view
               </a>

@@ -82,16 +82,35 @@ class Trial extends Model
       $config .= "Pay Per Solution: " .$this->payment_per_solution. "\n";
       $config .= "Base Payment: " .$this->payment_base. "\n";
       $config .= "Num Rounds: " .$this->num_rounds. "\n";
+
+      $rounds = \oceler\Round::where('trial_id', $this->id)
+                              ->orderBy('round', 'ASC')
+                              ->get();
+
+
+
+      foreach ($rounds as $round) {
+
+        $factoidset = \oceler\Factoidset::where('id', $round->factoidset_id)->first();
+        $nameset = \oceler\Nameset::where('id', $round->nameset_id)->first();
+        $config .= "Round ".$round->round." :\n";
+        $config .= "Factoid set: ".$factoidset->name."\n";
+        $config .+ "Name set: ".$nameset->name."\n";
+      }
+
       $config .= "Num Groups: " .$this->num_groups. "\n";
       $config .= "Networks:\n\n";
 
       $groups = \oceler\Group::where('trial_id', $this->id)
                               ->orderBy('group', 'ASC')
+                              ->with('network')
                               ->get();
+
+
 
       foreach ($groups as $group) {
 
-        $config .= "Group " .$group->group.":\n";
+        $config .= "Group " .$group->group.", Network ".$group->network->name.":\n";
         $config .= \oceler\Network::getAdjacencyMatrix($group->network_id);
         $config .= "\n";
       }
