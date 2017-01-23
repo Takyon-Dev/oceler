@@ -25,7 +25,24 @@
       </h2>
       <div class="text-center">
       @if($curr_round < count($trial->rounds))
-        <a href="/player/trial/new-round" role="button" class="btn btn-primary btn-lg">Continue</a>
+        <script>
+          countdown(10);
+
+          function countdown(i)
+          {
+            $("#countdown").html(i);
+            if(i == 0) window.location.replace('/player/trial/new-round');
+            else{
+              i--;
+              setTimeout(function(){
+                countdown(i);
+              }, 1000);
+            }
+          }
+        </script>
+
+        <h1>Next round starting in</h1>
+        <h1 id="countdown" class="text-primary huge"></h1>
       @elseif($group->survey_url)
         <a href="{{ $group->survey_url }}" role="button" class="btn btn-primary btn-lg">Continue</a>
       @else

@@ -34,7 +34,7 @@
       @if(isset($trial))
         {!! Form::model($trial, ['route' => ['trial.update', $trial->id], 'method' => 'patch']) !!}
       @else
-        {!! Form::open(['url'=>'/admin/trial','method'=>'POST', 'id'=>'trial_config']) !!}
+        {!! Form::open(['url'=>'/admin/trial','method'=>'POST', 'id'=>'trial_config', 'files'=>'true']) !!}
       @endif
 
         <div class="row">
@@ -96,6 +96,12 @@
                     {!! Form::label('num_rounds', 'Number of rounds') !!}
 
                     {!! Form::input('number', 'num_rounds', 1, ['class'=>'num-input', 'id'=>'num_rounds']) !!}<br>
+
+                    {!! Form::label('instructions', 'Instructions (paste HTML or plain text)') !!}
+                    {!! Form::textarea('instructions') !!}<br>
+
+                    {!! Form::label('instructions_image', 'Image file (optional)') !!}
+                    {!! Form::file('instructions_image') !!}
 
                   </div>
                 </div>

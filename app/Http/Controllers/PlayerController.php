@@ -200,7 +200,9 @@ class PlayerController extends Controller
       $trial->save();
 
       // Update the start time for this round
-      $trial->rounds[$curr_round - 1]->touch();
+      $dt = \Carbon\Carbon::now()->addSeconds(10)->toDateTimeString();
+      $trial->rounds[$curr_round - 1]->updated_at = $dt;
+      $trial->rounds[$curr_round - 1]->save();
 
       return redirect('/player/trial');
     }
@@ -407,7 +409,7 @@ class PlayerController extends Controller
 
       // Update the start time of the first round (used for the timer)
       // We add 10 seconds to account for the countdown before the trial begins
-      $dt = \Carbon\Carbon::now()->addSeconds(10)->toDateTimeString();
+      $dt = \Carbon\Carbon::now()->addSeconds(5)->toDateTimeString();
       $trial->rounds[0]->updated_at = $dt;
       $trial->rounds[0]->save();
 
@@ -450,6 +452,25 @@ class PlayerController extends Controller
       }
 
       return View::make('layouts.player.initialize');
+
+    }
+
+    /*
+      Testing functions...
+     */
+
+    public function timerTest()
+    {
+      echo 'Starting new round...';
+
+      $now = \Carbon\Carbon::now()->toDateTimeString();
+      $round_timeout = 1;
+
+      return View::make('layouts.tests.timer-test')
+                  ->with('now', $now)
+                  ->with('round_timeout', $round_timeout)
+                  ->with('trial_time', $now);
+
 
     }
 

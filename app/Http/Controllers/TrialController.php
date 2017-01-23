@@ -11,6 +11,7 @@ use Auth;
 use DB;
 use Response;
 use Session;
+use Input;
 
 
 class TrialController extends Controller
@@ -58,8 +59,10 @@ class TrialController extends Controller
      */
     public function store(Request $request)
     {
+
       $trial = new Trial();
       $trial->name = $request->name;
+      $trial->instr_path = $request->instructions;
       $trial->distribution_interval = $request->distribution_interval;
       $trial->num_waves = $request->num_waves;
       $trial->num_players = $request->num_players;
@@ -71,6 +74,16 @@ class TrialController extends Controller
       $trial->num_rounds = $request->num_rounds;
       $trial->num_groups = $request->num_groups;
       $trial->is_active = false;
+
+      if($request->hasFile('instructions_image')){
+
+        $img = $request->file('instructions_image');
+        $img_name = $img->getClientOriginalName();
+        $img_storage_path = storage_path()."/config-files/images/".$img_name;
+
+        $img->move($img_storage_path, $img->getRealPath());
+        $trial->instr_img_path = $img_storage_path;
+      }
 
       $trial->save(); // Saves the trial to the trial table
 
@@ -187,8 +200,19 @@ class TrialController extends Controller
 
       $trial = Trial::with('users')->find($id);
 
+      $curr_server_time = \Carbon\Carbon::now()->toDateTimeString();
+      $trial_start_time = $trial->rounds[0]->updated_at;
+
+      $timeout = 0;
+      foreach ($trial->rounds as $round) {
+        $timeout += $round->round_timeout;
+      }
+
       return View::make('layouts.admin.trial-view')
-                  ->with('trial', $trial);
+                  ->with('trial', $trial)
+                  ->with('curr_server_time', $curr_server_time)
+                  ->with('trial_start_time', $trial_start_time)
+                  ->with('timeout', $timeout);
     }
 
     /**
@@ -440,7 +464,8 @@ class TrialController extends Controller
           // ... And delete that user from the queue
           \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
         }
-        return 0;
+
+          return 0;
         }
 
         else return $trial->num_players - $queued_players;

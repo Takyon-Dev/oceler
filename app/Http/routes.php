@@ -251,6 +251,9 @@ Route::get('/admin/config-files/view/{name}', [
 	'roles' => ['administrator']
 ]);
 
+// Testing routes...
+Route::get('/player/timer-test', 'PlayerController@timerTest');
+
 
 // Authentication routes...
 Route::get('/login', 'Auth\AuthController@getLogin');

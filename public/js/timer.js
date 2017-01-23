@@ -1,31 +1,57 @@
-function addTimer(curr, start, end, redirect){
+function addTimer(duration, redirect){
 
-		// convert start time from minutes to milliseconds
-		var time = end * 60000;
+		// convert end time from minutes to milliseconds
+		var time = duration * 60000;
 
-		var startTime = new Date(start);
-		console.log(startTime);
-		var endTime = new Date(startTime.getTime() + time);
+		var currentTime = new Date();
 
-		var countdown = (endTime - startTime) / 1000;
+		var startTime = currentTime.getTime();
+
+		// Add the duration time to the current time
+		var endTime = new Date(currentTime.getTime() + time);
 
     if(!readCookie('OcelerTime')){
-      createCookie('OcelerTime', countdown);
+      createCookie('OcelerTime', endTime);
 			createCookie('OcelerRedirect', redirect);
     }
+}
+
+function addAdminTimer(server_time, start, duration, trial_id)
+{
+
+	// convert end time from minutes to milliseconds
+	var time = duration * 60000;
+
+	localTime = new Date().getTime();
+
+	serverTime = new Date(server_time).getTime();
+
+	var startTime = new Date(start).getTime();
+
+	timeRemaining = (startTime + time) - serverTime;
+
+	if(timeRemaining < 0) timeRemaining = 0;
+
+	// Add the duration time to the current time
+	var endTime = new Date(localTime + timeRemaining);
+
+	if(!readCookie('OcelerTime_T' + trial_id )){
+		createCookie('OcelerTime_T' + trial_id, endTime);
+	}
 
 }
 
-function timerTick(tick){
+function timerTick()
+{
 
 	// Subtracts the current time from the initial time value stored in the cookie
-	//time_now = new Date();
-	//time_num = time_now.getTime();
+	time_now = new Date();
+	time_num = time_now.getTime();
 
 	the_end = readCookie('OcelerTime');
 	the_end = new Date(the_end);
 	ending = the_end.getTime();
-	remaining = ending - tick;
+	remaining = ending - time_num;
 
 	timer = document.getElementById('timer');
 
@@ -38,12 +64,13 @@ function timerTick(tick){
 		}
 
 		setTimeout(function() {
-			timerTick(tick + 1);
+			timerTick();
 		}, 1000);
 
 	}
 
 	// If no time is left, the timer is set to display zero
+	// the timer cookie is deleted, and the player is redirected
 	else {
 
 		timer.innerHTML = '00:00';
@@ -55,6 +82,45 @@ function timerTick(tick){
 	}
 
 }
+
+function adminTimerTick(trial_id){
+
+	// Subtracts the current time from the initial time value stored in the cookie
+	time_now = new Date();
+	time_num = time_now.getTime();
+
+	the_end = readCookie('OcelerTime_T' + trial_id);
+	the_end = new Date(the_end);
+	ending = the_end.getTime();
+	remaining = ending - time_num;
+
+	timer = document.getElementById('timer');
+
+	// If there is any tme remaining, it displays it
+	if(remaining > 0){
+
+		if(timer){
+				display = display_time(remaining);
+				timer.innerHTML = display;
+		}
+
+		setTimeout(function() {
+			adminTimerTick(curr_round, trial_id);
+		}, 1000);
+
+	}
+
+	// If no time is left, the timer is set to display trial ended
+	// and the timer cookie is deleted
+	else {
+
+		timer.innerHTML = 'Trial has ended';
+		deleteCookie('OcelerTime_T' + trial_id);
+		return;
+	}
+
+}
+
 
 function pause_timer(){
 

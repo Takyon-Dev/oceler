@@ -5,17 +5,21 @@
 @stop
 
 @section('js')
+  <script type="text/javascript" src="{{ asset('js/timer.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/listen.js') }}"></script>
+
   <script>
 
     $(document).ready(function(){
 
-      if({{ $trial->curr_round }} <= {{ count($trial->rounds) }}){
-        var start_time = "{{ $trial->rounds[$trial->curr_round - 1]->updated_at }}";
-        var round_timeout = "{{ $trial->rounds[$trial->curr_round - 1]->round_timeout }}";
-        deleteCookie('OcelerTime'); // Delete any previous timer cookies
-        addTimer(start_time, round_timeout, null);
-        timerTick();
-      }
+      var trial_id = "{{ $trial->id }}";
+      var server_time = "{{ $curr_server_time }}";
+      var curr_round = "{{ $trial->curr_round }}";
+      var start_time = "{{ $trial_start_time }}";
+      var timeout = "{{ $timeout }}";
+      addAdminTimer(server_time, start_time, timeout, curr_round, trial_id);
+      adminTimerTick(trial_id);
+
 
       setInterval(function(){
         playerTrialListener({{ $trial->id }});
@@ -24,8 +28,6 @@
     });
 
   </script>
-  <script type="text/javascript" src="{{ asset('js/timer.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('js/listen.js') }}"></script>
 @stop
 
 
@@ -35,7 +37,6 @@
       <div class="row">
         <div class="col-md-12">
           <h2 class="text-primary"><span class="text-muted">Trial:</span> {{ $trial->name }} ::
-            <span class="text-muted">Round:</span> {{ $trial->curr_round }}
             <span class="text-muted">Time:</span>
             <span id="timer" class="text-primary"></span>
           </h2>
