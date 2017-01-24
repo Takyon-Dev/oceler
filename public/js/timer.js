@@ -1,14 +1,20 @@
-function addTimer(duration, redirect){
+function addTimer(server_time, start, duration, redirect){
 
-		// convert end time from minutes to milliseconds
-		var time = duration * 60000;
+	// convert end time from minutes to milliseconds
+	var time = duration * 60000;
 
-		var currentTime = new Date();
+	localTime = new Date().getTime();
 
-		var startTime = currentTime.getTime();
+	serverTime = new Date(server_time).getTime();
 
-		// Add the duration time to the current time
-		var endTime = new Date(currentTime.getTime() + time);
+	var startTime = new Date(start).getTime();
+
+	timeRemaining = (startTime + time) - serverTime;
+
+	if(timeRemaining < 0) timeRemaining = 0;
+
+	// Add the duration time to the current time
+	var endTime = new Date(localTime + timeRemaining);
 
     if(!readCookie('OcelerTime')){
       createCookie('OcelerTime', endTime);

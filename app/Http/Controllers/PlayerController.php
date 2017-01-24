@@ -52,7 +52,7 @@ class PlayerController extends Controller
       if(!$trial_user || !\Session::get('curr_round')) return \Redirect::to('/player/');
 
       $curr_round = \Session::get('curr_round');
-      $curr_time = \Carbon\Carbon::now();
+      $server_time = \Carbon\Carbon::now();
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
@@ -167,9 +167,6 @@ class PlayerController extends Controller
       // we'll call a helper function to get an array of months and minutes
       $datetime = Solution::dateTimeArray();
 
-      echo $curr_round;
-      dump($trial);
-
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
     	// solution categories array
@@ -183,7 +180,7 @@ class PlayerController extends Controller
                    ->with('months', $datetime['months'])
                    ->with('names', $names)
                    ->with('nodes', $nodes)
-                   ->with('curr_time', $curr_time);
+                   ->with('server_time', $server_time);
     }
 
 
@@ -360,7 +357,8 @@ class PlayerController extends Controller
       // been stopped). Return -1 if stopped
 
       $player = \oceler\User::with('trials')->find(Auth::id());
-      if(!$player->trials) return -1;
+
+      if(count($player->trials) == 0) return -1;
 
       // Update the timestamp in pivot table
       // (used to determine if player is actively polling server)
@@ -408,7 +406,7 @@ class PlayerController extends Controller
       $trial->save();
 
       // Update the start time of the first round (used for the timer)
-      // We add 10 seconds to account for the countdown before the trial begins
+      // We add 5 seconds to account for the countdown before the trial begins
       $dt = \Carbon\Carbon::now()->addSeconds(5)->toDateTimeString();
       $trial->rounds[0]->updated_at = $dt;
       $trial->rounds[0]->save();
@@ -471,6 +469,18 @@ class PlayerController extends Controller
                   ->with('round_timeout', $round_timeout)
                   ->with('trial_time', $now);
 
+
+    }
+
+    public function isTrialStoppedTest()
+    {
+
+      $player = \oceler\User::with('trials')->find(Auth::id());
+      dump($player);
+
+      if(count($player->trials) == 0) echo -1;
+
+      else echo 9;
 
     }
 

@@ -10,6 +10,8 @@ function solutionListener()
 		success: function(solutions)
 		{
 
+      console.log(solutions);
+
 			if(solutions == -1){
 				window.location = '/player/trial/end';
 			}
@@ -31,7 +33,8 @@ function messageListener()
 {
 	setTimeout(messageListener, 2000);
 
-	// If the player is typing a reply, just return
+	// If the player is typing a reply, just return.
+	// This prevents the message frame (including the reply field)from reloading.
 	if($(".reply-form").is(":visible")) return;
 
 	$.ajax({

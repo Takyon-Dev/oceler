@@ -31,6 +31,9 @@ class Trial extends Model
 
     public function stopTrial() {
 
+      $this->is_active = 0;
+      $this->save();
+
       $trial_users = \DB::table('trial_user')
                       ->where('trial_id', $this->id)
                       ->get();

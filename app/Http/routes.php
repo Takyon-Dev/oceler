@@ -254,6 +254,8 @@ Route::get('/admin/config-files/view/{name}', [
 // Testing routes...
 Route::get('/player/timer-test', 'PlayerController@timerTest');
 
+Route::get('/player/is-trial-stopped', 'PlayerController@isTrialStoppedTest');
+
 
 // Authentication routes...
 Route::get('/login', 'Auth\AuthController@getLogin');

@@ -30,6 +30,7 @@ class Message extends Model
 
     return $this->hasMany('oceler\Reply')
                 ->whereIn('user_id', $players_from)
+                ->orderBy('created_at', 'ASC')
                 ->with('replier');
   }
 

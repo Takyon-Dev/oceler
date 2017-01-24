@@ -1,10 +1,10 @@
 <script>
 
 	$(document).ready(function() {
-		var curr_time = "{{ $curr_time }}";
+		var server_time = "{{ $server_time }}";
 		var start_time = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->updated_at }}";
 		var round_timeout = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->round_timeout }}";
-		addTimer(curr_time, start_time, round_timeout, '/player/trial/end-round');
+		addTimer(server_time, start_time, round_timeout, '/player/trial/end-round');
 		timerTick(0);
 	});
 </script>
