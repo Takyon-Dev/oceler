@@ -64,6 +64,24 @@ Route::get('player/trial/queue/status', [
 	'roles' => ['player']
 ]);
 
+Route::get('player/trial/instructions', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@showInstructions',
+	'roles' => ['player']
+]);
+
+Route::get('player/trial/instructions/status/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@instructionsStatus',
+	'roles' => ['player']
+]);
+
+Route::get('player/trial/instructions/status/read/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@markInstructionsAsRead',
+	'roles' => ['player']
+]);
+
 Route::get('player/trial/end-round', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@endTrialRound',
@@ -255,6 +273,8 @@ Route::get('/admin/config-files/view/{name}', [
 Route::get('/player/timer-test', 'PlayerController@timerTest');
 
 Route::get('/player/is-trial-stopped', 'PlayerController@isTrialStoppedTest');
+
+Route::get('/player/message-listen-test', 'MessageController@messageListenTest');
 
 
 // Authentication routes...

@@ -111,7 +111,7 @@ function adminTimerTick(trial_id){
 		}
 
 		setTimeout(function() {
-			adminTimerTick(curr_round, trial_id);
+			adminTimerTick(trial_id);
 		}, 1000);
 
 	}

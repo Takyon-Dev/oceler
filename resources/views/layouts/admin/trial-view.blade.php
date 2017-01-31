@@ -17,7 +17,7 @@
       var curr_round = "{{ $trial->curr_round }}";
       var start_time = "{{ $trial_start_time }}";
       var timeout = "{{ $timeout }}";
-      addAdminTimer(server_time, start_time, timeout, curr_round, trial_id);
+      addAdminTimer(server_time, start_time, timeout, trial_id);
       adminTimerTick(trial_id);
 
 

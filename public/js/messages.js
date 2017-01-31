@@ -85,6 +85,34 @@ function shareMessage(id)
 	$("#share_box").show();
 }
 
+/**
+ * Recursively traverses the message thread
+ * to display any messages (and replies) in the thread
+ * that were shared.
+ */
+function traverseMessageThread(parent, msg)
+{
+
+		if(!parent) return;
+
+		var shared = new Reply(parent.users, parent.sender,
+														parent.message, parent.factoid,
+														parent.share_id, parent.id);
+
+		shared.addMessage($("#msg_" + msg.id));
+
+		traverseMessageThread(parent.shared_from, msg);
+
+		$.each(parent.shared_replies, function(key, reply){
+			console.log('Shared Reply:');
+			console.log(reply);
+			var shared_reply = new Reply(parent.users, reply.replier, reply.message, parent.id);
+			shared_reply.addMessage($("#msg_" + msg.id));
+		});
+
+
+}
+
 
 function createHeader(from, to)
 {

@@ -380,6 +380,20 @@ class PlayerController extends Controller
   	}
 
     /**
+     * Displays the insgtructions specific to the trial
+     * that the player has been assigned to.
+     */
+    public function showInstructions()
+    {
+
+      $trial_id = DB::table('trial_user')->where('user_id', Auth::id())->pluck('trial_id');
+      $trial = \oceler\Trial::where('id', $trial_id)->first();
+
+      return View::make('layouts.player.instructions')
+                 ->with('trial', $trial);
+    }
+
+    /**
      * Runs at the start of a trial. Stores the curr_round as 1,
      * and sets the user's player_name for the trial.
      * Stores current round and trial ID in Session for access later.

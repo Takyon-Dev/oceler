@@ -62,7 +62,7 @@ class TrialController extends Controller
 
       $trial = new Trial();
       $trial->name = $request->name;
-      $trial->instr_path = $request->instructions;
+      $trial->instructions = $request->instructions;
       $trial->distribution_interval = $request->distribution_interval;
       $trial->num_waves = $request->num_waves;
       $trial->num_players = $request->num_players;
@@ -75,17 +75,18 @@ class TrialController extends Controller
       $trial->num_groups = $request->num_groups;
       $trial->is_active = false;
 
+      $trial->save(); // Saves the trial to the trial table
+
+
       if($request->hasFile('instructions_image')){
 
         $img = $request->file('instructions_image');
         $img_name = $img->getClientOriginalName();
-        $img_storage_path = storage_path()."/config-files/images/".$img_name;
-
-        $img->move($img_storage_path, $img->getRealPath());
-        $trial->instr_img_path = $img_storage_path;
+        $img_storage_path = "/uploads/trial-images/".$trial->id;
+        $img->move(public_path().$img_storage_path, $img_name);
+        $trial->instr_img_path = $img_storage_path."/".$img_name;
+        $trial->save();
       }
-
-      $trial->save(); // Saves the trial to the trial table
 
       /*
        * For each trial round (set in the config), the trial timeout,
@@ -469,6 +470,39 @@ class TrialController extends Controller
         }
 
         else return $trial->num_players - $queued_players;
+
+    }
+
+    /**
+     * Returns true if number of players in trial who have
+     * finished reading the instructions matches the total
+     * number of players in that trial.
+     * @return boolean
+     */
+    public function instructionsStatus($trial_id)
+    {
+
+      //$trial_id = DB::table('trial_user')->where('user_id', Auth::id())->pluck('trial_id');
+      $trial = Trial::with('users')->find($trial_id);
+
+      //dump($trial);
+
+      $num_read = 0;
+
+      foreach ($trial->users as $user) {
+        if($user->pivot->instructions_read == 1) $num_read++;
+      }
+      header('Content-Type: application/json');
+      echo json_encode(array(
+        'response' => $num_read == count($trial->users),
+      ));
+
+    }
+
+    public function markInstructionsAsRead($user_id)
+    {
+
+      DB::update('update trial_user set instructions_read = 1 where user_id = ?', [$user_id]);
 
     }
 }

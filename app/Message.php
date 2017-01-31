@@ -45,6 +45,7 @@ class Message extends Model
   {
     return $this->belongsTo('oceler\Message', 'share_id')
                 ->with('sender')
+                ->with('sharedFrom')
                 ->with('sharedReplies')
                 ->with('factoid')
                 ->with('users');
