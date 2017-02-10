@@ -13,7 +13,7 @@ function solutionListener()
       console.log(solutions);
 
 			if(solutions == -1){
-				window.location = '/player/trial/end';
+				window.location = '/player/trial/trial-stopped';
 			}
 
 			$.each(solutions, function(key, sol)

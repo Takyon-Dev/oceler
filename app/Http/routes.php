@@ -70,6 +70,18 @@ Route::get('player/trial/instructions', [
 	'roles' => ['player']
 ]);
 
+Route::get('player/trial/timeout', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@queueTimeout',
+	'roles' => ['player']
+]);
+
+Route::get('player/trial/trial-stopped', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@trialStopped',
+	'roles' => ['player']
+]);
+
 Route::get('player/trial/instructions/status/{id}', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@instructionsStatus',
@@ -97,6 +109,12 @@ Route::get('player/trial/new-round', [
 Route::get('player/trial/end', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@endTrial',
+	'roles' => ['player']
+]);
+
+Route::get('player/end-task', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@endTask',
 	'roles' => ['player']
 ]);
 

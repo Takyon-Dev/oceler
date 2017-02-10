@@ -15,14 +15,10 @@ function queue()
         $("#players_needed").show();
       }
 
-      else{
-        $("#queue_content h1").html('There are no trials available at this time.');
-        $("#queue_content img").hide();
-      }
-
     }
   });
 
+  setTimeout(leaveQueue, 300000);
   setTimeout(queue, 2000);
 }
 
@@ -61,4 +57,9 @@ function markAsRead(user_id)
     }
   });
 
+}
+
+function leaveQueue()
+{
+  window.location.replace("/player/trial/timeout");
 }

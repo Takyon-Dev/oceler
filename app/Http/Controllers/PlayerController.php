@@ -285,7 +285,25 @@ class PlayerController extends Controller
         $trial->save();
       }
 
-      return View::make('layouts.player.end-trial');
+      // Calculate the player's earnings
+      $round_earnings = DB::table('round_earnings')
+                          ->where('trial_id', '=', $trial->id)
+                          ->where('user_id', '=', Auth::id())
+                          ->sum('earnings');
+      $total_earnings = $round_earnings + $trial->payment_base;
+
+      return View::make('layouts.player.end-trial')
+                  ->with('total_earnings', $total_earnings);
+    }
+
+    public function endTask()
+    {
+
+      /*
+        Lookup base payment, apply to user's MTurk account
+        and display it.
+       */
+      return View::make('layouts.player.end-task');
     }
 
     /**
