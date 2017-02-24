@@ -516,4 +516,46 @@ class PlayerController extends Controller
 
     }
 
+    public function getMTurkLogin(Request $request)
+    {
+      $mturk_id = $request->workerID;
+      $user = \oceler\User::where('email', $mturk_id)->first();
+
+      // If there is already an account associated with this mturkID,
+      // sign them in
+      if($user){
+
+        $credentials = array(
+          'email' => $user->email,
+          'password' => '0c3134-MtU4k'
+        );
+
+        if (Auth::attempt($credentials)) {
+          return \Redirect::to('home');
+        }
+      }
+
+      // Otherwise, use the mturkID in the URL to create
+      // a new account and sign them in
+      elseif($mturk_id) {
+
+        $user = new \oceler\User();
+        $user->name = $mturk_id;
+        $user->email = $mturk_id;
+        $user->password = \Hash::make('0c3134-MtU4k');
+        $user->role_id = 3;
+        $user->save();
+
+        Auth::login($user);
+        return \Redirect::to('home');
+
+      }
+
+      // If there isn't an ID in the URL, just redirect to login
+      else {
+        return \Redirect::to('login');
+      }
+
+    }
+
 }
