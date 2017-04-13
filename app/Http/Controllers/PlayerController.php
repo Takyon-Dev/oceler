@@ -52,6 +52,7 @@ class PlayerController extends Controller
       if(!$trial_user || !\Session::get('curr_round')) return \Redirect::to('/player/');
 
       $curr_round = \Session::get('curr_round');
+
       $server_time = \Carbon\Carbon::now();
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
@@ -186,8 +187,8 @@ class PlayerController extends Controller
 
     public function startTrialRound()
     {
-      $curr_round = Session::get('curr_round');
-      Session::put('curr_round', $curr_round++);
+      $curr_round = Session::get('curr_round') + 1;
+      Session::put('curr_round', $curr_round);
 
       $trial = \oceler\Trial::where('id', Session::get('trial_id'))
                             ->with('rounds')
@@ -197,7 +198,7 @@ class PlayerController extends Controller
       $trial->save();
 
       // Update the start time for this round
-      $dt = \Carbon\Carbon::now()->addSeconds(10)->toDateTimeString();
+      $dt = \Carbon\Carbon::now()->toDateTimeString();
       $trial->rounds[$curr_round - 1]->updated_at = $dt;
       $trial->rounds[$curr_round - 1]->save();
 
@@ -234,7 +235,7 @@ class PlayerController extends Controller
       }
 
       $amt_earned = 0;
-
+      
       if($trial->pay_correct){
         if($trial->pay_time_factor){
           $amt_earned = $time_correct / 60 * $trial->payment_per_solution;
@@ -500,8 +501,6 @@ class PlayerController extends Controller
                   ->with('now', $now)
                   ->with('round_timeout', $round_timeout)
                   ->with('trial_time', $now);
-
-
     }
 
     public function isTrialStoppedTest()

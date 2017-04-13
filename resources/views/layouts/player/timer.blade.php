@@ -4,8 +4,9 @@
 		var server_time = "{{ $server_time }}";
 		var start_time = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->updated_at }}";
 		var round_timeout = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->round_timeout }}";
-		addTimer(server_time, start_time, round_timeout, '/player/trial/end-round');
-		timerTick(0);
+		var time = 0;
+		addTimer(server_time, start_time, round_timeout);
+		timerTick();
 	});
 </script>
 <div id="timer_container" class="col-md-12">

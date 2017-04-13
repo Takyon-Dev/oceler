@@ -10,15 +10,19 @@
 
   <script>
 
+    var TimerVars = {};
+
     $(document).ready(function(){
 
-      var trial_id = "{{ $trial->id }}";
+
       var server_time = "{{ $curr_server_time }}";
-      var curr_round = "{{ $trial->curr_round }}";
-      var start_time = "{{ $trial_start_time }}";
-      var timeout = "{{ $timeout }}";
-      addAdminTimer(server_time, start_time, timeout, trial_id);
-      adminTimerTick(trial_id);
+      TimerVars.curr_round = "{{ $trial->curr_round }}";
+      TimerVars.total_rounds = "{{ count($trial->rounds) }}";
+      var start_time = "{{ $start_time }}";
+      var timeout = "{{ $trial->rounds [$trial->curr_round -1]->round_timeout }}";
+      var time = 0;
+      addTimer(server_time, start_time, timeout);
+      adminTimerTick();
 
 
       setInterval(function(){

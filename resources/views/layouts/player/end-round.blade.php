@@ -6,9 +6,6 @@
 
 @section('js')
   <script type="text/javascript" src="{{ asset('js/timer.js') }}"></script>
-  <script>
-    deleteCookie('OcelerTime');
-  </script>
 @stop
 
 @section('content')

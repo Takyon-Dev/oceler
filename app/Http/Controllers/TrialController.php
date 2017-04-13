@@ -202,18 +202,14 @@ class TrialController extends Controller
       $trial = Trial::with('users')->find($id);
 
       $curr_server_time = \Carbon\Carbon::now()->toDateTimeString();
-      $trial_start_time = $trial->rounds[0]->updated_at;
+      $curr_round = $trial->curr_round;
+      $start_time = $trial->rounds[$curr_round - 1]->updated_at;
 
-      $timeout = 0;
-      foreach ($trial->rounds as $round) {
-        $timeout += $round->round_timeout;
-      }
 
       return View::make('layouts.admin.trial-view')
                   ->with('trial', $trial)
                   ->with('curr_server_time', $curr_server_time)
-                  ->with('trial_start_time', $trial_start_time)
-                  ->with('timeout', $timeout);
+                  ->with('start_time', $start_time);
     }
 
     /**
