@@ -84,7 +84,7 @@
 
                     {!! Form::input('number', 'payment_per_solution', null,
                                     ['class'=>'num-input',
-                                    'placeholder' => '.05', 'step'=>'.01',
+                                    'step'=>'any',
                                     'min'=>'0']) !!}<br>
 
                     {!! Form::label('payment_base', 'Base pay') !!}
