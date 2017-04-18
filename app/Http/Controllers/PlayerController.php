@@ -181,6 +181,7 @@ class PlayerController extends Controller
                    ->with('months', $datetime['months'])
                    ->with('names', $names)
                    ->with('nodes', $nodes)
+                   ->with('user_node', $u_node)
                    ->with('server_time', $server_time);
     }
 
@@ -235,7 +236,7 @@ class PlayerController extends Controller
       }
 
       $amt_earned = 0;
-      
+
       if($trial->pay_correct){
         if($trial->pay_time_factor){
           $amt_earned = $time_correct / 60 * $trial->payment_per_solution;

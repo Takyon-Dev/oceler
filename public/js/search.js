@@ -22,6 +22,7 @@ function doSearch()
 	searchData = $("#search_form").serializeArray();
 
 	searchData.push({ name: "wave", value: wave });
+	searchData.push({ name: "node", value: user_node });
 
 	$.ajaxPrefilter(function(options, originalOptions, xhr) {
 		var token = $('#_token').val();

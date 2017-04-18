@@ -13,7 +13,11 @@
     var players_to = <?php echo json_encode($players_to); ?>;
     var players_from = <?php echo json_encode($players_from); ?>;
     var distribution_interval = "{{ $trial->distribution_interval }}";
+
+    // used for search
+    var user_node = "{{ $user_node }}";
     var wave = 0;
+
 
     $(document).ready(function(){
 

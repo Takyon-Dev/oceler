@@ -13,6 +13,8 @@
 				<div id="curr_result"></div>
 				<hr>
 				<h2>Earlier search results</h2>
-				<div id="past_results"></div>
+					<div id="past_results_scrollable" class="pre-scrollable">
+						<div id="past_results"></div>
+					</div>
 			</div>
 		</div>
