@@ -32,7 +32,7 @@ class Log extends Model
     {
 
       $logs = array();
-      $files = scandir(storage_path()."/logs/trial-logs/");
+      $files = scandir(storage_path()."/logs/trial-logs/", SCANDIR_SORT_DESCENDING);
 
       $i = 0;
       foreach ($files as $f) {
