@@ -31,8 +31,7 @@ function waitForInstructions(trial_id)
     success: function(status)
     {
 
-      //var json = $.parseJSON(JSON.stringify(status));
-      console.log(status);
+      json = $.parseJSON(status);
       if(status.response){
         window.location.replace("/player/trial/initialize");
       }
