@@ -32,7 +32,7 @@ function waitForInstructions(trial_id)
     {
 
       json = $.parseJSON(status);
-      if(status.response){
+      if(json.response){
         window.location.replace("/player/trial/initialize");
       }
 
