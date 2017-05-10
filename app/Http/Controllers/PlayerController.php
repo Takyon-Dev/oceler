@@ -538,7 +538,7 @@ class PlayerController extends Controller
         $user = new \oceler\User();
         $user->name = "Mturk Worker";
         $user->email = $mturk_id;
-        $user->mturk_id -> $worker_id
+        $user->mturk_id -> $worker_id;
         $user->password = \Hash::make('0c3134-MtU4k');
         $user->role_id = 3;
         $user->save();
