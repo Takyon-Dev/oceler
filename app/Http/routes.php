@@ -11,6 +11,14 @@
 |
 */
 
+/* Force ssl when running on non-local server.
+   Makes all generated links https - required
+   to embed in MTurk */
+if(App::environment() !== 'local'){
+  URL::forceSchema("https");
+}
+
+
 Route::get('/', function () {
     return view('welcome');
 });

@@ -519,6 +519,12 @@ class PlayerController extends Controller
     public function getMTurkLogin(Request $request)
     {
       $mturk_id = $request->workerID;
+      $assignment_id = $request->assignmentID;
+
+      if($assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE"){
+        return View::make('layouts.player.default');
+      }
+
       $user = \oceler\User::where('email', $mturk_id)->first();
 
       // If there is already an account associated with this mturkID,
@@ -547,8 +553,7 @@ class PlayerController extends Controller
         $user->save();
 
         Auth::login($user);
-        return \Redirect::to('home');
-
+        return \Redirect::to('player/trial/queue');
       }
 
       // If there isn't an ID in the URL, just redirect to login

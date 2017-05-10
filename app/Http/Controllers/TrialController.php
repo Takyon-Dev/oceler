@@ -488,10 +488,7 @@ class TrialController extends Controller
     public function instructionsStatus($trial_id)
     {
 
-      //$trial_id = DB::table('trial_user')->where('user_id', Auth::id())->pluck('trial_id');
       $trial = Trial::with('users')->find($trial_id);
-
-      //dump($trial);
 
       $num_read = 0;
 
