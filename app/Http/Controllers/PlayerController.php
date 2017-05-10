@@ -518,47 +518,51 @@ class PlayerController extends Controller
 
     public function getMTurkLogin(Request $request)
     {
-      $mturk_id = $request->workerID;
+      $worker_id = $request->workerId;
       $assignment_id = $request->assignmentId;
+      $hit_id = $request->hitId;
 
+      /* If the user is just previewing the MTurk HIT the assignment id
+       will not be available. Show a default page. */
       if($assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE"){
         return View::make('layouts.player.default');
       }
 
-      $user = \oceler\User::where('email', $mturk_id)->first();
+      /* If the user accepts the HIT, we need to see if they are already
+      in our database. */
+      $user = \oceler\User::where('mturk_id', $worker_id)->first();
 
-      // If there is already an account associated with this mturkID,
-      // sign them in
-      if($user){
-
-        $credentials = array(
-          'email' => $user->email,
-          'password' => '0c3134-MtU4k'
-        );
-
-        if (Auth::attempt($credentials)) {
-          return \Redirect::to('home');
-        }
-      }
-
-      // Otherwise, use the mturkID in the URL to create
-      // a new account and sign them in
-      elseif($mturk_id) {
-
+      /* If there isn't already an account for this person,
+         we create one (if there is an MTurk worker ID) */
+      if(!$user && $worker_id) {
         $user = new \oceler\User();
-        $user->name = $mturk_id;
+        $user->name = "Mturk Worker";
         $user->email = $mturk_id;
+        $user->mturk_id -> $worker_id
         $user->password = \Hash::make('0c3134-MtU4k');
         $user->role_id = 3;
         $user->save();
-
-        Auth::login($user);
-        return \Redirect::to('player/trial/queue');
       }
 
-      // If there isn't an ID in the URL, just redirect to login
-      else {
-        return \Redirect::to('login');
+      /* Then we log them in, record the MTurk HIT data,
+         and send them to the trial queue */
+      $credentials = array(
+        'email' => $user->email,
+        'password' => '0c3134-MtU4k'
+      );
+
+      if(Auth::attempt($credentials)) {
+
+        DB::table('mturk_hits')->insert([
+            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'user_id' => $user->id,
+            'hit_id' => $request->hitId,
+            'assignment_id' => $$request->assignmentId,
+            'worker_id' => $request->factoidset_id[$i],
+            ]);
+
+        return \Redirect::to('player/trial/queue');
       }
 
     }
