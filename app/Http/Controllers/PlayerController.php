@@ -519,7 +519,7 @@ class PlayerController extends Controller
     public function getMTurkLogin(Request $request)
     {
       $mturk_id = $request->workerID;
-      $assignment_id = $request->assignmentID;
+      $assignment_id = $request->assignmentId;
 
       if($assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE"){
         return View::make('layouts.player.default');
