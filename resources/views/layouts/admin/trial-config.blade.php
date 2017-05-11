@@ -40,11 +40,7 @@
         <div class="row">
           <div class="col-md-12">
 
-            @if(isset($trial))
-              <h1 class="text-center">Editing Trial</h1>
-            @else
-              <h1 class="text-center">New Trial</h1>
-            @endif
+            <h1 class="text-center">New Trial</h1>
 
                 <div class="col-md-6">
                   <div class="form-group">
@@ -134,8 +130,8 @@
             <div class="col-md-6 group-container">
               <h3 class="bg-info">Group #<span>1</span></h3>
               <div class="form-group">
-                {!! Form::label('network', 'Network:') !!}<br>
-                {!! Form::select('network[]', $networks) !!}<br>
+                {!! Form::label('network_id', 'Network:') !!}<br>
+                {!! Form::select('network_id[]', $networks) !!}<br>
 
                 {!! Form::label('survey_url', 'Survey URL:') !!}<br>
                 {!! Form::text('survey_url[]', null, ['class'=>'form-control']) !!}<br>

@@ -15,10 +15,11 @@ class MessageController extends Controller
 {
 
 
-    /**
-    * Stores a new message to the messages table in the DB
-    *
-    */
+  /**
+  * Stores a new message to the messages table in the DB
+  * and writes the message, sender, and recipients to
+  * the log.
+  */
 	public function  postMessage(Request $request)
 	{
 
@@ -37,8 +38,8 @@ class MessageController extends Controller
 
     $log = "MESSAGE-- ID: " .$msg->id. " FROM: ". $user->id . "(". $user->player_name .") ";
 
+    // Add each recipient player to message_user
 		foreach ($request->share_to as $player) {
-			// Add each recipient player to message_user
 			$msg->users()->attach($player);
       $player = \oceler\User::find($player);
       $log .= 'TO: ' .$player->id . "(". $player->player_name .") ";
@@ -65,7 +66,7 @@ class MessageController extends Controller
 		$messages = array();
 
 		// Get all new messages updated (or inserted)
-		// ** THIS QUERY SHOULD BE MADE MORE EFFICIENT
+		// ** THIS QUERY COULD BE MADE MORE EFFICIENT
 		// SO THAT THERE IS NO NEED FOR THE FOREACH BELOW -
 		// e.g. get new messages where sender or a recipient is the user
 

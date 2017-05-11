@@ -30,11 +30,32 @@
       <div class="row">
         <div class="col-md-12">
           <h1 class="text-center">Trials</h1>
-
           <a href="/admin/trial/create" class="btn btn-success" role="button">
             <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
             New Trial
           </a>
+          <br>or<br>
+          @if (count($errors) > 0)
+            <div class="text-danger">
+                <p>There was a problem with your upload...</p>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>ERROR: {{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+          @endif
+
+          {!! Form::open(array('url'=>'/admin/config-files/upload',
+                               'method'=>'POST', 'files'=>true)) !!}
+            <label class="btn btn-success btn-file">
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                Load from Config
+                <input type="file" style="display: none;"
+                      name="config_file"  onchange="this.form.submit()">
+            </label>
+          {!! Form::close() !!}
+
           <table class="table table-striped trials">
             <tr>
               <th>Trial</th>
@@ -75,7 +96,7 @@
                   <a href="/admin/trial/{{ $trial->id }}">View</a>
                 @endif
               </td>
-              
+
               <td>
                 {!! Form::open(['method' => 'DELETE',
                                 'route' => ['trial.delete', $trial->id],

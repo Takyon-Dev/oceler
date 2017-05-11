@@ -2,9 +2,12 @@
 
 namespace oceler;
 
+use Illuminate\Http\Request;
+use oceler\Http\Requests;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use SoftDeletingTrait;
+use DB;
 
 class Trial extends Model
 {
@@ -32,33 +35,122 @@ class Trial extends Model
       return $this->hasMany('\oceler\Group');
     }
 
+    public function storeTrialConfig($request)
+    {
+
+      $this->name = $request->name;
+      $this->instructions = $request->instructions;
+      $this->distribution_interval = $request->distribution_interval;
+      $this->num_waves = $request->num_waves;
+      $this->num_players = $request->num_players;
+      $this->unique_factoids = $request->unique_factoids || 0;
+      $this->pay_correct = $request->pay_correct || 0;
+      $this->pay_time_factor = $request->pay_time_factor || 0;
+      $this->payment_per_solution = $request->payment_per_solution;
+      $this->payment_base = $request->payment_base;
+      $this->num_rounds = $request->num_rounds;
+      $this->num_groups = $request->num_groups;
+      $this->is_active = false;
+
+      $this->save(); // Saves the trial to the trial table
+
+
+      if($request->hasFile('instructions_image')){
+
+        $img = $request->file('instructions_image');
+        $img_name = $img->getClientOriginalName();
+        $img_storage_path = "/uploads/trial-images/".$this->id;
+        $img->move(public_path().$img_storage_path, $img_name);
+        $this->instr_img_path = $img_storage_path."/".$img_name;
+        $this->save();
+      }
+
+      /*
+       * For each trial round (set in the config), the trial timeout,
+       * factoidsets, countrysets, and namesets (selected in the config)
+       * are stored in the rounds table.
+       */
+      for($i = 0; $i < $this->num_rounds; $i++){
+
+        DB::table('rounds')->insert([
+            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'trial_id' => $this->id,
+            'round' => ($i + 1),
+            'round_timeout' => $request->round_timeout[$i],
+            'factoidset_id' => $request->factoidset_id[$i],
+            'nameset_id' => $request->nameset_id[$i],
+            ]);
+      }
+
+      /*
+       *	For each group (set in the config) store the group's
+       *	network and end-of-experiment survey URL
+       */
+      for($i = 0; $i < $this->num_groups; $i++){
+
+        DB::table('groups')->insert([
+          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'group' => $i + 1,
+          'trial_id' => $this->id,
+          'network_id' => $request->network_id[$i],
+          'survey_url' => $request->survey_url[$i],
+        ]);
+
+      }
+    }
+
+    /*
+     * Adds a new trial based on a config file.
+     */
+    public static function addTrialFromConfig($config)
+    {
+
+      foreach ($config['trials'] as $trial_config) {
+
+        $trial = new Trial();
+
+        /* Create a new request and merge the
+        config values to it. This way we can
+        use the storeTrialConfig function to process
+        trials created via config file or webpage form. */
+        $request = new Request();
+        $request->merge($trial_config);
+        $trial->storeTrialConfig($request);
+        $trial->logConfig();
+      }
+
+
+    }
+
     public function stopTrial() {
 
       $this->is_active = 0;
       $this->save();
 
-      $trial_users = \DB::table('trial_user')
+      $this_users = \DB::table('trial_user')
                       ->where('trial_id', $this->id)
                       ->get();
 
-      foreach ($trial_users as $trial_user) {
+      foreach ($this_users as $this_user) {
 
           \DB::table('trial_user_archive')->insert([
 
             'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
             'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'trial_id' => $trial_user->trial_id,
-            'user_id' => $trial_user->user_id,
-            'group_id' => $trial_user->group_id,
+            'trial_id' => $this_user->trial_id,
+            'user_id' => $this_user->user_id,
+            'group_id' => $this_user->group_id,
           ]);
 
-          \DB::table('trial_user')->where('id', $trial_user->id)->delete();
+          \DB::table('trial_user')->where('id', $this_user->id)->delete();
       }
     }
 
     public static function removePlayerFromTrial($id)
     {
-      $trial_user = \DB::table('trial_user')
+      $this_user = \DB::table('trial_user')
                       ->where('user_id', $id)
                       ->first();
 
@@ -66,12 +158,12 @@ class Trial extends Model
 
         'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
         'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'trial_id' => $trial_user->trial_id,
+        'trial_id' => $this_user->trial_id,
         'user_id' => \Auth::id(),
-        'group_id' => $trial_user->group_id,
+        'group_id' => $this_user->group_id,
       ]);
 
-      \DB::table('trial_user')->where('id', $trial_user->id)->delete();
+      \DB::table('trial_user')->where('id', $this_user->id)->delete();
     }
 
     public function logConfig()

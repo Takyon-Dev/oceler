@@ -26,15 +26,19 @@ class ConfigController extends Controller
 
       switch($config['type']){
         case 'network':
-          \oceler\Network::addNetwork($config);
+          \oceler\Network::addNetworkFromConfig($config);
           break;
 
         case 'factoid':
-          \oceler\Factoidset::addFactoidset($config);
+          \oceler\Factoidset::addFactoidsetFromConfig($config);
           break;
 
         case 'names':
-          \oceler\Nameset::addNameset($config);
+          \oceler\Nameset::addNamesetFromConfig($config);
+          break;
+
+        case 'trial':
+          \oceler\Trial::addTrialFromConfig($config);
           break;
       }
     }

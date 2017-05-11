@@ -54,7 +54,9 @@
           <h3 class="bg-info text-center">Factoid sets</h3>
           @foreach($factoidsets as $factoidset)
             <li>
-              {{ $factoidset->name }}
+              <span role="button" data-toggle="tooltip" title="id: {{ $factoidset->id }}">
+                {{ $factoidset->name }}
+              </span>
               <span class="pull-right">
                 <a href="/admin/config-files/view/{{ $factoidset->name }}">view</a> |
                 <a href="/admin/config-files/delete/factoidset/{{ $factoidset->id }}">delete</a>
@@ -66,7 +68,9 @@
           <h3 class="bg-info text-center">Networks</h3>
           @foreach($networks as $network)
             <li>
-              {{ $network->name }}
+              <span role="button" data-toggle="tooltip" title="id: {{ $network->id }}">
+                {{ $network->name }}
+              </span>
               <span class="pull-right">
                 <a href="/admin/config-files/view/{{ $network->name }}">view</a> |
                 <a href="/admin/config-files/delete/network/{{ $network->id }}">delete</a>
@@ -78,7 +82,9 @@
           <h3 class="bg-info text-center">Names</h3>
           @foreach($namesets as $nameset)
             <li>
-              {{ $nameset->name }}
+              <span role="button" data-toggle="tooltip" title="id: {{ $nameset->id }}">
+                {{ $nameset->name }}
+              </span>
               <span class="pull-right">
                 <a href="/admin/config-files/view/{{ $nameset->name }}">view</a> |
                 <a href="/admin/config-files/delete/nameset/{{ $nameset->id }}">delete</a>

@@ -61,68 +61,7 @@ class TrialController extends Controller
     {
 
       $trial = new Trial();
-      $trial->name = $request->name;
-      $trial->instructions = $request->instructions;
-      $trial->distribution_interval = $request->distribution_interval;
-      $trial->num_waves = $request->num_waves;
-      $trial->num_players = $request->num_players;
-      $trial->unique_factoids = $request->unique_factoids || 0;
-      $trial->pay_correct = $request->pay_correct || 0;
-      $trial->pay_time_factor = $request->pay_time_factor || 0;
-      $trial->payment_per_solution = $request->payment_per_solution;
-      $trial->payment_base = $request->payment_base;
-      $trial->num_rounds = $request->num_rounds;
-      $trial->num_groups = $request->num_groups;
-      $trial->is_active = false;
-
-      $trial->save(); // Saves the trial to the trial table
-
-
-      if($request->hasFile('instructions_image')){
-
-        $img = $request->file('instructions_image');
-        $img_name = $img->getClientOriginalName();
-        $img_storage_path = "/uploads/trial-images/".$trial->id;
-        $img->move(public_path().$img_storage_path, $img_name);
-        $trial->instr_img_path = $img_storage_path."/".$img_name;
-        $trial->save();
-      }
-
-      /*
-       * For each trial round (set in the config), the trial timeout,
-       * factoidsets, countrysets, and namesets (selected in the config)
-       * are stored in the rounds table.
-       */
-      for($i = 0; $i < $trial->num_rounds; $i++){
-
-        DB::table('rounds')->insert([
-            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'trial_id' => $trial->id,
-            'round' => ($i + 1),
-            'round_timeout' => $request->round_timeout[$i],
-            'factoidset_id' => $request->factoidset_id[$i],
-            'nameset_id' => $request->nameset_id[$i],
-            ]);
-      }
-
-      /*
-       *	For each group (set in the config) store the group's
-       *	network and end-of-experiment survey URL
-       */
-      for($i = 0; $i < $trial->num_groups; $i++){
-
-        DB::table('groups')->insert([
-          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-          'group' => $i + 1,
-          'trial_id' => $trial->id,
-          'network_id' => $request->network[$i],
-          'survey_url' => $request->survey_url[$i],
-        ]);
-
-      }
-
+      $trial->storeTrialConfig($request);
       $trial->logConfig();
 
       return \Redirect::to('/admin/trial');

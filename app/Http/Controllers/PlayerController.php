@@ -20,6 +20,10 @@ class PlayerController extends Controller
       return View::make('layouts.player.home');
     }
 
+    /**
+     * Loads the trial game screen for the player, including the solution
+     * categories and network.
+     */
     public function playerTrial()
     {
     	/**
@@ -53,7 +57,7 @@ class PlayerController extends Controller
 
       $curr_round = \Session::get('curr_round');
 
-      $server_time = \Carbon\Carbon::now();
+      $server_time = \Carbon\Carbon::now(); // Used for the javascript trial timer
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
@@ -152,10 +156,9 @@ class PlayerController extends Controller
         $players_from_ids[] = $player->id;
       }
 
-      // Store the player arrays in Session so we can access them later
-      Session::put('players_from', $players_from);
+      // Store the player id's in Session so we can access them later
+      // for the message functions
       Session::put('players_from_ids', $players_from_ids);
-      Session::put('players_to', $players_to);
 
     	/*
     	* Solution categories are stored in the DB. This makes it
@@ -487,6 +490,62 @@ class PlayerController extends Controller
 
     }
 
+    public function getMTurkLogin(Request $request)
+    {
+      $worker_id = $request->workerId;
+
+      /* If the user is just previewing the MTurk HIT the assignment id
+       will not be available. Show a default page. */
+      if($request->assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE"){
+        return View::make('layouts.player.default');
+      }
+
+      /* If the user accepts the HIT, we need to see if they are already
+      in our database. */
+      $user = \oceler\User::where('mturk_id', $worker_id)->first();
+
+      /* If there isn't already an account for this person,
+         we create one (if there is an MTurk worker ID) */
+      if(!$user && $worker_id) {
+        $user = new \oceler\User();
+        $user->name = "Mturk Worker";
+        $user->email = $worker_id;
+        $user->mturk_id = $worker_id;
+        $user->password = \Hash::make('0c3134-MtU4k');
+        $user->role_id = 3;
+        $user->save();
+      }
+
+      /* Then we log them in, record the MTurk HIT data,
+         and send them to the trial queue */
+      $credentials = array(
+        'email' => $user->email,
+        'password' => '0c3134-MtU4k'
+      );
+
+      if(Auth::attempt($credentials)) {
+
+        /* Log their IP and user agent. This happens
+        automatically when users log in, but here we're
+        logging them in manually */
+        $user->ip_address = $_SERVER['REMOTE_ADDR'];
+        $user->user_agent = $_SERVER['HTTP_USER_AGENT'];
+        $user->save();
+
+        DB::table('mturk_hits')->insert([
+            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'user_id' => $user->id,
+            'hit_id' => $request->hitId,
+            'assignment_id' => $request->assignmentId,
+            'worker_id' => $worker_id,
+            ]);
+
+        return \Redirect::to('player/trial/queue');
+      }
+
+    }
+
     /*
       Testing functions...
      */
@@ -516,55 +575,5 @@ class PlayerController extends Controller
 
     }
 
-    public function getMTurkLogin(Request $request)
-    {
-      $worker_id = $request->workerId;
-      $assignment_id = $request->assignmentId;
-      $hit_id = $request->hitId;
-
-      /* If the user is just previewing the MTurk HIT the assignment id
-       will not be available. Show a default page. */
-      if($assignment_id == "ASSIGNMENT_ID_NOT_AVAILABLE"){
-        return View::make('layouts.player.default');
-      }
-
-      /* If the user accepts the HIT, we need to see if they are already
-      in our database. */
-      $user = \oceler\User::where('mturk_id', $worker_id)->first();
-
-      /* If there isn't already an account for this person,
-         we create one (if there is an MTurk worker ID) */
-      if(!$user && $worker_id) {
-        $user = new \oceler\User();
-        $user->name = "Mturk Worker";
-        $user->email = $worker_id;
-        $user->mturk_id -> $worker_id;
-        $user->password = \Hash::make('0c3134-MtU4k');
-        $user->role_id = 3;
-        $user->save();
-      }
-
-      /* Then we log them in, record the MTurk HIT data,
-         and send them to the trial queue */
-      $credentials = array(
-        'email' => $user->email,
-        'password' => '0c3134-MtU4k'
-      );
-
-      if(Auth::attempt($credentials)) {
-
-        DB::table('mturk_hits')->insert([
-            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'user_id' => $user->id,
-            'hit_id' => $request->hitId,
-            'assignment_id' => $$request->assignmentId,
-            'worker_id' => $request->factoidset_id[$i],
-            ]);
-
-        return \Redirect::to('player/trial/queue');
-      }
-
-    }
 
 }

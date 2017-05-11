@@ -16,7 +16,7 @@ class Nameset extends Model
       return $this->hasMany('\oceler\Name');
     }
 
-    public static function addNameset($config)
+    public static function addNamesetFromConfig($config)
     {
 
       // Save the new Nameset

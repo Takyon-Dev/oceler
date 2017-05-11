@@ -15,7 +15,7 @@ class Factoidset extends Model
   }
 
 
-  public static function addFactoidset($config)
+  public static function addFactoidsetFromConfig($config)
   {
 
     // Save the new Factoidset

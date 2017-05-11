@@ -22,7 +22,7 @@ class Network extends Model
      * @param array $config   Contains the network definition
      *                        in a multi-dimentional array
      */
-    public static function addNetwork($config)
+    public static function addNetworkFromConfig($config)
     {
 
       // Save the new network
