@@ -17,11 +17,15 @@
   <div class="row">
     <div class="col-md-12">
 
-      <h1 class="text-primary text-center">
-        [ OPTIONAL -- END OF EXPERIMENT MESSAGE HERE ]<br>
-        The experiment is now over. Thank you for your participation.
-      </h1>
-
+      <div class="text-center">
+        @if($group->survey_url)
+          <h3>Next, you'll take a short survey.</h3>
+          <a href="{{ $group->survey_url }}" role="button" class="btn btn-primary btn-lg">Continue</a>
+        @else
+            <h3>This is the end of the experiment. Thank you for your participation!</h3>
+            <h3>You earned ${{ $total_earnings }}!
+        @endif
+      </div>
     </div>
   </div>
 </div>

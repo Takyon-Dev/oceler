@@ -43,8 +43,7 @@ class ConfigController extends Controller
       }
     }
 
-
-  return redirect('\admin\config-files');
+  return back();
 
   }
 

@@ -295,6 +295,12 @@ Route::get('/admin/config-files/view/{name}', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/data', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@getData',
+	'roles' => ['administrator']
+]);
+
 // Testing routes...
 Route::get('/player/timer-test', 'PlayerController@timerTest');
 

@@ -134,7 +134,8 @@ class Trial extends Model
                       ->get();
 
       foreach ($this_users as $this_user) {
-
+          Trial::removePlayerFromTrial($this_user->user_id, false);
+          /*
           \DB::table('trial_user_archive')->insert([
 
             'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
@@ -145,13 +146,14 @@ class Trial extends Model
           ]);
 
           \DB::table('trial_user')->where('id', $this_user->id)->delete();
+          */
       }
     }
 
-    public static function removePlayerFromTrial($id)
+    public static function removePlayerFromTrial($user_id, $completed_trial)
     {
       $this_user = \DB::table('trial_user')
-                      ->where('user_id', $id)
+                      ->where('user_id', $user_id)
                       ->first();
 
       \DB::table('trial_user_archive')->insert([
@@ -161,6 +163,7 @@ class Trial extends Model
         'trial_id' => $this_user->trial_id,
         'user_id' => \Auth::id(),
         'group_id' => $this_user->group_id,
+        'completed_trial' => $completed_trial
       ]);
 
       \DB::table('trial_user')->where('id', $this_user->id)->delete();

@@ -4,7 +4,7 @@
       "type" : "network",
         "name" : "1-player",
         "nodes" : {
-
+              "1" : [1]
              }
   }
 

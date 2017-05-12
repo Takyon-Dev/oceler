@@ -434,11 +434,13 @@ class TrialController extends Controller
       foreach ($trial->users as $user) {
         if($user->pivot->instructions_read == 1) $num_read++;
       }
+      /*
       header('Content-Type: application/json');
       echo json_encode(array(
         'response' => $num_read == count($trial->users),
       ));
-
+      */
+      return Response::json($num_read == count($trial->users));
     }
 
     public function markInstructionsAsRead($user_id)

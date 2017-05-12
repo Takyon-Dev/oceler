@@ -19,6 +19,7 @@
                         <li><a href="/admin/trial">Trials</a></li>
                         <li><a href="/admin/log">Logs</a></li>
                         <li><a href="/admin/config-files">Config Files</a></li>
+                        <li><a href="/admin/data">Data</a></li>
                         <li><a href="/logout">Sign out</a></li>
                     </ul>
                 </div>

@@ -219,10 +219,6 @@ class PlayerController extends Controller
                   ->orderBy('updated_at', 'desc')
                   ->first();
 
-      $group = DB::table('groups')
-                  ->where('id', $trial_user->group_id)
-                  ->first();
-
       $trial = \oceler\Trial::where('id', '=', $trial_user->trial_id)
                             ->with('rounds')
                             ->with('users')
@@ -262,26 +258,42 @@ class PlayerController extends Controller
                             '.$trial->rounds[$curr_round - 1]->id.',
                             '.$amt_earned.');');
 
-      return View::make('layouts.player.end-round')
-                  ->with('trial', $trial)
-                  ->with('group', $group)
-                  ->with('curr_round', $curr_round)
-                  ->with('check_solutions', $check_solutions)
-                  ->with('num_correct', $num_correct)
-                  ->with('amt_earned', $amt_earned);
+    // If this is the last round, take them to the trial end page
+    if(!($curr_round < count($trial->rounds))){
+
+      return \Redirect::to('player/trial/end');
+
+    }
+
+    return View::make('layouts.player.end-round')
+                ->with('trial', $trial)
+                ->with('curr_round', $curr_round)
+                ->with('check_solutions', $check_solutions)
+                ->with('num_correct', $num_correct)
+                ->with('amt_earned', $amt_earned);
     }
 
     /**
-     * Removes the player from the trial and displays the
+     * Removes the player from the trial, marks them as
+     * having completed the trial, and displays the
      * end-trial page.
      */
     public function endTrial()
     {
+      $trial_user = DB::table('trial_user')
+                  ->where('user_id', '=', Auth::user()->id)
+                  ->orderBy('updated_at', 'desc')
+                  ->first();
+
+      $group = DB::table('groups')
+                  ->where('id', $trial_user->group_id)
+                  ->first();
+
       // If the user hasn't already been unassigned from the
       // trial by some other method, remove them here
       $trial = \oceler\Trial::find(Session::get('trial_id'));
       if($trial->users->contains(Auth::id())){
-        \oceler\Trial::removePlayerFromTrial(Auth::id());
+        \oceler\Trial::removePlayerFromTrial(Auth::id(), true);
       }
 
       // If all users have left the trial, deactivate it
@@ -298,14 +310,17 @@ class PlayerController extends Controller
       $total_earnings = $round_earnings + $trial->payment_base;
 
       return View::make('layouts.player.end-trial')
-                  ->with('total_earnings', $total_earnings);
+                  ->with('total_earnings', $total_earnings)
+                  ->with('group', $group);
     }
 
     public function endTask()
     {
 
       /*
-        Lookup base payment, apply to user's MTurk account
+        Called when a trial ends early or a trial is not availble (after
+        a timeout).
+        Look up base payment, apply to user's MTurk account(?)
         and display it.
        */
       return View::make('layouts.player.end-task');

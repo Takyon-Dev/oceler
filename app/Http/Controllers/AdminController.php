@@ -90,5 +90,45 @@ class AdminController extends Controller
     return Response::download($log['path'], $log['name'], $headers);
   }
 
+  /* Retrieves player performance data, grouped by trial */
+  public function getData()
+  {
+    $stats = [];
+    $trials = \oceler\Trial::all();
+
+    foreach ($trials as $trial) {
+      $stats[$trial->id]['trial'] =
+        array('name' => $trial->name,
+        'end_time' => $trial->updated_at);
+      $users = DB::table('trial_user_archive')
+                 ->where('trial_id', '=', $trial->id)
+                 ->get();
+
+      foreach ($users as $user) {
+
+        $round_earnings = DB::table('round_earnings')
+                            ->where('trial_id', '=', $trial->id)
+                            ->where('user_id', '=', $user->user_id)
+                            ->sum('earnings');
+        $total_earnings = $round_earnings + $trial->payment_base;
+
+        $user = DB::table('users')
+                       ->where('id', '=', $user->user_id)
+                       ->get();
+        dump($user);
+
+        $stats[$trial->id]['users'][$user->id] =
+          array('worker_id' => $user->mturk_id,
+                'last_ping' => $user->updated_at,
+                'user_agent' => $user->user_agent,
+                'ip_address' => $user->ip_address);
+      }
+    }
+    dump($stats);
+    return View::make('layouts.admin.data')
+                ->with('stats', $stats);
+
+  }
+
 
 }

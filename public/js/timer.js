@@ -97,20 +97,25 @@ function adminTimerTick(trial_id){
 		}
 
 		setTimeout(function() {
-			timerTick();
+			adminTimerTick();
 		}, 1000);
 
 	}
 
-	// If no time is left, the timer is set to display trial ended
-	// and the timer cookie is deleted
+	/* If no time is left, if all rounds have completed
+	   display trial ended message, otherwise reload the page
+	   to start a new timer for the next round */
 	else {
+
 		if(TimerVars.curr_round == TimerVars.total_rounds){
 			timer.innerHTML = 'Trial has ended';
 			return;
 		}
 		else {
-			location.reload();
+			setTimeout(function() {
+				location.reload()
+			}, 3000);
+			;
 		}
 	}
 

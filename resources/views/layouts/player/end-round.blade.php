@@ -40,8 +40,6 @@
 
         <h1>Next round starting in</h1>
         <h1 id="countdown" class="text-primary huge"></h1>
-      @elseif($group->survey_url)
-        <a href="{{ $group->survey_url }}" role="button" class="btn btn-primary btn-lg">Continue</a>
       @else
         <a href="/player/trial/end" role="button" class="btn btn-primary btn-lg">Continue</a>
       @endif
