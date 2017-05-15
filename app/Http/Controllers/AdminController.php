@@ -94,34 +94,50 @@ class AdminController extends Controller
   public function getData()
   {
     $stats = [];
-    $trials = \oceler\Trial::all();
+    $trials = \oceler\Trial::with('rounds')->get();
 
     foreach ($trials as $trial) {
+
+      if(count($trial->rounds) <= 0) continue;
+      $total_time = \Carbon\Carbon::parse($trial->updated_at)
+                                  ->diffInMinutes(\Carbon\Carbon::parse(
+                                  $trial->rounds[0]->updated_at));
+
+      $factoidsets = DB::table('factoidsets')
+                       ->whereIn('id', ($trial->rounds->pluck('factoidset_id')))
+                       ->lists('name');
+
       $stats[$trial->id]['trial'] =
         array('name' => $trial->name,
-        'end_time' => $trial->updated_at);
-      $users = DB::table('trial_user_archive')
+        'num_players' => $trial->num_players,
+        'factoidset' => $factoidsets,
+        'start_time' => $trial->rounds[0]->updated_at,
+        'total_time' => $total_time);
+      $trial_users = DB::table('trial_user_archive')
                  ->where('trial_id', '=', $trial->id)
                  ->get();
 
-      foreach ($users as $user) {
+      foreach ($trial_users as $trial_user) {
+
+
+        $user = DB::table('users')
+                       ->where('id', '=', $trial_user->user_id)
+                       ->first();
 
         $round_earnings = DB::table('round_earnings')
                             ->where('trial_id', '=', $trial->id)
-                            ->where('user_id', '=', $user->user_id)
+                            ->where('user_id', '=', $user->id)
                             ->sum('earnings');
         $total_earnings = $round_earnings + $trial->payment_base;
 
-        $user = DB::table('users')
-                       ->where('id', '=', $user->user_id)
-                       ->get();
-        dump($user);
+
 
         $stats[$trial->id]['users'][$user->id] =
           array('worker_id' => $user->mturk_id,
                 'last_ping' => $user->updated_at,
                 'user_agent' => $user->user_agent,
-                'ip_address' => $user->ip_address);
+                'ip_address' => $user->ip_address,
+                'earnings' => $total_earnings);
       }
     }
     dump($stats);
