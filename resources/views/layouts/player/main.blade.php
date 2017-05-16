@@ -32,8 +32,9 @@
         }
       });
 
-      solutionListener(last_solution);
-      messageListener(last_message_time);
+      // Initiates the ping function in listen.js
+      ping();
+
       distributionListener({{ $nodes[Auth::user()->id]}}, distribution_interval,
                          {{ $trial->rounds[(Session::get('curr_round') - 1)]
                                   ->factoidset_id}});

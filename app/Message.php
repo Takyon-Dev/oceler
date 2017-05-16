@@ -56,4 +56,34 @@ class Message extends Model
     return $this->hasMany('oceler\Message', 'share_id');
   }
 
+  public static function getNewMessages($user_id, $last_message_time)
+  {
+    $messages = [];
+    $new_messages = Message::with('users')
+                    ->with('sender')
+                    ->with('replies')
+                    ->with('factoid')
+                    ->with('sharedFrom')
+                    ->where('updated_at', '>', $last_message_time)
+                    ->where('trial_id', \Session::get('trial_id'))
+                    ->where('round', \Session::get('curr_round'))
+                    ->get();
+
+    foreach($new_messages as $key=>$msg){
+      if($msg->user_id == $user_id){
+        $messages[] = $msg;
+      }
+      else {
+        foreach($msg->users as $recipient){
+          if($recipient->id == $user_id){
+            $messages[] = $msg;
+          }
+        }
+      }
+
+    }
+
+    return $messages;
+  }
+
 }

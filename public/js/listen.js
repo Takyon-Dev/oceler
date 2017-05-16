@@ -1,64 +1,66 @@
 var last_solution = 0;
 var last_message_time = 0;
+var PING_INTERVAL = 2000; // Time between pings, in ms
 
-function solutionListener()
+/*
+	Pings the server at a set interval for messages and solutions
+ */
+function ping()
 {
-
 	$.ajax({
 		type: "GET",
-		url: "/listen/solution/"+last_solution,
-		success: function(solutions)
+		url: "/player/ping/solution/"+ last_solution +"/message/" + last_message_time,
+		success: function(response)
 		{
 
-      console.log(solutions);
-
-			if(solutions == -1){
+			if(response == -1){
 				window.location = '/player/trial/trial-stopped';
 			}
 
-			$.each(solutions, function(key, sol)
-			{
-				addNewSolution(sol);
-				last_solution = sol.id;
-			});
-
+			if(response.solutions){
+				solutionHandler(response.solutions);
+			}
+			if(response.messages){
+				messageHandler(response.messages);
+			}
 		}
 	});
 
-	setTimeout(solutionListener, 2000);
+	setTimeout(ping, PING_INTERVAL);
 
 }
 
-function messageListener()
+function solutionHandler(solutions)
 {
-	setTimeout(messageListener, 2000);
 
+	$.each(solutions, function(key, sol)
+	{
+		addNewSolution(sol);
+		last_solution = sol.id;
+	});
+}
+
+function messageHandler(messages)
+{
 	// If the player is typing a reply, just return.
 	// This prevents the message frame (including the reply field)from reloading.
 	if($(".reply-form").is(":visible")) return;
 
-	$.ajax({
-		type: "GET",
-		url: "/listen/message/"+last_message_time,
-		success: function(messages)
+		$.each(messages, function(key, msg)
 		{
+			var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
+			m.addMessage($("#messages"));
 
-			$.each(messages, function(key, msg)
-			{
-				var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
-				m.addMessage($("#messages"));
+			traverseMessageThread(msg.shared_from, msg);
 
-				traverseMessageThread(msg.shared_from, msg);
-
-				$.each(msg.replies, function(key, reply){
-					var r = new Reply(msg.users, reply.replier, reply.message, msg.id);
-					r.addMessage($("#msg_" + msg.id));
-				});
-
-				last_message_time = msg.updated_at;
+			$.each(msg.replies, function(key, reply){
+				var r = new Reply(msg.users, reply.replier, reply.message, msg.id);
+				r.addMessage($("#msg_" + msg.id));
 			});
-		}
-	});
+
+			last_message_time = msg.updated_at;
+		});
+
 }
 
 function queueListener()

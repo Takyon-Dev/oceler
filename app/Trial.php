@@ -22,8 +22,7 @@ class Trial extends Model
 
     public function users() {
       return $this->belongsToMany('oceler\User')
-                  ->withPivot('group_id')
-                  ->withPivot('instructions_read')
+                  ->withPivot('group_id', 'instructions_read', 'last_ping')
                   ->withTimestamps();
     }
 

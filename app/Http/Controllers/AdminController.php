@@ -130,6 +130,10 @@ class AdminController extends Controller
                             ->sum('earnings');
         $total_earnings = $round_earnings + $trial->payment_base;
 
+        $player_time = \Carbon\Carbon::parse($trial->updated_at)
+                                    ->diffInMinutes(\Carbon\Carbon::parse(
+                                    $trial->rounds[0]->updated_at));
+
 
 
         $stats[$trial->id]['users'][$user->id] =

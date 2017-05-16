@@ -383,39 +383,33 @@ class PlayerController extends Controller
 
   	}
 
-      /**
-      * Gets the most recent solutions for every player
-      *  that is visible to the user
-      *
-      * @param solution_id	The id of the latest solution that was retrieved
-      */
-  	public function getListenSolution($solution_id)
-  	{
+    /*
+      Pings the server - Checks that trial hasn't been stopped by admin;
+      records last ping time (to determine if player is active);
+      retrieves latest solutions and messages
+     */
+    public function ping($last_solution, $last_msg)
+    {
       // First, check that the trial is still in progress (that it hasn't
       // been stopped). Return -1 if stopped
-
-      $player = \oceler\User::with('trials')->find(Auth::id());
-
+      $player = \oceler\User::with('trials')->find(Auth::id())->first();
       if(count($player->trials) == 0) return -1;
 
-      // Update the timestamp in pivot table
-      // (used to determine if player is actively polling server)
-      $player->trials[0]->pivot->touch();
+      // Update the last ping time for this user
+      dump($player);
+      echo $player->pivot->group_id;
 
-      // The IDs of all players that this player can see
-  		$ids = Session::get('players_from_ids');
+      $solutions = Solution::getLatestSolutions(Session::get('trial_id'),
+                                                Session::get('curr_round'),
+                                                $last_solution,
+                                                Session::get('players_from_ids'));
 
-  		// Get all solutions more recent than the last solution ID we have
-  		$solutions = DB::table('solutions')
-                      ->whereIn('user_id', $ids)
-                      ->where('id', '>', $solution_id)
-                      ->where('trial_id', Session::get('trial_id'))
-                      ->where('round', Session::get('curr_round'))
-                      ->get();
+      $messages = \oceler\Message::getNewMessages($player->id, $last_msg);
 
-  		return Response::json($solutions);
+      $response = array("solutions" => $solutions, "messages" => $messages);
+      return Response::json($response);
 
-  	}
+    }
 
     /**
      * Displays the insgtructions specific to the trial

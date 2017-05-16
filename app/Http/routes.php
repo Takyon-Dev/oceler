@@ -47,6 +47,12 @@ Route::get('player/', [
 	'roles' => ['player'] // Only a player role can view this page
 ]);
 
+Route::get('player/ping/solution/{last_sol}/message/{last_msg}', [
+  'middleware' => ['auth', 'roles'], // A 'roles' middleware must be specified
+	'uses' => 'PlayerController@ping',
+	'roles' => ['player'] // Only a player role can view this page
+]);
+
 
 Route::get('player/trial', [
 	'middleware' => ['auth', 'roles'],
@@ -132,11 +138,6 @@ Route::post('/solution', [
 	'roles' => ['player']
 ]);
 
-Route::get('/listen/solution/{id}', [
-	'middleware' => ['auth', 'roles'],
-	'uses' => 'PlayerController@getListenSolution',
-	'roles' => ['player']
-]);
 
 Route::post('/message', [
 	'middleware' => ['auth', 'roles'],
@@ -144,11 +145,6 @@ Route::post('/message', [
 	'roles' => ['player']
 ]);
 
-Route::get('/listen/message/{id}', [
-	'middleware' => ['auth', 'roles'],
-	'uses' => 'MessageController@getListenMessage',
-	'roles' => ['player']
-]);
 
 Route::get('/listen/system-message/', [
 	'middleware' => ['auth', 'roles'],

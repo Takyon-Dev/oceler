@@ -55,49 +55,6 @@ class MessageController extends Controller
 
 	}
 
-	/**
-	 * Gets the most recent messages sent to the player
-	 * @param  Request $request
-	 */
-	public function getListenMessage($last_message_time)
-	{
-		$user = Auth::user();
-
-		$messages = array();
-
-		// Get all new messages updated (or inserted)
-		// ** THIS QUERY COULD BE MADE MORE EFFICIENT
-		// SO THAT THERE IS NO NEED FOR THE FOREACH BELOW -
-		// e.g. get new messages where sender or a recipient is the user
-
-		$new_messages = Message::with('users')
-										->with('sender')
-										->with('replies')
-                    ->with('factoid')
-                    ->with('sharedFrom')
-										->where('updated_at', '>', $last_message_time)
-                    ->where('trial_id', \Session::get('trial_id'))
-                    ->where('round', \Session::get('curr_round'))
-										->get();
-
-		foreach($new_messages as $key=>$msg){
-			if($msg->user_id == $user->id){
-				$messages[] = $msg;
-			}
-			else {
-				foreach($msg->users as $recipient){
-					if($recipient->id == $user->id){
-						$messages[] = $msg;
-					}
-				}
-			}
-
-		}
-
-
-		return Response::json($messages);
-
-	}
 
   public function getListenSystemMessage(Request $request)
 	{

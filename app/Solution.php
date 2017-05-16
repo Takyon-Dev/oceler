@@ -118,6 +118,15 @@ class Solution extends Model
 
     }
 
+    public static function getLatestSolutions($trial_id, $round, $last_sol, $filter)
+    {
+      return Solution::whereIn('user_id', $filter)
+                      ->where('id', '>', $last_sol)
+                      ->where('trial_id', $trial_id)
+                      ->where('round', $round)
+                      ->get();
+    }
+
     public static function dateTimeArray()
     {
       $datetime = [];
