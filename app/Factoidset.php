@@ -21,6 +21,8 @@ class Factoidset extends Model
     // Save the new Factoidset
     $factoidset = new Factoidset();
     $factoidset->name = $config['name'];
+    $factoidset->solutions_display_name = $config['solutions-display-name'];
+    $factoidset->system_msg_name = $config['system-msg-name'];
     $factoidset->save();
 
     // Then store each factoid, along with the factoidset ID

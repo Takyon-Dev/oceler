@@ -104,8 +104,6 @@ function traverseMessageThread(parent, msg)
 		traverseMessageThread(parent.shared_from, msg);
 
 		$.each(parent.shared_replies, function(key, reply){
-			console.log('Shared Reply:');
-			console.log(reply);
 			var shared_reply = new Reply(parent.users, reply.replier, reply.message, parent.id);
 			shared_reply.addMessage($("#msg_" + msg.id));
 		});
@@ -132,7 +130,8 @@ function createHeader(from, to)
 	}
 
 	else{
-		header = from.player_name + ':';
+		var fr = (from.player_name == "System") ? system_msg_name : from.player_name;
+		header = fr + ':';
 	}
 
 	return header;
@@ -167,7 +166,8 @@ Message.prototype.header = function(){
 	}
 
 	else{
-		header = this.sender_name + ':';
+		var fr = (this.sender_name == "System") ? system_msg_name : this.sender_name;
+		header = fr + ':';
 	}
 
 	return header;

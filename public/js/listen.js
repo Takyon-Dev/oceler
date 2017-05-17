@@ -12,7 +12,6 @@ function ping()
 		url: "/player/ping/solution/"+ last_solution +"/message/" + last_message_time,
 		success: function(response)
 		{
-
 			if(response == -1){
 				window.location = '/player/trial/trial-stopped';
 			}

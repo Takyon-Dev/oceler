@@ -9,8 +9,6 @@ function addTimer(server_time, start, duration){
 
 	timeRemaining = (startTime + round_time) - serverTime;
 
-	console.log("Round Time: " + round_time + " Server Time: " + serverTime + " Start Time: " + startTime + " Time Remaining: " + timeRemaining);
-
 	if(timeRemaining < 0) timeRemaining = 0;
 
 	var endTime = timeRemaining;

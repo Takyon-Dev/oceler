@@ -134,18 +134,6 @@ class Trial extends Model
 
       foreach ($this_users as $this_user) {
           Trial::removePlayerFromTrial($this_user->user_id, false);
-          /*
-          \DB::table('trial_user_archive')->insert([
-
-            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'trial_id' => $this_user->trial_id,
-            'user_id' => $this_user->user_id,
-            'group_id' => $this_user->group_id,
-          ]);
-
-          \DB::table('trial_user')->where('id', $this_user->id)->delete();
-          */
       }
     }
 
@@ -162,6 +150,7 @@ class Trial extends Model
         'trial_id' => $this_user->trial_id,
         'user_id' => \Auth::id(),
         'group_id' => $this_user->group_id,
+        'last_ping' => $this_user->last_ping,
         'completed_trial' => $completed_trial
       ]);
 

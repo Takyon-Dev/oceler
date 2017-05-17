@@ -1,6 +1,8 @@
 [
   {"type":"factoid",
     "name":"factoids_with_waves2",
+    "solutions-display-name" : "Answers",
+    "system-msg-name" : "Admin",
     "factoids":[
       {
         "factoid":"The Aqua, Orange, Indigo, Tan or Red groups may be planning an attack",

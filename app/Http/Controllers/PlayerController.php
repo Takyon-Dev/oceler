@@ -165,7 +165,12 @@ class PlayerController extends Controller
     	*  possible to support different sessions
     	*  having different solution categories.
     	*/
-    	$solution_categories = \oceler\Solution::getSolutionCategories($trial->rounds[$curr_round - 1]->factoidset_id);
+    	$solution_categories = \oceler\Solution::getSolutionCategories(
+                              $trial->rounds[$curr_round - 1]->factoidset_id);
+
+      $factoidset = \oceler\Factoidset::
+                          find($trial->rounds[$curr_round - 1]->factoidset_id)
+                          ->first();
 
       // And for the datepicker in the solutions entry form,
       // we'll call a helper function to get an array of months and minutes
@@ -179,6 +184,8 @@ class PlayerController extends Controller
                    ->with('trial', $trial)
                    ->with('players_from', $players_from)
                    ->with('players_to', $players_to)
+                   ->with('solutions_display_name', $factoidset->solutions_display_name)
+                   ->with('system_msg_name', $factoidset->system_msg_name)
                    ->with('solution_categories', $solution_categories)
                    ->with('minutes', $datetime['minutes'])
                    ->with('months', $datetime['months'])
@@ -257,13 +264,6 @@ class PlayerController extends Controller
                             ("'.$dt.'","'.$dt.'",'.$trial->id.', '.$user->id.',
                             '.$trial->rounds[$curr_round - 1]->id.',
                             '.$amt_earned.');');
-
-    // If this is the last round, take them to the trial end page
-    if(!($curr_round < count($trial->rounds))){
-
-      return \Redirect::to('player/trial/end');
-
-    }
 
     return View::make('layouts.player.end-round')
                 ->with('trial', $trial)
@@ -396,9 +396,11 @@ class PlayerController extends Controller
       if(count($player->trials) == 0) return -1;
 
       // Update the last ping time for this user
-      dump($player);
-      echo $player->pivot->group_id;
+      $player->trials[0]->pivot->last_ping = \Carbon\Carbon::now()
+                                                ->toDateTimeString();
+      $player->trials[0]->pivot->save();
 
+      // Get latest solutions and messages
       $solutions = Solution::getLatestSolutions(Session::get('trial_id'),
                                                 Session::get('curr_round'),
                                                 $last_solution,

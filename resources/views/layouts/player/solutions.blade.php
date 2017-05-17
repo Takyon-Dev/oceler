@@ -1,5 +1,6 @@
 
 <div class="col-md-12 solutions">
+	<h1>{{ $solutions_display_name }}</h1>
 	<table class="table solutions">
 	    <thead>
 	        <tr>

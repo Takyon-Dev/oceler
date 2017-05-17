@@ -99,10 +99,13 @@ class AdminController extends Controller
     foreach ($trials as $trial) {
 
       if(count($trial->rounds) <= 0) continue;
-      $total_time = \Carbon\Carbon::parse($trial->updated_at)
-                                  ->diffInMinutes(\Carbon\Carbon::parse(
-                                  $trial->rounds[0]->updated_at));
 
+      $total_time = 0;
+
+      foreach ($trial->rounds as $round) {
+        $total_time += $round->round_timeout;
+      }
+                         
       $factoidsets = DB::table('factoidsets')
                        ->whereIn('id', ($trial->rounds->pluck('factoidset_id')))
                        ->lists('name');
@@ -130,7 +133,7 @@ class AdminController extends Controller
                             ->sum('earnings');
         $total_earnings = $round_earnings + $trial->payment_base;
 
-        $player_time = \Carbon\Carbon::parse($trial->updated_at)
+        $player_time = \Carbon\Carbon::parse($trial_user->last_ping)
                                     ->diffInMinutes(\Carbon\Carbon::parse(
                                     $trial->rounds[0]->updated_at));
 
@@ -138,13 +141,14 @@ class AdminController extends Controller
 
         $stats[$trial->id]['users'][$user->id] =
           array('worker_id' => $user->mturk_id,
-                'last_ping' => $user->updated_at,
+                'last_ping' => $trial_user->last_ping,
                 'user_agent' => $user->user_agent,
                 'ip_address' => $user->ip_address,
+                'player_time' => $player_time,
                 'earnings' => $total_earnings);
       }
     }
-    dump($stats);
+
     return View::make('layouts.admin.data')
                 ->with('stats', $stats);
 
