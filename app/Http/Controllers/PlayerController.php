@@ -176,6 +176,14 @@ class PlayerController extends Controller
       // we'll call a helper function to get an array of months and minutes
       $datetime = Solution::dateTimeArray();
 
+      echo "<pre>";
+      var_dump($trial);
+      echo "</pre>";
+
+      echo '$curr_round: '.$curr_round.' Round stored in session: '.\Session::get('curr_round').'<br>';
+
+      echo '$server_time: '.$server_time.'<br>';
+
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
     	// solution categories array
@@ -421,8 +429,12 @@ class PlayerController extends Controller
     public function showInstructions()
     {
 
+
+
       $trial_id = DB::table('trial_user')->where('user_id', Auth::id())->pluck('trial_id');
       $trial = \oceler\Trial::where('id', $trial_id)->first();
+
+      dump($trial);
 
       return View::make('layouts.player.instructions')
                  ->with('trial', $trial);
