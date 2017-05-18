@@ -57,7 +57,10 @@ class PlayerController extends Controller
 
       $curr_round = \Session::get('curr_round');
 
-      $server_time = \Carbon\Carbon::now(); // Used for the javascript trial timer
+      $server_time = date("m/d/y H:i:s"); // Used for the javascript trial timer
+
+      $start_time = date("m/d/y H:i:s",strtotime(
+      $trial->rounds[(Session::get('curr_round') - 1)]->updated_at));
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
@@ -187,8 +190,7 @@ class PlayerController extends Controller
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
     	// solution categories array
-    	// return View::make('layouts.player.main')
-    	return View::make('layouts.tests.timer-debug')
+    	return View::make('layouts.player.main')
                    ->with('user', Auth::user())
                    ->with('trial', $trial)
                    ->with('players_from', $players_from)
@@ -201,7 +203,8 @@ class PlayerController extends Controller
                    ->with('names', $names)
                    ->with('nodes', $nodes)
                    ->with('user_node', $u_node)
-                   ->with('server_time', $server_time);
+                   ->with('server_time', $server_time)
+                   ->with('start_time', $start_time);
     }
 
 
@@ -599,54 +602,24 @@ class PlayerController extends Controller
 
     }
 
-    public function timerDebug()
+    public function dateDebug()
     {
 
-      $user = \oceler\User::find(3);
-      Auth::login($user);
-
-      $group = 1;
-
-      $trial = \oceler\Trial::find(11);
-
-      // from queue
-      DB::table('trial_user')->insert([
-        'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'user_id' => $user->id,
-        'trial_id' => $trial->id,
-        'group_id' => \DB::table('groups')
-                      ->where('trial_id', $trial->id)
-                      ->where('group', $group)
-                      ->value('id')
-      ]);
-
-      // From initializeTrial
-      $curr_round = 1;
-      Session::put('curr_round', $curr_round);
-
-      $dt = \Carbon\Carbon::now()->addSeconds(5)->toDateTimeString();
-      $trial->rounds[0]->updated_at = $dt;
-      $trial->rounds[0]->save();
-
-
-      // From playerTrial
-      $server_time = \Carbon\Carbon::now(); // Used for the javascript trial timer
-      $round_timeout = 1;
+      $server_time = date("m/d/y H:i:s");
 
       echo '<pre>';
       print_r($_SERVER);
       echo '</pre>';
 
-      echo '$curr_round: '.$curr_round.' Round stored in session: '.\Session::get('curr_round').'<br>';
-
       echo '$server_time: '.$server_time.'<br>';
 
-      return View::make('layouts.tests.timer-debug')
-                  ->with('trial', $trial)
+      $round_time = DB::table('rounds')->orderBy('updated_at', 'desc')->first();
+
+      $start_time = date("m/d/y H:i:s",strtotime($round_time->updated_at));
+
+      return View::make('layouts.tests.date-debug')
                   ->with('server_time', $server_time)
-                  ->with('curr_round', \Session::get('curr_round'))
-                  ->with('round_timeout', $round_timeout);
+                  ->with('start_time', $start_time);
     }
 
 

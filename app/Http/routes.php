@@ -304,7 +304,7 @@ Route::get('/player/is-trial-stopped', 'PlayerController@isTrialStoppedTest');
 
 Route::get('/player/message-listen-test', 'MessageController@messageListenTest');
 
-Route::get('/player/timer-debug', 'PlayerController@timerDebug');
+Route::get('/player/date-debug', 'PlayerController@dateDebug');
 
 
 // Authentication routes...

@@ -17,6 +17,42 @@ function addTimer(server_time, start, duration){
 
 }
 
+function dateDebug(server_time, start, duration)
+{
+
+	var out = "Called addDebugTimer()<br>";
+
+	out += "Parameters :: server_time : " + server_time
+								+ " start : " + start + " duration : " + duration + "<br>";
+
+	// convert end time from minutes to milliseconds
+	var round_time = duration * 60000;
+
+	out += "round_time : " + round_time + "<br>";
+
+	serverTime = new Date(server_time).getTime();
+
+	out += "serverTimeDate : " + serverTime + "<br>";
+
+	var startTime = new Date(start).getTime();
+
+	out += "startTimeDate : " + startTime + "<br>";
+
+	timeRemaining = (startTime + round_time) - serverTime;
+
+	if(timeRemaining < 0) timeRemaining = 0;
+
+	out += "timeRemaining : " + timeRemaining + "<br>";
+
+	var endTime = timeRemaining;
+
+	time = endTime;
+
+	out += "Setting :: endTime  : " + endTime +  " time : " + time + "<br>";
+	$("#output").append(out);
+
+}
+
 function addDebugTimer(server_time, start, duration){
 	var out = "Called addDebugTimer()<br>";
 
