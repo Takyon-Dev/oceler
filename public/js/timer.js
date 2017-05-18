@@ -17,6 +17,39 @@ function addTimer(server_time, start, duration){
 
 }
 
+function addDebugTimer(server_time, start, duration){
+	var out = "Called addDebugTimer()<br>";
+
+	out += "Parameters :: server_time : " + server_time
+								+ " start : " + start + " duration : " + duration + "<br>";
+
+	// convert end time from minutes to milliseconds
+	var round_time = duration * 60000;
+
+	out += "round_time : " + round_time + "<br>";
+
+	serverTime = new Date(server_time).getTime();
+
+	out += "serverTimeDate : " + serverTime + "<br>";
+
+	var startTime = new Date(start).getTime();
+
+	out += "startTimeDate : " + startTime + "<br>";
+
+	timeRemaining = (startTime + round_time) - serverTime;
+
+	if(timeRemaining < 0) timeRemaining = 0;
+
+	out += "timeRemaining : " + timeRemaining + "<br>";
+
+	var endTime = timeRemaining;
+
+	time = endTime;
+
+  out += "Setting :: endTime  : " + endTime +  " time : " + time + "<br>";
+	$("#output").append(out);
+}
+
 function addAdminTimer(server_time, start, duration, trial_id)
 {
 
@@ -38,6 +71,45 @@ function addAdminTimer(server_time, start, duration, trial_id)
 
 	if(!readCookie('OcelerTime_T' + trial_id )){
 		createCookie('OcelerTime_T' + trial_id, endTime);
+	}
+
+}
+
+function debugTimerTick()
+{
+
+	// Subtracts one second (1000 ms) from the time
+	var ending = time;
+	var remaining = ending - 1000;
+	time = remaining;
+
+	var out = "debugTimerTick() :: remaining: " + remaining + "<br>";
+	$("#output").append(out);
+	var timer = document.getElementById('timer');
+
+	// If there is any tme remaining, it displays it
+	if(remaining > 0){
+
+		if(timer){
+				display = display_time(remaining);
+				timer.innerHTML = display;
+		}
+		out = "Recursively calling debugTimerTick()<br>";
+		$("#output").append(out);
+		setTimeout(function() {
+			debugTimerTick();
+		}, 1000);
+
+	}
+
+	// If no time is left, the timer is set to display zero
+	// and the player is redirected
+	else {
+		out = "Timer has expired - redirect occurring";
+		$("#output").append(out);
+		timer.innerHTML = '00:00';
+		//window.location.href = '/player/trial/end-round';
+		return;
 	}
 
 }
