@@ -31,10 +31,13 @@ function dateDebug(server_time, start, duration)
 	out += "round_time : " + round_time + "<br>";
 
 	serverTime = new Date(server_time).getTime();
+	serverTime = server_time * 1000;
 
 	out += "serverTimeDate : " + serverTime + "<br>";
 
 	var startTime = new Date(start).getTime();
+
+	start_time = start * 1000;
 
 	out += "startTimeDate : " + startTime + "<br>";
 

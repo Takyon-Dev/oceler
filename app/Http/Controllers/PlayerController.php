@@ -57,14 +57,14 @@ class PlayerController extends Controller
 
       $curr_round = \Session::get('curr_round');
 
-      $server_time = date("m/d/y H:i:s"); // Used for the javascript trial timer
-
-      $start_time = date("m/d/y H:i:s",strtotime(
-      $trial->rounds[(Session::get('curr_round') - 1)]->updated_at));
-
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
                             ->first();
+
+      $server_time = date("m/d/y H:i:s"); // Used for the javascript trial timer
+
+      $start_time = date("m/d/y H:i:s",strtotime(
+                    $trial->rounds[(Session::get('curr_round') - 1)]->updated_at));
 
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
@@ -178,14 +178,6 @@ class PlayerController extends Controller
       // And for the datepicker in the solutions entry form,
       // we'll call a helper function to get an array of months and minutes
       $datetime = Solution::dateTimeArray();
-
-      echo "<pre>";
-      var_dump($trial);
-      echo "</pre>";
-
-      echo '$curr_round: '.$curr_round.' Round stored in session: '.\Session::get('curr_round').'<br>';
-
-      echo '$server_time: '.$server_time.'<br>';
 
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
@@ -437,8 +429,6 @@ class PlayerController extends Controller
       $trial_id = DB::table('trial_user')->where('user_id', Auth::id())->pluck('trial_id');
       $trial = \oceler\Trial::where('id', $trial_id)->first();
 
-      dump($trial);
-
       return View::make('layouts.player.instructions')
                  ->with('trial', $trial);
     }
@@ -606,7 +596,7 @@ class PlayerController extends Controller
     {
 
       $server_time = date("m/d/y H:i:s");
-
+      $server_time = time();
       echo '<pre>';
       print_r($_SERVER);
       echo '</pre>';
@@ -615,7 +605,8 @@ class PlayerController extends Controller
 
       $round_time = DB::table('rounds')->orderBy('updated_at', 'desc')->first();
 
-      $start_time = date("m/d/y H:i:s",strtotime($round_time->updated_at));
+      //$start_time = date("m/d/y H:i:s",strtotime($round_time->updated_at));
+      $start_time = strtotime($round_time->updated_at);
 
       return View::make('layouts.tests.date-debug')
                   ->with('server_time', $server_time)
