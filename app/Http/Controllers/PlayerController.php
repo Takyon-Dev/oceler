@@ -61,10 +61,11 @@ class PlayerController extends Controller
                             ->with('rounds')
                             ->first();
 
-      $server_time = date("m/d/y H:i:s"); // Used for the javascript trial timer
-
-      $start_time = date("m/d/y H:i:s",strtotime(
-                    $trial->rounds[(Session::get('curr_round') - 1)]->updated_at));
+      // Used for the javascript trial timer
+      $server_time = time();
+      $start_time = strtotime(
+                    $trial->rounds[(Session::get('curr_round') - 1)]
+                    ->updated_at);
 
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)

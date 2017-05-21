@@ -3,9 +3,9 @@ function addTimer(server_time, start, duration){
 	// convert end time from minutes to milliseconds
 	var round_time = duration * 60000;
 
-	serverTime = new Date(server_time).getTime();
+	var serverTime = (server_time * 1000);
 
-	var startTime = new Date(start).getTime();
+	var startTime = (start * 1000);
 
 	timeRemaining = (startTime + round_time) - serverTime;
 
