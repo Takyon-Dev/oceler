@@ -20,7 +20,7 @@ function addTimer(server_time, start, duration){
 function dateDebug(server_time, start, duration)
 {
 
-	var out = "Called addDebugTimer()<br>";
+	var out = "Called dateDebug()<br>";
 
 	out += "Parameters :: server_time : " + server_time
 								+ " start : " + start + " duration : " + duration + "<br>";
@@ -30,14 +30,14 @@ function dateDebug(server_time, start, duration)
 
 	out += "round_time : " + round_time + "<br>";
 
-	serverTime = new Date(server_time).getTime();
-	serverTime = server_time * 1000;
+	//serverTime = new Date(server_time).getTime();
+	serverTime = (server_time * 1000);
 
 	out += "serverTimeDate : " + serverTime + "<br>";
 
-	var startTime = new Date(start).getTime();
+	//var startTime = new Date(start).getTime();
 
-	start_time = start * 1000;
+	startTime = (start * 1000);
 
 	out += "startTimeDate : " + startTime + "<br>";
 
@@ -67,11 +67,11 @@ function addDebugTimer(server_time, start, duration){
 
 	out += "round_time : " + round_time + "<br>";
 
-	serverTime = new Date(server_time).getTime();
+	var serverTime = (server_time * 1000);
 
 	out += "serverTimeDate : " + serverTime + "<br>";
 
-	var startTime = new Date(start).getTime();
+	var startTime = (start * 1000);
 
 	out += "startTimeDate : " + startTime + "<br>";
 
