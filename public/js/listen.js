@@ -67,7 +67,7 @@ function queueListener()
 
   $.ajax({
     type: "GET",
-    url: "/admin/listen/queue/",
+    url: "/admin/listen/queue",
     success: function(queued_players)
     {
 
