@@ -171,7 +171,7 @@ function distributionListener(node, distribution_interval, factoidset_id)
 	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds
 	$.ajax({
 		type: "GET",
-		url: "/listen/system-message/",
+		url: "/listen/system-message",
 		data: {"node" : node, "wave" : wave, "factoidset_id" : factoidset_id}
 	});
 
