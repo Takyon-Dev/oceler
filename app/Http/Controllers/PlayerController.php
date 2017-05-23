@@ -398,6 +398,7 @@ class PlayerController extends Controller
       // First, check that the trial is still in progress (that it hasn't
       // been stopped). Return -1 if stopped
       $player = \oceler\User::with('trials')->find(Auth::id())->first();
+      dump($player);
       if(count($player->trials) == 0) return -1;
 
       // Update the last ping time for this user
