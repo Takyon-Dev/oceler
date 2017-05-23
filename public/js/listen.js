@@ -13,8 +13,7 @@ function ping()
 		success: function(response)
 		{
 			if(response == -1){
-				console.log(response);
-				//window.location = '/player/trial/trial-stopped';
+				window.location = '/player/trial/trial-stopped';
 			}
 
 			if(response.solutions){
