@@ -137,7 +137,7 @@ class Trial extends Model
       }
     }
 
-    public static function removePlayerFromTrial($user_id, $completed_trial)
+    public function removePlayerFromTrial($user_id, $completed_trial)
     {
       $this_user = \DB::table('trial_user')
                       ->where('user_id', $user_id)
@@ -147,14 +147,21 @@ class Trial extends Model
 
         'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
         'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'trial_id' => $this_user->trial_id,
-        'user_id' => \Auth::id(),
+        'trial_id' => $this->id,
+        'user_id' => $user_id,
         'group_id' => $this_user->group_id,
         'last_ping' => $this_user->last_ping,
         'completed_trial' => $completed_trial
       ]);
 
       \DB::table('trial_user')->where('id', $this_user->id)->delete();
+
+      if(\DB::table('trial_user')
+            ->where('trial_id', $this->id)
+            ->count() == 0){
+        $this->is_active = 0;
+        $this->save();
+      }
     }
 
     public function logConfig()

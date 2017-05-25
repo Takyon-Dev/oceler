@@ -296,23 +296,27 @@ class PlayerController extends Controller
 
       // If the user hasn't already been unassigned from the
       // trial by some other method, remove them here
-      $trial = \oceler\Trial::find(Session::get('trial_id'));
+      $trial = \oceler\Trial::where('id', Session::get('trial_id'))
+                            ->with('users')
+                            ->first();
       if($trial->users->contains(Auth::id())){
-        \oceler\Trial::removePlayerFromTrial(Auth::id(), true);
+        $trial->removePlayerFromTrial(Auth::id(), true);
       }
 
       // If all users have left the trial, deactivate it
+      /*
       if(count($trial->users) == 0){
         $trial->is_active = 0;
         $trial->save();
       }
-
+      */
       // Calculate the player's earnings
       $round_earnings = DB::table('round_earnings')
                           ->where('trial_id', '=', $trial->id)
                           ->where('user_id', '=', Auth::id())
                           ->sum('earnings');
-      $total_earnings = $round_earnings + $trial->payment_base;
+      $total_earnings = ["bonus" => $round_earnings,
+                         "base_pay" => $trial->payment_base];
 
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
