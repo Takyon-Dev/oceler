@@ -16,7 +16,11 @@
           <a href="{{ $group->survey_url }}" role="button" class="btn btn-primary btn-lg">Continue</a>
         @else
             <h3>This is the end of the experiment. Thank you for your participation!</h3>
-            <h3>You earned ${{ $total_earnings }}!
+            <h3>
+              You earned ${{ $total_earnings['bonus'] }} for your performance
+              in addition to your base payment of ${{ $total_earnings['base_pay'] }}
+              for a total of ${{ ($total_earnings['bonus'] + $total_earnings['base_pay']) }}
+
         @endif
       </div>
     </div>
