@@ -173,7 +173,7 @@ class PlayerController extends Controller
                               $trial->rounds[$curr_round - 1]->factoidset_id);
 
       $factoidset = \oceler\Factoidset::
-                          find($trial->rounds[$curr_round - 1]->factoidset_id)
+                          where('id', $trial->rounds[$curr_round - 1]->factoidset_id)
                           ->first();
 
       // And for the datepicker in the solutions entry form,

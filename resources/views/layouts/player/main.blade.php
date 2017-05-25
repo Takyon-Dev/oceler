@@ -13,6 +13,7 @@
     var players_to = <?php echo json_encode($players_to); ?>;
     var players_from = <?php echo json_encode($players_from); ?>;
     var distribution_interval = "{{ $trial->distribution_interval }}";
+    var factoidset_id = "{{ $trial->rounds[(Session::get('curr_round') - 1)]->factoidset_id}}"
     var system_msg_name = "{{ $system_msg_name }}" || "System";
 
     // used for search
@@ -37,8 +38,7 @@
       ping();
 
       distributionListener({{ $nodes[Auth::user()->id]}}, distribution_interval,
-                         {{ $trial->rounds[(Session::get('curr_round') - 1)]
-                                  ->factoidset_id}});
+                              factoidset_id);
 
     });
 

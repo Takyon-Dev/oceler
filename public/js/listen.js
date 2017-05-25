@@ -163,20 +163,21 @@ function addSolutionsRow(solutions)
 	return solutions_row;
 }
 
-function distributionListener(node, distribution_interval, factoidset_id)
+function distributionListener(node, distribution_interval, fset_id)
 {
-	// Increment wave (global) by one
-	wave++;
 
+	// Increment wave (global) by one
+	wave = wave + 1;
+	console.log("F: " + fset_id + "N: " + node + "W: " + wave);
 	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds
 	$.ajax({
 		type: "GET",
 		url: "/listen/system-message",
-		data: {"node" : node, "wave" : wave, "factoidset_id" : factoidset_id}
+		data: {"node" : node, "wave" : wave, "factoidset_id" : fset_id}
 	});
 
 	setTimeout(function(){
-		distributionListener(node, wave, distribution_interval, factoidset_id);
+		distributionListener(node, distribution_interval, fset_id);
 	}, delay)
 
 }

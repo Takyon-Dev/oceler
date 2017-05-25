@@ -67,6 +67,8 @@ class MessageController extends Controller
                     ->where('wave', \Input::get('wave'))
                     ->get();
 
+    dump($factoids);                
+
     $u_id = \oceler\User::where('player_name', 'System')->value('id');
     $trial_id = \Session::get('trial_id');
     $round = \Session::get('curr_round');

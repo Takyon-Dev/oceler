@@ -59,14 +59,12 @@ class SearchController extends Controller
           (SELECT factoid_distributions.factoid_id
            FROM factoid_distributions
            WHERE factoid_distributions.factoidset_id = :factoidset_id_2
-           AND factoid_distributions.wave <= :wave
-           AND factoid_distributions.node = :node)";
+           AND factoid_distributions.wave <= :wave)";
 
       $parameters = array('search_term' => $search_term,
                               'factoidset_id_1' => $factoidset,
                               'factoidset_id_2' => $factoidset,
-                              'wave' => $request->wave,
-                              'node' => $request->node);
+                              'wave' => $request->wave);
 
       if($trial->unique_factoids){
 
@@ -87,8 +85,7 @@ class SearchController extends Controller
                                      'trial_id' => $trial_id,
                                      'round_id' => $round_id,
                                      'user_id' => $user->id,
-                                     'wave' => $request->wave,
-                                     'node' => $request->node);
+                                     'wave' => $request->wave);
       }
 
       $factoids = \DB::select(\DB::raw($query), $parameters);
