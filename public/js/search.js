@@ -43,8 +43,8 @@ function doSearch()
 		})
 		.fail(function () {
 
-		}
-	);
+			}
+		);
 }
 
 function clearSearchForm()
@@ -58,14 +58,37 @@ function clearCurrentSearch()
 	$("#curr_result").empty();
 }
 
+function reloadSearch()
+{
+
+	$.ajax({
+		type: "GET",
+		url: "/search/reload",
+		success: function(results)
+		{
+			if(results){
+				$.each(results, function(key, result)
+				{
+					$("#past_results").prepend(formatSearchResult(result));
+				});
+			}
+		}
+	});
+}
+
 function displaySearchResult(result)
+{
+
+	$("#curr_result").append(formatSearchResult(result));
+}
+
+function formatSearchResult(result)
 {
 	var share_link = (result.success) ? '<a id="' + result.factoid_id + '">share</a>' : '';
 	var result_container = $('<div class="search-result"></div>');
 	var search_term = $('<span class="search-term text-muted">' + result.search_term + '</span>');
 	var results = $('<span class="result">' + result.result + '</span>' + share_link);
 
-	$(result_container).prepend(search_term, results);
+	return $(result_container).prepend(search_term, results);
 
-	$("#curr_result").append(result_container);
 }

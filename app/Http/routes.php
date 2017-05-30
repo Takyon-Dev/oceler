@@ -164,6 +164,12 @@ Route::post('/search', [
 	'roles' => ['player']
 ]);
 
+Route::get('/search/reload', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'SearchController@getSearchReload',
+	'roles' => ['player']
+]);
+
 // Admin routes...
 
 Route::get('/admin/players', [

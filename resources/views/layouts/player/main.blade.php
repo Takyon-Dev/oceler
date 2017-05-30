@@ -37,8 +37,13 @@
       // Initiates the ping function in listen.js
       ping();
 
+      // Initiates the factoid distribution listener
       distributionListener({{ $nodes[Auth::user()->id]}}, distribution_interval,
                               factoidset_id);
+
+      // Pulls any previous searches for this round
+      // (in case the page is reloaded)
+      reloadSearch();                        
 
     });
 

@@ -130,4 +130,50 @@ class SearchController extends Controller
 
   }
 
+  function getSearchReload()
+  {
+    $user = \Auth::user();
+
+    $trial_id = \DB::table('trial_user')
+                ->where('user_id', '=', $user->id)
+                ->orderBy('updated_at', 'desc')
+                ->value('trial_id');
+
+    $trial = \oceler\Trial::find($trial_id);
+
+    $curr_round = \Session::get('curr_round');
+
+    $round_id = \DB::table('rounds')
+                    ->where('trial_id', $trial_id)
+                    ->where('round', $curr_round)
+                    ->value('id');
+
+    $searches = \DB::table('searches')
+                 ->where('user_id', '=', $user->id)
+                 ->where('trial_id', '=', $trial_id)
+                 ->where('round_id', '=', $round_id)
+                 ->orderBy('id', 'asc')
+                 ->get();
+
+    $results = array();
+
+    foreach ($searches as $search) {
+      $result = array();
+      $result['search_term'] = $search->search_term;
+      if($search->factoid_id)
+      {
+        $result['success'] = true;
+        $result['result'] = \DB::table('factoids')
+                               ->where('id', $search->factoid_id)
+                               ->pluck('factoid');
+      }
+      else {
+        $result['success'] = false;
+        $result['result'] = 'No results were found for your search \'' . $search->search_term . '\'';
+      }
+      $results[] = $result;
+    }
+    return $results;
+  }
+
 }

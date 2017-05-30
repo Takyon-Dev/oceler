@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTrialTypeToTrialsTable extends Migration
+class CreateSessionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,11 @@ class AddTrialTypeToTrialsTable extends Migration
      */
     public function up()
     {
-      Schema::table('trials', function(Blueprint $table){
-
-          $table->integer('trial_type')->after('name');
-
-      });
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->unique();
+            $table->text('payload');
+            $table->integer('last_activity');
+        });
     }
 
     /**
@@ -26,10 +26,6 @@ class AddTrialTypeToTrialsTable extends Migration
      */
     public function down()
     {
-      Schema::table('trials', function(Blueprint $table){
-
-          $table->dropColumn('trial_type');
-
-      });
+        Schema::drop('sessions');
     }
 }
