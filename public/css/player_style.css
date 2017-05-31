@@ -22,6 +22,12 @@ body {
 	font-size: 96px;
 }
 
+a.disabled, a.disabled:hover {
+	color: #333;
+	cursor: default!important;
+	text-decoration: none;
+}
+
 /**
 * Timer
 */

@@ -84,6 +84,7 @@ function displaySearchResult(result)
 
 function formatSearchResult(result)
 {
+	// NEED TO DISABLE SHARE IF THERE ARE NO players_to
 	var share_link = (result.success) ? '<a id="' + result.factoid_id + '">share</a>' : '';
 	var result_container = $('<div class="search-result"></div>');
 	var search_term = $('<span class="search-term text-muted">' + result.search_term + '</span>');

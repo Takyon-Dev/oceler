@@ -34,6 +34,11 @@
         }
       });
 
+      // Prevent any disabled links (e.g. share links) from being clicked on
+      $('body').on('click', 'a.disabled', function(event) {
+        event.preventDefault();
+      });
+
       // Initiates the ping function in listen.js
       ping();
 
@@ -43,7 +48,7 @@
 
       // Pulls any previous searches for this round
       // (in case the page is reloaded)
-      reloadSearch();                        
+      reloadSearch();
 
     });
 

@@ -205,7 +205,23 @@ Message.prototype.toHTML = function(){
 
 	var share_link = $('<a>', {id: this.id});
 	$(share_link).html('share');
-	$(share_link).click(function(){ shareMessage(this.id) });
+
+	// If there are no players to share/reply to then disable the links
+	if(Object.keys(players_to).length == 0){
+		$(reply_link).attr('class', 'disabled');
+		$(share_link).attr('class', 'disabled');
+	}
+
+	else {
+		$(reply_link).click(function(){
+												$("#msg_" + this.id + " .reply-form").show(400);
+												$("#msg_" + this.id + " .reply-form input[name='reply']").focus();
+											});
+
+		$(share_link).click(function(){ shareMessage(this.id) });
+	}
+
+
 
 	var links = $('<span>');
 
@@ -221,6 +237,7 @@ Message.prototype.toHTML = function(){
 	$(links).append(')');
 
 	$(msg_body).append(links);
+
 
 	// Add the reply form
 	var reply_form = $('<form>', {class: 'reply-form'});
