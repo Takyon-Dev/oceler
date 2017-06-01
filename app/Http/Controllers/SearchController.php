@@ -166,6 +166,7 @@ class SearchController extends Controller
         $result['result'] = \DB::table('factoids')
                                ->where('id', $search->factoid_id)
                                ->pluck('factoid');
+        $result['factoid_id'] = $search->factoid_id;
       }
       else {
         $result['success'] = false;

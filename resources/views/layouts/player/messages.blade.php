@@ -21,9 +21,17 @@
 							<input type="hidden" id="_token" name="_token" value="<?php echo csrf_token(); ?>">
 							<div class="col-md-2 share-to">
 								<h3>share to:</h3>
-								<p class="text-center"><small><a href="" id="share_check_all">
-									check all
-								</a></small></p>
+								<p class="text-center">
+									<small>
+										@if(count($players_to) == 0)
+											No players available
+										@else
+											<a href="" id="share_check_all">
+											check all
+											</a>
+										@endif	
+									</small>
+								</p>
 								<div class="form-group">
 									@foreach($players_to AS $player)
 										<label for="share_to" class="share-name">{{ $player->player_name }}</label>
@@ -37,7 +45,12 @@
 						</div>
 						<div class="row">
 							<div class="col-md-6 pull-right">
-								<button type="button" id="msg_send" class="btn btn-primary pull-right">SEND</button>
+								<button type="button" id="msg_send"
+									class="btn btn-primary pull-right
+										{{ (count($players_to) == 0) ? ' disabled' : ''  }}
+									">
+									SEND
+								</button>
 								<button type="button" id="msg_cancel" class="btn btn-primary pull-right">CANCEL</button>
 							</div>
 						</div>

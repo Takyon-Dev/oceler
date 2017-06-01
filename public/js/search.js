@@ -6,14 +6,6 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
-	$(document).on('click', ".search-result a", function(event){
-
-		$("#msg_form #share_box").html($(this).siblings(".result").html());
-		$("#msg_form #share_box").show();
-		$("#msg_form #factoid_id").val($(this).attr('id'));
-
-	});
-
 });
 
 function doSearch()
@@ -69,6 +61,7 @@ function reloadSearch()
 			if(results){
 				$.each(results, function(key, result)
 				{
+					console.log(result);
 					$("#past_results").prepend(formatSearchResult(result));
 				});
 			}
@@ -78,18 +71,42 @@ function reloadSearch()
 
 function displaySearchResult(result)
 {
-
+	console.log(result);
 	$("#curr_result").append(formatSearchResult(result));
 }
 
 function formatSearchResult(result)
 {
-	// NEED TO DISABLE SHARE IF THERE ARE NO players_to
-	var share_link = (result.success) ? '<a id="' + result.factoid_id + '">share</a>' : '';
+
+	// Add share link if search returned a result
+	if(result.success){
+		var share_link = $('<a>', {id: result.factoid_id});
+		$(share_link).html('share');
+
+		// If there are players available to share to
+		// add the click functionality
+		if(num_players_to != 0){
+			$(share_link).click(function(){
+					$("#msg_form #share_box").html($(this).siblings(".result").html());
+					$("#msg_form #share_box").show();
+					$("#msg_form #factoid_id").val($(this).attr('id'));
+				});
+		}
+		// Otherwise, disable the link
+		else {
+			$(share_link).attr('class', 'disabled');
+		}
+	}
+
+	else {
+		var share_link = '';
+	}
+
 	var result_container = $('<div class="search-result"></div>');
 	var search_term = $('<span class="search-term text-muted">' + result.search_term + '</span>');
-	var results = $('<span class="result">' + result.result + '</span>' + share_link);
+	var results = $('<span class="result">' + result.result + '</span>');
 
-	return $(result_container).prepend(search_term, results);
+
+	return $(result_container).prepend(search_term, results).append($(share_link));
 
 }

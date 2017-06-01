@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+	if(num_players_to == 0) return;
 
 	$(document).on('click', '#msg_send' , function(event) {
 
@@ -19,6 +20,9 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
+	// Reset the message form to default state
+	clearMessageForm();
+
 });
 
 /**
@@ -30,10 +34,15 @@ $(document).ready(function() {
  */
 function sendMessage()
 {
+	if (!checkValidMessage($('.share-name:checkbox:checked'),
+												 $("#factoid_id").val(),
+											 	 $("#share_id").val(),
+											 	 $("#message").val(),)
+
+	) return;
 
 	// Serialize the form data
 	msgData = $("#msg_form").serialize();
-
 
 	// IS THE BELOW STILL NEEDED SINCE THE ENTIRE form
 	// IS BEING SERIALIZED?
@@ -60,6 +69,22 @@ function sendMessage()
 	);
 }
 
+function checkValidMessage(to_arr, factoid, share, msg)
+{
+	console.log(to_arr);
+	if (to_arr.length == 0){
+		alert("You need to select a player to send this message to.");
+		return false;
+	}
+
+	else if(!factoid && !share && !msg){
+		alert("This message is empty.");
+		return false;
+	}
+
+	else return true;
+}
+
 /**
  * Resets the message form.
  *
@@ -71,6 +96,9 @@ function clearMessageForm()
 	$("#factoid_id").val('');
 	$("#share_id").val('');
 	$("#share_box").hide();
+
+	// Default state is to have all available players selected
+	$(".share-name").prop('checked', true);
 }
 
 function shareMessage(id)
@@ -207,7 +235,7 @@ Message.prototype.toHTML = function(){
 	$(share_link).html('share');
 
 	// If there are no players to share/reply to then disable the links
-	if(Object.keys(players_to).length == 0){
+	if(num_players_to == 0){
 		$(reply_link).attr('class', 'disabled');
 		$(share_link).attr('class', 'disabled');
 	}
