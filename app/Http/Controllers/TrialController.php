@@ -350,13 +350,19 @@ class TrialController extends Controller
 
       // Get all trials that are active but already have been filled
       // by querying the trial_user table
-      $filled_trials = DB::table('trial_user')->select('trial_id')->get();
+      $filled_trials = DB::table('trial_user')
+                         ->pluck('trial_id');
+      dump($filled_trials);
 
       // Get the oldest active, not-already-filled trial
+      /*
+        THIS IS BROKEN _ NEEDS TO SUPPORT MULTIPLE ACTIVE TRIALS
+       */
       $trial = Trial::where('is_active', 1)
                     ->whereNotIn('id', $filled_trials)
                     ->orderBy('created_at', 'asc')
                     ->first();
+
 
       // If such a trial exists, see if the # of players in the queue
       // is equal to the required # of players for the trial
@@ -434,12 +440,7 @@ class TrialController extends Controller
       foreach ($trial->users as $user) {
         if($user->pivot->instructions_read == 1) $num_read++;
       }
-      /*
-      header('Content-Type: application/json');
-      echo json_encode(array(
-        'response' => $num_read == count($trial->users),
-      ));
-      */
+
       return Response::json($num_read == count($trial->users));
     }
 
