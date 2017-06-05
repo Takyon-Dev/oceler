@@ -179,7 +179,7 @@ class PlayerController extends Controller
       // And for the datepicker in the solutions entry form,
       // we'll call a helper function to get an array of months and minutes
       $datetime = Solution::dateTimeArray();
-      
+
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
     	// solution categories array
@@ -456,6 +456,8 @@ class PlayerController extends Controller
                   ->where('user_id', '=', Auth::user()->id)
                   ->orderBy('updated_at', 'desc')
                   ->first();
+
+      if(!$trial_user) return View::make('layouts.player.trial-stopped');
 
       Session::put('trial_id', $trial_user->trial_id);
 

@@ -14,7 +14,6 @@ function addTimer(server_time, start, duration){
 	var endTime = timeRemaining;
 
 	time = endTime;
-
 }
 
 function dateDebug(server_time, start, duration)

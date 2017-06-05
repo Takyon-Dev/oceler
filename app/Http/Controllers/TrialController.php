@@ -139,15 +139,16 @@ class TrialController extends Controller
     {
 
       $trial = Trial::with('users')->find($id);
-
-      $curr_server_time = \Carbon\Carbon::now()->toDateTimeString();
       $curr_round = $trial->curr_round;
-      $start_time = $trial->rounds[$curr_round - 1]->updated_at;
+      $server_time = time();
+      $start_time = strtotime(
+                    $trial->rounds[$curr_round - 1]
+                    ->updated_at);
 
 
       return View::make('layouts.admin.trial-view')
                   ->with('trial', $trial)
-                  ->with('curr_server_time', $curr_server_time)
+                  ->with('curr_server_time', $server_time)
                   ->with('start_time', $start_time);
     }
 
@@ -350,9 +351,13 @@ class TrialController extends Controller
 
       // Get all trials that are active but already have been filled
       // by querying the trial_user table
-      $filled_trials = DB::table('trial_user')
-                         ->pluck('trial_id');
-      dump($filled_trials);
+      $running_trials = DB::table('trial_user')
+                         ->get();
+
+      $filled_trials = [];
+      foreach ($running_trials as $t) {
+        $filled_trials[] = $t->trial_id;
+      }
 
       // Get the oldest active, not-already-filled trial
       /*
@@ -363,6 +368,7 @@ class TrialController extends Controller
                     ->orderBy('created_at', 'asc')
                     ->first();
 
+      dump($trial);
 
       // If such a trial exists, see if the # of players in the queue
       // is equal to the required # of players for the trial
