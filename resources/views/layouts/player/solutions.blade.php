@@ -41,9 +41,12 @@
 							@endif
 							<label for="confidence">Confidence:</label>
 							<select name="confidence">
-								<option value="">----</option>
 								@for($i=10; $i <= 100; $i += 10)
-									<option value="{{$i}}">{{$i}}%</option>;
+									@if($i == 50)
+										<option value="{{$i}}" selected="selected">{{$i}}%</option>
+									@else
+										<option value="{{$i}}">{{$i}}%</option>
+									@endif
 								@endfor
 							</select><br>
 							<span class="err_msg"></span>

@@ -10,12 +10,10 @@ body {
 .full-width h1 {
 	text-align: center;
 	font-size: 150%;
-	color: #000;
 }
 
 .full-width h2, .full-width h3 {
 	font-size: 110%;
-	color: #000;
 }
 
 .huge {
@@ -200,6 +198,13 @@ div.share-to div br {
 
 #msg_cancel {
 	margin-right: 12px;
+}
+
+.msg-alert {
+	background-color: #FFC92C;
+	color: #1d9ce5;
+	font-size: 90%;
+	padding: 2px;
 }
 
 div#msg_feed {

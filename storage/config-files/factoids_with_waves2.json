@@ -1,58 +1,59 @@
 [
-  {"type":"factoid",
-    "name":"factoids_with_waves2",
-    "solutions-display-name" : "Answers",
-    "system-msg-name" : "Admin",
-    "factoids":[
-      {
-        "factoid":"The Aqua, Orange, Indigo, Tan or Red groups may be planning an attack",
-        "keywords":["Aqua","Orange","Indigo","Tan","Red","groups","group","planning","plan","attack","attacks","attacker","attackers"],
-        "wave": 1,
-        "nodes": 1
-      },
-      {
-        "factoid":"The Aqua, Red, Maroon, Lime, and Indigo groups always plan large-scale attacks",
-        "keywords":["Aqua","Red","Maroon","Lime","Indigo","group","groups","always","plan","planning","large-scale","large","scale","attacks","attack","attackers","attacker"],
-        "wave": 1,
-        "nodes": 2
-      },
-      {
-        "factoid":"The Aqua and Tan groups use only their own operatives, never employing locals",
-        "keywords":["Aqua","Tan","groups","group","use","only","own","operatives","operative","never","employing","employ","locals","local"],
-        "wave": 1,
-        "nodes": [1,2]
-      },
-      {
-        "factoid":"Jupiter is known to work only with the Aqua, Orange, or Tan groups",
-        "keywords":["Jupiter","known","work","with","only","Aqua","Orange","Tan","groups","group"],
-        "wave": 1,
-        "nodes": [1,2,3]
-        },
-        {
-          "factoid":"The Red group has been known to use suicide bombers",
-          "keywords":["Red","group","groups","known","use","suicide","bombers","bomber","bomb"],
-          "wave": 1,
-          "nodes": 2
-        },
-        {
-          "factoid":"Mars has been seen with several groups",
-          "keywords":["Mars","seen","see","with","several","groups","group"],
-          "wave": 2,
-          "nodes": [1,2,3]
-        },
-        {
-          "factoid":"The attack will occur in January, May, August, or December",
-          "keywords":["attack","attacks","attacker","attackers","will","occur","January","May","August","December"],
-          "wave": 2,
-          "nodes": [1,17]
-          }
-      ],
+{"type":"factoid",
+"name":"factoids_with_waves2",
+"solutions-display-name" : "Answers",
+"system-msg-name" : "Admin",
+"searchable-node" : 17,
+"factoids":[
+{
+"factoid":"The Aqua, Orange, Indigo, Tan or Red groups may be planning an attack",
+"keywords":["Aqua","Orange","Indigo","Tan","Red","groups","group","planning","plan","attack","attacks","attacker","attackers"],
+"wave": 1,
+"nodes": [1,17]
+},
+{
+"factoid":"The Aqua, Red, Maroon, Lime, and Indigo groups always plan large-scale attacks",
+"keywords":["Aqua","Red","Maroon","Lime","Indigo","group","groups","always","plan","planning","large-scale","large","scale","attacks","attack","attackers","attacker"],
+"wave": 1,
+"nodes": 1
+},
+{
+"factoid":"The Aqua and Tan groups use only their own operatives, never employing locals",
+"keywords":["Aqua","Tan","groups","group","use","only","own","operatives","operative","never","employing","employ","locals","local"],
+"wave": 1,
+"nodes": 17
+},
+{
+"factoid":"Jupiter is known to work only with the Aqua, Orange, or Tan groups",
+"keywords":["Jupiter","known","work","with","only","Aqua","Orange","Tan","groups","group"],
+"wave": 1,
+"nodes": [2,3]
+},
+{
+"factoid":"The Red group has been known to use suicide bombers",
+"keywords":["Red","group","groups","known","use","suicide","bombers","bomber","bomb"],
+"wave": 1,
+"nodes": [2, 17]
+},
+{
+"factoid":"Mars has been seen with several groups",
+"keywords":["Mars","seen","see","with","several","groups","group"],
+"wave": 2,
+"nodes": [1,2,3]
+},
+{
+"factoid":"The attack will occur in January, May, August, or December",
+"keywords":["attack","attacks","attacker","attackers","will","occur","January","May","August","December"],
+"wave": 1,
+"nodes": [17]
+}
+],
 
-      "solutions":{
-        "who":"Aqua",
-        "what":["stadium","stadiums"],
-        "where":"Alphaland",
-        "when":"May 6 3:00 PM"
-        }
-  }
+"solutions":{
+"who":"Aqua",
+"what":["stadium","stadiums"],
+"where":"Alphaland",
+"when":"May 6 3:00 PM"
+}
+}
 ]

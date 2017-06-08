@@ -360,15 +360,10 @@ class TrialController extends Controller
       }
 
       // Get the oldest active, not-already-filled trial
-      /*
-        THIS IS BROKEN _ NEEDS TO SUPPORT MULTIPLE ACTIVE TRIALS
-       */
       $trial = Trial::where('is_active', 1)
                     ->whereNotIn('id', $filled_trials)
                     ->orderBy('created_at', 'asc')
                     ->first();
-
-      dump($trial);
 
       // If such a trial exists, see if the # of players in the queue
       // is equal to the required # of players for the trial

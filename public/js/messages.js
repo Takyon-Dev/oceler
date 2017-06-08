@@ -16,8 +16,8 @@ $(document).ready(function() {
 
 	$(document).on('click', '#share_check_all' , function(event) {
 		var share_names = $('input.share-name');
-		share_names.prop('checked', true);
-		event.preventDefault();
+		share_names.prop('checked', 'checked');
+		event.preventDefault ? event.preventDefault() : (event.returnValue = false);
 	});
 
 	// Reset the message form to default state
@@ -71,7 +71,6 @@ function sendMessage()
 
 function checkValidMessage(to_arr, factoid, share, msg)
 {
-	console.log(to_arr);
 	if (to_arr.length == 0){
 		alert("You need to select a player to send this message to.");
 		return false;
@@ -98,7 +97,7 @@ function clearMessageForm()
 	$("#share_box").hide();
 
 	// Default state is to have all available players selected
-	$(".share-name").prop('checked', true);
+	$(".share-name").prop('checked', 'checked');
 }
 
 function shareMessage(id)

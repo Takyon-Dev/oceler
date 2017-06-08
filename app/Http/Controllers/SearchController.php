@@ -5,6 +5,7 @@ namespace oceler\Http\Controllers;
 use Illuminate\Http\Request;
 use oceler\Http\Requests;
 use oceler\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class SearchController extends Controller
 {
@@ -22,15 +23,14 @@ class SearchController extends Controller
 
     $curr_round = \Session::get('curr_round');
 
-    $round_id = \DB::table('rounds')
+    $round = \DB::table('rounds')
                     ->where('trial_id', $trial_id)
                     ->where('round', $curr_round)
-                    ->value('id');
+                    ->first();
 
-    $factoidset = \DB::table('rounds')
-                ->where('round', $curr_round)
-                ->where('trial_id', $trial_id)
-                ->value('factoidset_id');
+    $factoidset = \DB::table('factoidsets')
+                ->where('id', $round->factoidset_id)
+                ->first();
 
     // Split the search input by space chars
     $search_terms = explode(' ', $request->search_term);
@@ -59,11 +59,13 @@ class SearchController extends Controller
           (SELECT factoid_distributions.factoid_id
            FROM factoid_distributions
            WHERE factoid_distributions.factoidset_id = :factoidset_id_2
+           AND factoid_distributions.node = :searchable_node
            AND factoid_distributions.wave <= :wave)";
 
       $parameters = array('search_term' => $search_term,
-                              'factoidset_id_1' => $factoidset,
-                              'factoidset_id_2' => $factoidset,
+                              'factoidset_id_1' => $factoidset->id,
+                              'factoidset_id_2' => $factoidset->id,
+                              'searchable_node' => $factoidset->searchable_node,
                               'wave' => $request->wave);
 
       if($trial->unique_factoids){
@@ -80,11 +82,12 @@ class SearchController extends Controller
              AND factoid_id IS NOT NULL)";
 
              $parameters = array('search_term' => $search_term,
-                                     'factoidset_id_1' => $factoidset,
-                                     'factoidset_id_2' => $factoidset,
+                                     'factoidset_id_1' => $factoidset->id,
+                                     'factoidset_id_2' => $factoidset->id,
                                      'trial_id' => $trial_id,
-                                     'round_id' => $round_id,
+                                     'round_id' => $round->id,
                                      'user_id' => $user->id,
+                                     'searchable_node' => $factoidset->searchable_node,
                                      'wave' => $request->wave);
       }
 
@@ -117,7 +120,7 @@ class SearchController extends Controller
     $search = new \oceler\Search();
     $search->user_id = $user->id;
     $search->trial_id = $trial_id;
-    $search->round_id = $round_id;
+    $search->round_id = $round->id;
     $search->search_term = $request->search_term;
     $search->factoid_id = $result['factoid_id'];
     $search->save();

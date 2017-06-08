@@ -29,7 +29,7 @@
 											<a href="" id="share_check_all">
 											check all
 											</a>
-										@endif	
+										@endif
 									</small>
 								</p>
 								<div class="form-group">
@@ -60,7 +60,13 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12" id="msg_feed">
-				<h2>MESSAGE FEED</h2>
+				<h2>
+					MESSAGE FEED
+					<span class="msg-alert collapse">
+						New Message!
+						<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
+					</span>
+				</h2>
 				<div id="messages" class="pre-scrollable">
 					<!--
 						<div id="1" class="message">

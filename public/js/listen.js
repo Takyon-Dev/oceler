@@ -19,7 +19,7 @@ function ping()
 			if(response.solutions){
 				solutionHandler(response.solutions);
 			}
-			if(response.messages){
+			if(response.messages.length > 0){
 				messageHandler(response.messages);
 			}
 		}
@@ -45,21 +45,54 @@ function messageHandler(messages)
 	// This prevents the message frame (including the reply field)from reloading.
 	if($(".reply-form").is(":visible")) return;
 
-		$.each(messages, function(key, msg)
-		{
-			var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
-			m.addMessage($("#messages"));
+	var fresh_reply;
+	var fresh_msg;
 
-			traverseMessageThread(msg.shared_from, msg);
+	$.each(messages, function(key, msg){
 
-			$.each(msg.replies, function(key, reply){
-				var r = new Reply(msg.users, reply.replier, reply.message, msg.id);
-				r.addMessage($("#msg_" + msg.id));
-			});
+		show_alert = false;
+		user_reply = false;
 
-			last_message_time = msg.updated_at;
+			if(msg.sender.id != user_id){
+
+				$.each(msg.replies, function(key, reply){
+					if(reply.replier == user_id){
+						user_reply = true;
+					}
+				});
+
+			if(!user_reply) show_alert = true;
+		};
+	});
+
+	if(show_alert) newMessageAlert();
+
+	$.each(messages, function(key, msg)
+	{
+		var m = new Message(msg.users, msg.sender, msg.message, msg.factoid, msg.share_id, msg.id);
+
+		m.addMessage($("#messages"));
+
+		traverseMessageThread(msg.shared_from, msg);
+
+		$.each(msg.replies, function(key, reply){
+			var r = new Reply(msg.users, reply.replier, reply.message, msg.id);
+			r.addMessage($("#msg_" + msg.id));
 		});
 
+		last_message_time = msg.updated_at;
+	});
+
+}
+
+function newMessageAlert()
+{
+	if(!$(".msg-alert").is(":visible")){
+		$(".msg-alert").fadeIn();
+		setTimeout(function(){
+			$(".msg-alert").fadeOut();
+		}, 10000);
+	}
 }
 
 function queueListener()

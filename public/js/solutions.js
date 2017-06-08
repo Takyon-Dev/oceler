@@ -4,7 +4,7 @@ $(document).ready(function() {
 
 		showSolutionForm(this);
 		event.preventDefault();
-	});
+	}); 
 
 	$(document).on('click', '.sol-cancel' , function(event) {
 
@@ -35,10 +35,13 @@ function showSolutionForm(self)
 
 		// Populates solution form with the current solution and confidence
 		curr_sol = $(self).siblings('.sol').html(); // Gets the current solution
-		curr_conf = $(self).siblings('.conf').html().slice(0,-1) // Gets the current confidence (trimming off the % symbol);
+		// Gets the current confidence (trimming off the % symbol)
+		curr_conf = $(self).siblings('.conf').html().slice(0,-1);
 
-		form.find('input[name="solution"]').val(curr_sol); // Fills input with current solution
-		form.find('select[name="confidence"]').val(curr_conf); // Fills input with current confidence
+		form.find('input[name="solution"]').val(curr_sol);
+		if(curr_conf){
+			form.find('select[name="confidence"]').val(curr_conf);
+		}
 	});
 
 }
