@@ -37,7 +37,7 @@ function sendMessage()
 	if (!checkValidMessage($('.share-name:checkbox:checked'),
 												 $("#factoid_id").val(),
 											 	 $("#share_id").val(),
-											 	 $("#message").val(),)
+											 	 $("#message").val())
 
 	) return;
 
