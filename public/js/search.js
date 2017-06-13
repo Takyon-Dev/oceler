@@ -46,7 +46,7 @@ function clearSearchForm()
 
 function clearCurrentSearch()
 {
-	$("#past_results").prepend($("#curr_result").html());
+	$("#curr_result > div").prependTo($("#past_results"));
 	$("#curr_result").empty();
 }
 
@@ -61,7 +61,6 @@ function reloadSearch()
 			if(results){
 				$.each(results, function(key, result)
 				{
-					console.log(result);
 					$("#past_results").prepend(formatSearchResult(result));
 				});
 			}
@@ -71,7 +70,6 @@ function reloadSearch()
 
 function displaySearchResult(result)
 {
-	console.log(result);
 	$("#curr_result").append(formatSearchResult(result));
 }
 
@@ -86,7 +84,7 @@ function formatSearchResult(result)
 		// If there are players available to share to
 		// add the click functionality
 		if(num_players_to != 0){
-			$(share_link).click(function(){
+			$(share_link).bind('click', function(){
 					$("#msg_form #share_box").html($(this).siblings(".result").html());
 					$("#msg_form #share_box").show();
 					$("#msg_form #factoid_id").val($(this).attr('id'));

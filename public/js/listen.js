@@ -20,6 +20,8 @@ function ping()
 				solutionHandler(response.solutions);
 			}
 			if(response.messages.length > 0){
+				console.log(response.messages);
+				console.log("------------------");
 				messageHandler(response.messages);
 			}
 		}
@@ -49,7 +51,7 @@ function messageHandler(messages)
 	var fresh_msg;
 
 	$.each(messages, function(key, msg){
-
+		console.log(msg);
 		show_alert = false;
 		user_reply = false;
 
