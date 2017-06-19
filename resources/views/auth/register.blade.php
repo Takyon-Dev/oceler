@@ -1,5 +1,5 @@
 @extends('layouts.master')
-	
+
 
 @section('content')
 	<div class="row">
@@ -16,7 +16,7 @@
 				</div>
 			@endif
 
-			{!! Form::open(array('url' => '/auth/register', 'class' => 'form')) !!}
+			{!! Form::open(array('url' => '/register', 'class' => 'form')) !!}
 				<fieldset>
 					<div class="form-group">
 						{!! Form::label('name', 'Your name:') !!}
@@ -37,7 +37,7 @@
 					<div class="form-group">
 						{!! Form::label('password_confirmation', 'Confirm password:') !!}
 						{!! Form::text('password_confirmation', null, array('class'=>'form-control', 'required')) !!}
-					</div>					
+					</div>
 					<div class="form-group">
 						{!! Form::submit('Create Account', ['class' => 'btn btn-primary'] ) !!}
 					</div>

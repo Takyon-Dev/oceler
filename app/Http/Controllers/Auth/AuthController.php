@@ -66,6 +66,7 @@ class AuthController extends Controller
             'email' => $data['email'],
             'mturk_id' => $data['mturk_id'],
             'password' => bcrypt($data['password']),
+            'role_id' => 3, //Regular (non-admin) user
             'ip_address' => $_SERVER['REMOTE_ADDR'],
             'user_agent' => $_SERVER['HTTP_USER_AGENT'],
         ]);
