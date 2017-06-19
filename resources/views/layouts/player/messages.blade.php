@@ -33,11 +33,10 @@
 									</p>
 									<div class="form-group">
 										@foreach($players_to AS $player)
-											<label for="share_to" class="share-name">{{ $player->player_name }}</label>
-										@endforeach
-										<br>
-										@foreach($players_to AS $player)
-											<input name="share_to[]" type="checkbox" class="share-name" value="{{ $player->id }}">
+											<div>
+												<input name="share_to[]" type="checkbox" class="share-name" value="{{ $player->id }}">
+												<label for="share_to" class="share-name">{{ $player->player_name }}</label>
+											</div>
 										@endforeach
 									</div>
 							</div>

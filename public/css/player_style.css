@@ -172,32 +172,21 @@ div.share-to h3 {
 	text-align: center;
 }
 
-div.share-to div {
+div.share-to div div {
 	float:left;
-	clear: both;
-	margin: 24px 0 0 18px;
+	background-color: #fcf8e3;
+	margin: 2px;
+	padding: 2px;
+	padding-right: 4px;
 }
 
-label.share-name, input.share-name {
-	float: left;
-}
 
 input.share-name {
-	margin: -10px 6px 0 0;
+	margin-right: 2px;
 }
 
 label.share-name {
-
-	transform: rotate(-90deg);
-	-webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-
-    padding: 8px;
-    width: 1%;
+	margin: 0;
 }
 
 div.share-to div br {
