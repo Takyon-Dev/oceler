@@ -68,11 +68,9 @@
 
 @section('content')
     <div class="container full-width">
-        <div class="row">
-            @include('layouts.player.timer')
-        </div>
-        <div class="row">
+        <div class="row top-frame">
             @include('layouts.player.solutions')
+            @include('layouts.player.timer')
         </div>
         <div class="row">
             @include('layouts.player.messages')

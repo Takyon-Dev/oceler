@@ -1,8 +1,12 @@
 
-<div class="col-md-12 solutions">
-	<h1>{{ $solutions_display_name }}</h1>
+<div class="col-md-10 solutions">
 	<table class="table solutions">
 	    <thead>
+					<tr>
+						<th></th>
+						<th colspan="{{count($solution_categories)}}">
+							<h1>{{ $solutions_display_name }}</h1>
+						</th>
 	        <tr>
 	            <th></th>
 	            @foreach($solution_categories AS $cat)

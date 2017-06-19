@@ -9,8 +9,8 @@
 		timerTick();
 	});
 </script>
-<div id="timer_container" class="col-md-12">
-	<div class="h4">
-		Time remaining: <span id="timer" class="text-primary"></span>
+<div id="timer_container" class="col-md-2">
+	<div class="h4 text-center">
+		Time remaining:<br><span id="timer" class="text-primary"></span>
 	</div>
 </div>

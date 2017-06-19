@@ -26,6 +26,10 @@ a.disabled, a.disabled:hover {
 	text-decoration: none;
 }
 
+.top-frame {
+	border-bottom: 1px solid #000;
+}
+
 /**
 * Timer
 */
@@ -36,11 +40,9 @@ div#timer_container {
 
 div#timer_container div {
     border: 1px solid black;
-    width: 12%;
     float: right;
     margin-right: 2%;
     padding: 4px;
-    text-align: left;
     background: #fff
 }
 
@@ -48,13 +50,12 @@ div#timer_container div {
 * 	Solutions
 */
 
-div.solutions {
-	border-top: 1px solid #000;
-	border-bottom: 1px solid #000;
-}
-
 table {
 	border: none;
+}
+
+.table th h1 {
+	margin: 0px;
 }
 
 .table>thead>tr>th {
@@ -124,6 +125,10 @@ form.solution-form input, form.solution-form label {
 * Messaging
 */
 
+.messaging h1 {
+	margin: 4px 0;
+}
+
 div#messaging_container {
     width: 100%;
     border: 1px solid #666666;
@@ -135,6 +140,10 @@ div#messaging_container {
 div#messaging_container form#msg_form{
 	width: 94%;
 	margin: 0 auto;
+}
+
+form#msg_form fieldset h2 {
+	margin: 0;
 }
 
 div#messaging_container form textarea {
@@ -286,6 +295,10 @@ form.reply-form .btn-sm {
 /**
  * Search
  */
+
+ .search h1 {
+ 	margin: 4px 0;
+ }
 
 div#search_container {
 	width: 100%;
