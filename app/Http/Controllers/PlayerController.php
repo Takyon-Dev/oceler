@@ -137,17 +137,17 @@ class PlayerController extends Controller
     		// See if their node is a target where the user's node is a source
     		$to = DB::table('network_edges')
                   ->where('network_id', '=', $network)
-                  ->where('target', '=', $u_node)
-                  ->where('source', '=', $node)
+                  ->where('target', '=', $node)
+                  ->where('source', '=', $u_node)
                   ->value('target');
 
     		// If they are a source (e.g. the user can see this player),
     		// add them to the $players_from array
-    		if($from) $players_from[] = $player;
+    		if($from && $from != $u_node) $players_from[] = $player;
 
     		// If they are a target (e.g., this player can see the user),
     		// add them to the $players_to array
-    		if($to) $players_to[] = $player;
+    		if($to && $to != $u_node) $players_to[] = $player;
 
     	}
 

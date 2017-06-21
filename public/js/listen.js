@@ -200,7 +200,6 @@ function distributionListener(node, distribution_interval, fset_id)
 
 	// Increment wave (global) by one
 	wave = wave + 1;
-	console.log("F: " + fset_id + "N: " + node + "W: " + wave);
 	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds
 	$.ajax({
 		type: "GET",

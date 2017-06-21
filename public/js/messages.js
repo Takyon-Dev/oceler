@@ -225,10 +225,6 @@ Message.prototype.toHTML = function(){
 	// Add the reply and share links
 	var reply_link = $('<a>', {id: this.id});
 	$(reply_link).html('reply');
-	$(reply_link).click(function(){
-											$("#msg_" + this.id + " .reply-form").show(400);
-											$("#msg_" + this.id + " .reply-form input[name='reply']").focus();
-										});
 
 	var share_link = $('<a>', {id: this.id});
 	$(share_link).html('share');
