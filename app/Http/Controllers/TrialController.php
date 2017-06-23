@@ -333,7 +333,9 @@ class TrialController extends Controller
      */
     public function queue()
     {
+
       $u_id = Auth::user()->id;
+      $last_trial_type = Auth::user()->lastTrialType();
       $dt = \Carbon\Carbon::now();
 
       // If this user has been added to trial_user already, just return with 0
@@ -342,6 +344,7 @@ class TrialController extends Controller
       // Add the player to the queue and set updated_at to
       // current date/time
       $player = \oceler\Queue::firstOrNew(['user_id' => $u_id]);
+      $player->trial_type = ($last_trial_type + 1);
       $player->updated_at = $dt->toDateTimeString();
       $player->save();
 
@@ -360,7 +363,9 @@ class TrialController extends Controller
       }
 
       // Get the oldest active, not-already-filled trial
+      // the player qualifies for
       $trial = Trial::where('is_active', 1)
+                    ->where('trial_type', '=', $player->trial_type)
                     ->whereNotIn('id', $filled_trials)
                     ->orderBy('created_at', 'asc')
                     ->first();
@@ -371,13 +376,14 @@ class TrialController extends Controller
         return -1;
       }
 
-      $queued_players = \oceler\Queue::count();
+      $queued_players = \oceler\Queue::count(); // NEED TO COUNT ONLY NUMBER OF PLAYERS WHO HAVE THE SAME TRIAL_TYPE!!
 
       // If there are enough players...
       if($queued_players >= $trial->num_players){
 
         // ... Take the required amount
-        $selected = \oceler\Queue::orderBy('created_at', 'asc')
+        $selected = \oceler\Queue::where('trial_type', '=', $player->trial_type)
+                                  ->orderBy('created_at', 'asc')
                                   ->take($trial->num_players)
                                   ->get();
 

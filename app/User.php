@@ -53,6 +53,13 @@ class User extends Model implements AuthenticatableContract,
     return $this->belongsToMany('oceler\Trial')->withPivot('group_id', 'last_ping')->withTimestamps();
     }
 
+    public function lastTrialType()
+    {
+      return \DB::table('trial_user_archive')
+               ->where('user_id', $this->id)
+               ->max('trial_type') ?: 0;
+    }
+
   public function role()
 	{
 		return $this->hasOne('oceler\Role', 'id', 'role_id');
