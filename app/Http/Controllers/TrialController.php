@@ -376,7 +376,8 @@ class TrialController extends Controller
         return -1;
       }
 
-      $queued_players = \oceler\Queue::count(); // NEED TO COUNT ONLY NUMBER OF PLAYERS WHO HAVE THE SAME TRIAL_TYPE!!
+      $queued_players = \oceler\Queue::where('trial_type', '=', $player->trial_type)
+                                      ->count();
 
       // If there are enough players...
       if($queued_players >= $trial->num_players){

@@ -38,6 +38,7 @@ class Trial extends Model
     {
 
       $this->name = $request->name;
+      $this->trial_type = $request->trial_type || 1;
       $this->instructions = $request->instructions;
       $this->distribution_interval = $request->distribution_interval;
       $this->num_waves = $request->num_waves;
@@ -169,6 +170,7 @@ class Trial extends Model
 
       $config = "\n================================================\nTrial Config:\n";
       $config .= "Name: " . $this->name . "\n";
+      $config .= "Type: " . $this->trial_type . "\n";
       $config .= "Dist. Interval: " .$this->distribution_interval . "\n";
       $config .= "Num Waves: " .$this->num_waves. "\n";
       $config .= "Num Players: " .$this->num_players. "\n";

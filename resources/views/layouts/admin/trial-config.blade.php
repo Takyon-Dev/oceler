@@ -48,6 +48,10 @@
 
                     {!! Form::input('text', 'name') !!}<br>
 
+                    {!! Form::label('trial_type', 'Trial type') !!}
+
+                    {!! Form::input('number', 'trial_type') !!}<br>
+
                     {!! Form::label('distribution_interval', 'Distribution interval') !!}
 
                     {!! Form::input('number', 'distribution_interval', null, ['class'=>'num-input', 'min'=>'0']) !!} min.<br>
