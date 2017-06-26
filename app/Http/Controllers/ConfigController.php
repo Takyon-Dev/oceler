@@ -18,6 +18,7 @@ class ConfigController extends Controller
 
     $config_json = json_decode(file_get_contents($request->config_file), true);
 
+    $errors = [];
 
     foreach ($config_json as $config) {
 
@@ -26,24 +27,46 @@ class ConfigController extends Controller
 
       switch($config['type']){
         case 'network':
-          \oceler\Network::addNetworkFromConfig($config);
+          try{
+            \oceler\Network::addNetworkFromConfig($config);
+          }
+          catch(\Exception $e){
+            $errors[] = $e->getMessage();
+          }
           break;
 
         case 'factoid':
-          \oceler\Factoidset::addFactoidsetFromConfig($config);
+          try{
+            \oceler\Factoidset::addFactoidsetFromConfig($config);
+          }
+          catch(\Exception $e){
+            $errors[] = $e->getMessage();
+          }
           break;
 
         case 'names':
-          \oceler\Nameset::addNamesetFromConfig($config);
+          try{
+            \oceler\Nameset::addNamesetFromConfig($config);
+          }
+          catch(\Exception $e){
+            $errors[] = $e->getMessage();
+          }
           break;
 
         case 'trial':
-          \oceler\Trial::addTrialFromConfig($config);
+          try{
+            \oceler\Trial::addTrialFromConfig($config);
+          }
+          catch(\Exception $e){
+            $errors[] = $e;
+          }
           break;
       }
     }
-
-  return back();
+  foreach ($errors as $e) {
+    throw($e);
+  }
+  return back()->withErrors($errors);
 
   }
 

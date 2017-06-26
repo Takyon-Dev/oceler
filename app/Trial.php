@@ -34,11 +34,15 @@ class Trial extends Model
       return $this->hasMany('\oceler\Group');
     }
 
+    public function archive() {
+      return $this->belongsToMany('oceler\User', 'trial_user_archive', 'trial_id', 'user_id');
+    }
+
     public function storeTrialConfig($request)
     {
 
       $this->name = $request->name;
-      $this->trial_type = $request->trial_type || 1;
+      $this->trial_type = $request->trial_type;
       $this->instructions = $request->instructions;
       $this->distribution_interval = $request->distribution_interval;
       $this->num_waves = $request->num_waves;
@@ -52,8 +56,13 @@ class Trial extends Model
       $this->num_groups = $request->num_groups;
       $this->is_active = false;
 
-      $this->save(); // Saves the trial to the trial table
+      try{
+        $this->save(); // Saves the trial to the trial table
+      }
 
+      catch(\Exception $e){
+        throw $e;
+      }
 
       if($request->hasFile('instructions_image')){
 
@@ -72,14 +81,33 @@ class Trial extends Model
        */
       for($i = 0; $i < $this->num_rounds; $i++){
 
+        if(!is_numeric($request->factoidset_id[$i])){
+          $factoidset_id = DB::table('factoidsets')
+                                          ->where('name', '=', $request->factoidset_id[$i])
+                                          ->orderBy('id', 'DESC')
+                                          ->pluck('id');
+
+        }
+
+        else $factoidset_id = $request->factoidset_id[$i];
+
+        if(!is_numeric($request->nameset_id[$i])){
+          $nameset_id = DB::table('namesets')
+                                          ->where('name', '=', $request->nameset_id[$i])
+                                          ->orderBy('id', 'DESC')
+                                          ->pluck('id');
+        }
+
+        else $nameset_id = $request->nameset_id[$i];
+
         DB::table('rounds')->insert([
             'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
             'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             'trial_id' => $this->id,
             'round' => ($i + 1),
             'round_timeout' => $request->round_timeout[$i],
-            'factoidset_id' => $request->factoidset_id[$i],
-            'nameset_id' => $request->nameset_id[$i],
+            'factoidset_id' => $factoidset_id,
+            'nameset_id' => $nameset_id,
             ]);
       }
 
@@ -89,12 +117,21 @@ class Trial extends Model
        */
       for($i = 0; $i < $this->num_groups; $i++){
 
+        if(!is_numeric($request->network_id[$i])){
+          $network_id = DB::table('networks')
+                                          ->where('name', '=', $request->network_id[$i])
+                                          ->orderBy('id', 'DESC')
+                                          ->pluck('id');
+        }
+
+        else $network_id = $request->network_id[$i];
+
         DB::table('groups')->insert([
           'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
           'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
           'group' => $i + 1,
           'trial_id' => $this->id,
-          'network_id' => $request->network_id[$i],
+          'network_id' => $network_id,
           'survey_url' => $request->survey_url[$i],
         ]);
 
@@ -117,8 +154,14 @@ class Trial extends Model
         trials created via config file or webpage form. */
         $request = new Request();
         $request->merge($trial_config);
-        $trial->storeTrialConfig($request);
-        $trial->logConfig();
+
+        try{
+          $trial->storeTrialConfig($request);
+          $trial->logConfig();
+        }
+        catch(\Exception $e){
+          throw $e;
+        }
       }
 
 
@@ -150,6 +193,7 @@ class Trial extends Model
         'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
         'trial_id' => $this->id,
         'user_id' => $user_id,
+        'trial_type' => $this->trial_type,
         'group_id' => $this_user->group_id,
         'last_ping' => $this_user->last_ping,
         'completed_trial' => $completed_trial
@@ -185,11 +229,9 @@ class Trial extends Model
                               ->orderBy('round', 'ASC')
                               ->get();
 
-
-
       foreach ($rounds as $round) {
 
-        $factoidset = \oceler\Factoidset::where('id', $round->factoidset_id)->first();
+        $factoidset = \oceler\Factoidset::find($round->factoidset_id);
         $nameset = \oceler\Nameset::where('id', $round->nameset_id)->first();
         $config .= "Round ".$round->round." :\n";
         $config .= "Factoid set: ".$factoidset->name."\n";
@@ -204,11 +246,10 @@ class Trial extends Model
                               ->with('network')
                               ->get();
 
-
-
       foreach ($groups as $group) {
 
-        $config .= "Group " .$group->group.", Network ".$group->network->name.":\n";
+        $network = \DB::table('networks')->where('id', '=', $group->network_id)->first();
+        $config .= "Group " .$group->group.", Network ".$network->name.":\n";
         $config .= \oceler\Network::getAdjacencyMatrix($group->network_id);
         $config .= "\n";
       }

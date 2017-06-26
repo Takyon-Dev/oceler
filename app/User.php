@@ -57,6 +57,7 @@ class User extends Model implements AuthenticatableContract,
     {
       return \DB::table('trial_user_archive')
                ->where('user_id', $this->id)
+               ->where('completed_trial', 1)
                ->max('trial_type') ?: 0;
     }
 

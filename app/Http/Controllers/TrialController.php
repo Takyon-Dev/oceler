@@ -26,6 +26,7 @@ class TrialController extends Controller
     {
       $trials = Trial::orderBy('id', 'desc')
                       ->with('users')
+                      ->with('archive')
                       ->get();
 
       return View::make('layouts.admin.trials')

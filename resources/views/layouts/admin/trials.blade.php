@@ -79,15 +79,22 @@
                     Make Inactive
                   </a>
 
-                @elseif (!$trial->is_active)
+                @elseif (!$trial->is_active && count($trial->archive) > 0)
 
-                  <span class="text-danger">Not Active</span>
+                  <span class="text-warning">Completed</span>
                   <a href="/admin/trial/toggle/{{ $trial->id }}"
                           class="btn btn-primary btn-xs" role="button">
                     Make Active
                   </a>
 
+                @elseif (!$trial->is_active)
+                  <span class="text-danger">Not Active</span>
+                  <a href="/admin/trial/toggle/{{ $trial->id }}"
+                          class="btn btn-primary btn-xs" role="button">
+                    Make Active
+                  </a>
                 @endif
+
               </td>
               <td>{{ count($trial->users) }} / {{ $trial->num_players }}</td>
 
