@@ -3,7 +3,7 @@
     "name":"trial_config_test",
     "trials":[
         {
-          "name":"TRIAL TYPE TEST T1P2",
+          "narme":"TRIAL TYPE TEST T1P2",
           "trial_type" : 4,
           "instructions":"<h1>TRIAL TYPE 1 - 2 Player</h1>",
           "distribution_interval": 1,
