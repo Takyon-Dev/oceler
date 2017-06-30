@@ -264,11 +264,12 @@ class PlayerController extends Controller
     $sql = DB::statement('
                           INSERT IGNORE INTO `round_earnings`
                             (`created_at`, `updated_at`, `trial_id`, `user_id`,
-                            `round_id`, `earnings`)
+                            `round_id`, `earnings`, `num_correct`, `tot_categories`)
                             VALUES
                             ("'.$dt.'","'.$dt.'",'.$trial->id.', '.$user->id.',
                             '.$trial->rounds[$curr_round - 1]->id.',
-                            '.$amt_earned.');');
+                            '.$amt_earned.', '.$num_correct.',
+                            '.count($check_solutions).');');
 
     return View::make('layouts.player.end-round')
                 ->with('trial', $trial)

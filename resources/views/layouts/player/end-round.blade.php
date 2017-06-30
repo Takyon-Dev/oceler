@@ -10,7 +10,6 @@
 
 @section('content')
 <div class="container">
-  @include('layouts.player.menu')
   <div class="row">
     <div class="col-md-12">
 

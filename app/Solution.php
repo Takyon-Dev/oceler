@@ -85,14 +85,17 @@ class Solution extends Model
               $solution_answers[$solution->category_id]['is_correct'] = true;
               $time_correct = abs(strtotime($solution->updated_at) - strtotime($solution->created_at));
 
-              // If there is no difference in time, use the end of round time
+              // If there is no difference in time, use the start of round time
+              // plus length of round to calculate the end of the round
               if($time_correct == 0){
-                $time_correct = abs(strtotime($trial->rounds[$curr_round - 1]->updated_at) - strtotime($solution->created_at));
+                $round_end_time = strtotime('+'.$trial->rounds[$curr_round - 1]->round_timeout.' minutes',
+                                            strtotime($trial->rounds[$curr_round - 1]->updated_at));
+                $time_correct = abs($round_end_time - (strtotime($solution->created_at)));
+
               }
               $solution_answers[$solution->category_id]['time_correct'] += $time_correct;
           }
         }
-
 
       return $solution_answers;
 

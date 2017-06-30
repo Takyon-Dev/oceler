@@ -10,7 +10,7 @@
 						<h2>Compose</h2>
 						<p id="share_container"></p>
 						<div class="row">
-							<div class="col-md-9">
+							<div class="col-md-6">
 								<div class="form-group">
 									<textarea id="message" name="message" rows="6" cols="14"></textarea>
 								</div>
@@ -18,7 +18,7 @@
 							<input type="hidden" id="factoid_id" name="factoid_id" value="">
 							<input type="hidden" id="share_id" name="share_id" value="">
 							<input type="hidden" id="_token" name="_token" value="<?php echo csrf_token(); ?>">
-							<div class="col-md-3 center-block share-to">
+							<div class="col-md-6 center-block share-to">
 									<h3>share to:</h3>
 									<p class="text-center">
 										<small>
@@ -69,15 +69,7 @@
 					</span>
 				</h2>
 				<div id="messages" class="pre-scrollable">
-					<!--
-						<div id="1" class="message">
-							<span class="header text-danger">You to Casey, Dakota:</span>
-							<span class="msg-body">
-								This is an example of a short message!
-							</span>
-							<span class="">(<a id="1">reply</a> / <a id="1">share</a>)</span>
-						</div>
-					-->
+
 				</div>
 			</div>
 		</div>

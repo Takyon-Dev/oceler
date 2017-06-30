@@ -6,7 +6,6 @@
 
 @section('content')
 <div class="container">
-  @include('layouts.player.menu')
   <div class="row">
     <div class="col-md-12">
       <h1 class="text-muted text-center">[ Instructions / description placeholder ]</h1>

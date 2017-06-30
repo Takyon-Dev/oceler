@@ -36,7 +36,7 @@ class MessageController extends Controller
 		$msg->save();
 
 
-    $log = "MESSAGE-- ID: " .$msg->id. " FROM: ". $user->id . "(". $user->player_name .") ";
+    $log = "MESSAGE-- ID: " .$msg->id. "MSG: " .$msg->message. " FROM: ". $user->id . "(". $user->player_name .") ";
 
     // Add each recipient player to message_user
 		foreach ($request->share_to as $player) {
@@ -49,8 +49,7 @@ class MessageController extends Controller
     if($factoid = \oceler\Factoid::find($request->factoid_id)){
       $log .= ' WITH FACTOID-- '.$factoid->factoid;
     }
-
-    $log .= $msg->message;
+    
     \oceler\Log::trialLog($msg->trial_id, $log);
 
 	}
@@ -67,7 +66,7 @@ class MessageController extends Controller
                     ->where('wave', \Input::get('wave'))
                     ->get();
 
-    dump($factoids);                
+    dump($factoids);
 
     $u_id = \oceler\User::where('player_name', 'System')->value('id');
     $trial_id = \Session::get('trial_id');
