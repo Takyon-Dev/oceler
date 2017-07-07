@@ -311,6 +311,7 @@ Route::get('/player/is-trial-stopped', 'PlayerController@isTrialStoppedTest');
 Route::get('/player/message-listen-test', 'MessageController@messageListenTest');
 
 Route::get('/player/date-debug', 'PlayerController@dateDebug');
+Route::get('/test-mturk', 'PlayerController@testMTurk');
 
 
 // Authentication routes...

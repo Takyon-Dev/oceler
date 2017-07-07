@@ -52,6 +52,10 @@
 
                     {!! Form::input('number', 'trial_type') !!}<br>
 
+                    {!! Form::label('trial_type', 'Passing score') !!}
+
+                    {!! Form::input('number', 'passing_score') !!}<br>
+
                     {!! Form::label('distribution_interval', 'Distribution interval') !!}
 
                     {!! Form::input('number', 'distribution_interval', null, ['class'=>'num-input', 'min'=>'0']) !!} min.<br>

@@ -304,20 +304,28 @@ class PlayerController extends Controller
         $trial->removePlayerFromTrial(Auth::id(), true);
       }
 
-      // If all users have left the trial, deactivate it
-      /*
-      if(count($trial->users) == 0){
-        $trial->is_active = 0;
-        $trial->save();
-      }
-      */
       // Calculate the player's earnings
-      $round_earnings = DB::table('round_earnings')
+      $round_data = DB::table('round_earnings')
                           ->where('trial_id', '=', $trial->id)
                           ->where('user_id', '=', Auth::id())
-                          ->sum('earnings');
+                          ->get();
+
+      $round_earnings = 0;
+      $passed_trial = true;
+      foreach ($round_data as $key => $round) {
+        $round_earnings += $round_data['earnings'];
+        if($round_data['num_correct'] / $round_data['tot_categories'] < $trial->passing_score){
+          $passed_trial = false;
+        }
+      }
+
       $total_earnings = ["bonus" => $round_earnings,
                          "base_pay" => $trial->payment_base];
+
+      if(Session::get('assignment_id')){
+        \oceler\MTurk::postHitData(Session::get('assignment_id'), Auth::user()->mturk_id,
+                            $total_earnings, $passed_trial, true);
+      }
 
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
@@ -566,7 +574,10 @@ class PlayerController extends Controller
             'hit_id' => $request->hitId,
             'assignment_id' => $request->assignmentId,
             'worker_id' => $worker_id,
+            'submit_to' => $request->turkSubmitTo
             ]);
+
+        Session::put('assignment_id', $request->assignmentId);
 
         return \Redirect::to('player/trial/queue');
       }
@@ -621,6 +632,12 @@ class PlayerController extends Controller
       return View::make('layouts.tests.date-debug')
                   ->with('server_time', $server_time)
                   ->with('start_time', $start_time);
+    }
+
+    public function testMTurk()
+    {
+      \oceler\MTurk::testAwsSdk();
+      return;
     }
 
 

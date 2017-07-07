@@ -17,7 +17,6 @@ class ConfigController extends Controller
     ]);
 
     $config_json = json_decode(file_get_contents($request->config_file), true);
-    dump(file_get_contents($request->config_file));
     $errors = [];
 
     foreach ($config_json as $config) {

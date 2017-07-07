@@ -43,6 +43,7 @@ class Trial extends Model
 
       $this->name = $request->name;
       $this->trial_type = $request->trial_type;
+      $this->passing_score = $request->passing_score;
       $this->instructions = $request->instructions;
       $this->distribution_interval = $request->distribution_interval;
       $this->num_waves = $request->num_waves;

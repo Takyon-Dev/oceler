@@ -74,7 +74,7 @@ class Solution extends Model
           $solution_answers[$i]['time_correct'] = 0;
         }
 
-        /* For each of the user's solutions compare them with the solution for
+        /* For each of the user's solutions compare them with the solution for 
         that particular category. If they match, update the is_correct flag
         and add the time correct (diff between the solutions timestamps).
         */
