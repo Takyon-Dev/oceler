@@ -71,18 +71,18 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
 
     if($completed_trial){
       $result = $client->approveAssignment([
-        'AssignmentId' => $assignment_id, // REQUIRED
+        'AssignmentId' => $assignment_id,
         'RequesterFeedback' => 'Great job!',
       ]);
     }
 
     if($total_earnings['bonus'] != 0){
       $result = $client->sendBonus([
-        'AssignmentId' => $assignment_id, // REQUIRED
-        'BonusAmount' => $total_earnings['bonus'], // REQUIRED
+        'AssignmentId' => $assignment_id,
+        'BonusAmount' => $total_earnings['bonus'],
         'Reason' => $total_earnings['bonus_reason'],
         'UniqueRequestToken' => $mturk_hit->unique_token,
-        'WorkerId' => $mturk_id, // REQUIRED
+        'WorkerId' => $mturk_id,
       ]);
     }
 
@@ -95,9 +95,9 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
 
       $result = $client->associateQualificationWithWorker([
         'IntegerValue' => $last_trial_type + 1,
-        'QualificationTypeId' => "3DDNYIPUQNTSBR52F1XBRX6XW33RZA", // REQUIRED
+        'QualificationTypeId' => "3DDNYIPUQNTSBR52F1XBRX6XW33RZA",
         'SendNotification' => false,
-        'WorkerId' => $mturk_id, // REQUIRED
+        'WorkerId' => $mturk_id,
       ]);
     }
 
