@@ -314,7 +314,7 @@ class PlayerController extends Controller
       $passed_trial = true;
       foreach ($round_data as $round) {
         $round_earnings += $round->earnings;
-        if($round->num_correct / $round->tot_categories < $trial->passing_score){
+        if(($round->num_correct / $round->tot_categories) < $trial->passing_score){
           $passed_trial = false;
         }
       }
@@ -322,18 +322,16 @@ class PlayerController extends Controller
       $total_earnings = ["bonus" => $round_earnings,
                          "bonus_reason" => "Bonus payment based on your performance.",
                          "base_pay" => $trial->payment_base];
-      Session::put('assignment_id', '123RVWYBAZW00EXAMPLE456RVWYBAZW00EXAMPLE');
 
       if(Session::get('assignment_id')){
-        echo 'CALLING POSTHITDATA __ ';
         \oceler\MTurk::postHitData(Session::get('assignment_id'), Auth::user()->mturk_id,
                             $total_earnings, $passed_trial, true);
       }
-      /*
+
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
                   ->with('group', $group);
-      */
+
     }
 
     public function endTask()

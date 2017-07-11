@@ -62,7 +62,6 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
                     ->where('assignment_id', '=', $assignment_id)
                     ->where('worker_id', '=', $mturk_id)
                     ->first();
-    dump($mturk_hit);
 
     $client = new \Aws\MTurk\MTurkClient([
       'version' => 'latest',
@@ -75,8 +74,6 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
         'AssignmentId' => $assignment_id, // REQUIRED
         'RequesterFeedback' => 'Great job!',
       ]);
-      echo 'COMPLETED TRIAL::';
-      dump($result);
     }
 
     if($total_earnings['bonus'] != 0){
@@ -87,8 +84,6 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
         'UniqueRequestToken' => $mturk_hit->unique_token,
         'WorkerId' => $mturk_id, // REQUIRED
       ]);
-      echo 'EARNED BONUS::';
-      dump($result);
     }
 
     if($passed_trial){
@@ -104,9 +99,15 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
         'SendNotification' => false,
         'WorkerId' => $mturk_id, // REQUIRED
       ]);
-      echo 'ADDED QUALIFICATION::';
-      dump($result);
     }
-    return;
+
+    $client = new \GuzzleHttp\Client();
+    $response = $client->request('POST',
+                                 $mturk_hit->submit_to.'/mturk/externalSubmit',
+                                 [
+                                   'form_params' => [
+                                                      'assignmentId' => $assignment_id
+                                                    ]
+                                                  ]);
   }
 }
