@@ -312,24 +312,28 @@ class PlayerController extends Controller
 
       $round_earnings = 0;
       $passed_trial = true;
-      foreach ($round_data as $key => $round) {
-        $round_earnings += $round_data['earnings'];
-        if($round_data['num_correct'] / $round_data['tot_categories'] < $trial->passing_score){
+      foreach ($round_data as $round) {
+        $round_earnings += $round->earnings;
+        if($round->num_correct / $round->tot_categories < $trial->passing_score){
           $passed_trial = false;
         }
       }
 
       $total_earnings = ["bonus" => $round_earnings,
+                         "bonus_reason" => "Bonus payment based on your performance.",
                          "base_pay" => $trial->payment_base];
+      Session::put('assignment_id', '123RVWYBAZW00EXAMPLE456RVWYBAZW00EXAMPLE');
 
       if(Session::get('assignment_id')){
+        echo 'CALLING POSTHITDATA __ ';
         \oceler\MTurk::postHitData(Session::get('assignment_id'), Auth::user()->mturk_id,
                             $total_earnings, $passed_trial, true);
       }
-
+      /*
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
                   ->with('group', $group);
+      */
     }
 
     public function endTask()
@@ -574,7 +578,8 @@ class PlayerController extends Controller
             'hit_id' => $request->hitId,
             'assignment_id' => $request->assignmentId,
             'worker_id' => $worker_id,
-            'submit_to' => $request->turkSubmitTo
+            'submit_to' => $request->turkSubmitTo,
+            'unique_token' => uniqid()
             ]);
 
         Session::put('assignment_id', $request->assignmentId);
