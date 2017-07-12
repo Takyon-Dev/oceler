@@ -26,6 +26,7 @@ class PlayerController extends Controller
      */
     public function playerTrial()
     {
+      //Session::put('assignment_id', '3BQU611VFPJH1X3PGCQ9ZXFSIR099G');
     	/**
     	* Let me take a moment to explain networks. The connections between users
     	*   are stored within a network of nodes. Each user is assigned a node.
