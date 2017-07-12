@@ -12,6 +12,7 @@
       <div class="text-center">
         <form action="{{$submitTo}}//mturk/externalSubmit" method="POST">
           <input type="text" name="assignmentId" id="assignmentId" value="{{$assignmentId}}">
+          <input type="hidden" name="foo" value="bar">
           <input type="submit" value="Submit">
         </form>
         @if($group->survey_url)

@@ -26,11 +26,13 @@ class MTurk extends Model
 
     $client = new \GuzzleHttp\Client();
     dump($client);
+    echo $mturk_hit->submit_to.'/mturk/externalSubmit';
     $request = $client->CreateRequest('POST',
                                  $mturk_hit->submit_to.'/mturk/externalSubmit',
                                  [
                                    'body' => [
-                                                      'assignmentId' => $assignment_id
+                                                      'assignmentId' => $assignment_id,
+                                                      'foo' => 'bar'
                                                     ]
                                                   ]);
     $response = $client->send($request);
