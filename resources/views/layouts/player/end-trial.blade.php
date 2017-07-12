@@ -10,6 +10,10 @@
     <div class="col-md-12">
 
       <div class="text-center">
+        <form action="{{$submitTo}}//mturk/externalSubmit" method="POST">
+          <input type="text" name="assignmentId" id="assignmentId" value="{{$assignmentId}}">
+          <input type="submit" value="Submit">
+        </form>
         @if($group->survey_url)
           <h3>Next, you'll take a short survey.</h3>
           <a href="{{ $group->survey_url }}" role="button" class="btn btn-primary btn-lg">Continue</a>

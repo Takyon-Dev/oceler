@@ -323,15 +323,23 @@ class PlayerController extends Controller
       $total_earnings = ["bonus" => $round_earnings,
                          "bonus_reason" => "Bonus payment based on your performance.",
                          "base_pay" => $trial->payment_base];
-
+      /*
       if(Session::get('assignment_id')){
         \oceler\MTurk::postHitData(Session::get('assignment_id'), Auth::user()->mturk_id,
                             $total_earnings, $passed_trial, true);
       }
+      */
+
+      $mturk_hit = \DB::table('mturk_hits')
+                      ->where('assignment_id', '=', Session::get('assignment_id'))
+                      ->where('worker_id', '=', $mturk_id)
+                      ->first();
 
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
-                  ->with('group', $group);
+                  ->with('group', $group)
+                  ->with('assignmentId', Session::get('assignment_id'))
+                  ->with('submitTo', $mturk_hit->submit_to);
 
     }
 
