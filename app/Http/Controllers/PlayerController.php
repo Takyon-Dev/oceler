@@ -332,7 +332,7 @@ class PlayerController extends Controller
 
       $mturk_hit = \DB::table('mturk_hits')
                       ->where('assignment_id', '=', Session::get('assignment_id'))
-                      ->where('worker_id', '=', $mturk_id)
+                      ->where('worker_id', '=', Auth::user()->mturk_id)
                       ->first();
 
       return View::make('layouts.player.end-trial')
