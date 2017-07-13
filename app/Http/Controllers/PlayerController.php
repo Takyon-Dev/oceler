@@ -232,6 +232,10 @@ class PlayerController extends Controller
                   ->orderBy('updated_at', 'desc')
                   ->first();
 
+      $group = DB::table('groups')
+                  ->where('id', $trial_user->group_id)
+                  ->first();
+
       $trial = \oceler\Trial::where('id', '=', $trial_user->trial_id)
                             ->with('rounds')
                             ->with('users')
@@ -277,9 +281,29 @@ class PlayerController extends Controller
                 ->with('curr_round', $curr_round)
                 ->with('check_solutions', $check_solutions)
                 ->with('num_correct', $num_correct)
-                ->with('amt_earned', $amt_earned);
+                ->with('amt_earned', $amt_earned)
+                ->with('group', $group);
     }
 
+    /**
+     * Redirects the player to a survey URL
+     */
+
+    public function getContinueSurvey()
+    {
+      $trial_user = DB::table('trial_user')
+                  ->where('user_id', '=', Auth::user()->id)
+                  ->orderBy('updated_at', 'desc')
+                  ->first();
+
+      $group = DB::table('groups')
+                  ->where('id', $trial_user->group_id)
+                  ->first();
+
+      return View::make('layouts.player.continue-survey')
+                  ->with('group', $group)
+                  ->with('mturk_id', base64_encode(Auth::user()->mturk_id));
+    }
     /**
      * Removes the player from the trial, marks them as
      * having completed the trial, and displays the
@@ -292,13 +316,20 @@ class PlayerController extends Controller
                   ->orderBy('updated_at', 'desc')
                   ->first();
 
+      if(!$trial_user){
+        $trial_user = DB::table('trial_user_archive')
+                    ->where('user_id', '=', $user->id)
+                    ->orderBy('updated_at', 'desc')
+                    ->first();
+      }
+
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
                   ->first();
 
       // If the user hasn't already been unassigned from the
       // trial by some other method, remove them here
-      $trial = \oceler\Trial::where('id', Session::get('trial_id'))
+      $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('users')
                             ->first();
       if($trial->users->contains(Auth::id())){
@@ -315,7 +346,7 @@ class PlayerController extends Controller
       $passed_trial = true;
       foreach ($round_data as $round) {
         $round_earnings += $round->earnings;
-        if(($round->num_correct / $round->tot_categories) < $trial->passing_score){
+        if(($round->num_correct / $round->tot_categories) < ($trial->passing_score / 100)){
           $passed_trial = false;
         }
       }
@@ -323,8 +354,13 @@ class PlayerController extends Controller
       $total_earnings = ["bonus" => $round_earnings,
                          "bonus_reason" => "Bonus payment based on your performance.",
                          "base_pay" => $trial->payment_base];
+
+      $assignment_id = DB::table('mturk_hits')
+                         ->where('user_id', '=', Auth::id())
+                         ->where('trial_id', '=', $trial->id)
+                         ->pluck('assignment_id');
       /*
-      if(Session::get('assignment_id')){
+      if($assignment_id){
         \oceler\MTurk::postHitData(Session::get('assignment_id'), Auth::user()->mturk_id,
                             $total_earnings, $passed_trial, true);
       }
@@ -338,8 +374,9 @@ class PlayerController extends Controller
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
                   ->with('group', $group)
+                  ->with('passed_trial', $passed_trial)
                   ->with('assignmentId', Session::get('assignment_id'))
-                  ->with('submitTo', $mturk_hit->submit_to);
+                  ->with('mturk_id', Auth::user()->mturk_id);
 
     }
 
@@ -532,7 +569,37 @@ class PlayerController extends Controller
         }
       }
 
+      // Update the mturk_hits table with trial_id (if applicable)
+      if(Session::get('assignment_id')){
+        DB::table('mturk_hits')
+          ->update(['trial_id' => $trial->id])
+          ->where('assignment_id', '=', Session::get('assignment_id'))
+          ->where('user_id', '=', Auth::user()->id)
+      }
+
       return View::make('layouts.player.initialize');
+
+    }
+
+    public function getMTurkSubmit($enc_id)
+    {
+      $worker_id = base64_decode($enc_id);
+
+      if(!Auth::check()){
+        $user = \oceler\User::where('mturk_id', $worker_id)->first();
+        /* Then we log them in, record the MTurk HIT data,
+           and send them to the trial queue */
+        $credentials = array(
+          'email' => $user->email,
+          'password' => '0c3134-MtU4k'
+        );
+
+        if(!Auth::attempt($credentials)) {
+          return; // Should be an error page
+        }
+      }
+      else $user = Auth::user();
+
 
     }
 

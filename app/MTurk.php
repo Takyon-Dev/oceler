@@ -11,10 +11,27 @@ class MTurk extends Model
 
   public static function testAwsSdk()
   {
+    echo "-- PHP -- ".getcwd()." -- PHP -- ";
+    $python = exec("/usr/bin/python ../resources/pyscripts/testMturkConnection.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox");
+    echo $python;
+    return;
+
+    $pyscript = ' resources/pyscripts/testMturkConnection.py ';
+    $python = 'usr/bin/python2.7';
+    $args = "-acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox";
+
+    $command = escapeshellcmd($python . $pyscript);
+    $output = shell_exec($command);
+    dump($output);
+
+    //resources/pyscripts/testMturkConnection.py -hit_id 3WUVMVA7OA27PNXEMET7KWWORD3AZW -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -delay 30.0
+    return;
+
     //'3BQU611VFPJH1X3PGCQ9ZXFSIR099G', 'A2LOZXVWUBY8MO', array('bonus' => '3.45', 'bonus_reason' => 'Bonus payment based on your performance.', 'base_pay' => '5'), false, true
     $assignment_id = '3BQU611VFPJH1X3PGCQ9ZXFSIR099G';
     $mturk_id = 'A2LOZXVWUBY8MO';
     $completed_trial = true;
+
 
 
     $mturk_hit = \DB::table('mturk_hits')
@@ -24,9 +41,11 @@ class MTurk extends Model
 
     dump($mturk_hit);
 
+    /*
+
+        TEST HIT SUBMISSION
     $client = new \GuzzleHttp\Client();
     dump($client);
-    echo $mturk_hit->submit_to.'/mturk/externalSubmit';
     $request = $client->CreateRequest('POST',
                                  $mturk_hit->submit_to.'/mturk/externalSubmit',
                                  [
@@ -38,6 +57,7 @@ class MTurk extends Model
     $response = $client->send($request);
     dump($response);
     return;
+    */
 
     $client = new \Aws\MTurk\MTurkClient([
       'version' => 'latest',
@@ -45,16 +65,15 @@ class MTurk extends Model
       'endpoint' => $mturk_hit->submit_to
     ]);
 
-    dump($client);
-
     if($completed_trial){
       $result = $client->approveAssignment([
-        'AssignmentId' => '3BQU611VFPJH1X3PGCQ9ZXFSIR099G',
+        'AssignmentId' => '3483FV8BEEIJJUGSXW8I50GCMKI266',
+        'RequesterFeedback' => 'nice work',
       ]);
     }
 
     dump($result);
-    exit;
+    return;
 
     /*
     $client = new \Aws\MTurk\MTurkClient([
@@ -99,78 +118,20 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
   public static function postHitData($assignment_id, $mturk_id, $total_earnings,
                                      $passed_trial, $completed_trial)
   {
-
     $mturk_hit = \DB::table('mturk_hits')
                     ->where('assignment_id', '=', $assignment_id)
                     ->where('worker_id', '=', $mturk_id)
                     ->first();
 
-    dump($mturk_hit);
+    $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
+    $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
 
-    $client = new \GuzzleHttp\Client();
-    dump($client);
-    $request = $client->CreateRequest('POST',
-                                 $mturk_hit->submit_to.'/mturk/externalSubmit',
-                                 [
-                                   'body' => [
-                                                      'assignmentId' => $assignment_id
-                                                    ]
-                                                  ]);
-    $response = $client->send($request);
-    dump($response);
-    return;
-    //
-    //
-    //
-    $mturk_hit = \DB::table('mturk_hits')
-                    ->where('assignment_id', '=', $assignment_id)
-                    ->where('worker_id', '=', $mturk_id)
-                    ->first();
+    $host = (strpos($mturk_hit->submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
+    $args = ' -acc_key '.$aws_access_key;
+    $args .= ' -sec_key '.$aws_secret_key;
+    $args .= ' -sec_key '.$aws_secret_key;
 
-    $client = new \Aws\MTurk\MTurkClient([
-      'version' => 'latest',
-      'region'  => env('AWS_REGION', ''),
-      'endpoint' => $mturk_hit->submit_to
-    ]);
 
-    if($completed_trial){
-      $result = $client->approveAssignment([
-        'AssignmentId' => '3BQU611VFPJH1X3PGCQ9ZXFSIR099G',
-      ]);
-    }
 
-    if($total_earnings['bonus'] != 0){
-      $result = $client->sendBonus([
-        'AssignmentId' => $assignment_id,
-        'BonusAmount' => $total_earnings['bonus'],
-        'Reason' => $total_earnings['bonus_reason'],
-        'UniqueRequestToken' => $mturk_hit->unique_token,
-        'WorkerId' => $mturk_id,
-      ]);
-    }
-
-    if($passed_trial){
-      $last_trial_type = DB::table('trial_user_archive')
-                            ->where('user_id', '=', Auth::id())
-                            ->orderBy('trial_type', 'DESC')
-                            ->take(1)
-                            ->pluck('trial_type');
-
-      $result = $client->associateQualificationWithWorker([
-        'IntegerValue' => $last_trial_type + 1,
-        'QualificationTypeId' => "3DDNYIPUQNTSBR52F1XBRX6XW33RZA",
-        'SendNotification' => false,
-        'WorkerId' => $mturk_id,
-      ]);
-    }
-
-    $client = new \GuzzleHttp\Client();
-    $response = $client->request('POST',
-                                 $mturk_hit->submit_to.'/mturk/externalSubmit',
-                                 [
-                                   'form_params' => [
-                                                      'assignmentId' => $assignment_id
-                                                    ]
-                                                  ]);
   }
 }

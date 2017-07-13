@@ -114,6 +114,12 @@ Route::get('player/trial/end-round', [
 	'roles' => ['player']
 ]);
 
+Route::get('player/continue-survey', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@getContinueSurvey',
+	'roles' => ['player']
+]);
+
 Route::get('player/trial/new-round', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@startTrialRound',
@@ -320,6 +326,7 @@ Route::post('/login', 'Auth\AuthController@postLogin');
 Route::get('/logout', 'Auth\AuthController@getLogout');
 
 Route::get('/MTurk-login', 'PlayerController@getMTurkLogin');
+Route::get('/MTurk-submit/{$enc_id}', 'PlayerController@getMTurksubit');
 
 // Registration routes...
 Route::get('/register', 'Auth\AuthController@getRegister');
