@@ -18,7 +18,7 @@
       </h3>
       <div class="text-center">
         <a href="/player/trial/queue" role="button" class="btn btn-primary btn-lg">Try Again</a>
-        <a href="/player/end-task" role="button" class="btn btn-primary btn-lg">End Task</a>
+        <a href="/player/end-task/trial-stopped" role="button" class="btn btn-primary btn-lg">End Task</a>
       </div>
     </div>
   </div>

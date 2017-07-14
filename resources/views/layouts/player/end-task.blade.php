@@ -10,12 +10,15 @@
     <div class="col-md-12">
 
       <h1 class="text-primary text-center">
-        The task is now over. Thank you for your participation.
+        {{ $msg }}
       </h1>
       <h3 class="text-center">
-        Your payment of [BASE_PAYMENT] will be transferred to your
-        Amazon MTurk account.
+        Click the button below to complete this assignment and
+        collect your payment of ${{ number_format($total_earnings['bonus'], 2) }}.
       </h3>
+      <div class="text-center">
+        @include('layouts.includes.mturk-external-submit-form')
+      </div>
     </div>
   </div>
 </div>

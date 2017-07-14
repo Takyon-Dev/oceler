@@ -1,0 +1,17 @@
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-acc_key")
+parser.add_argument("-sec_key")
+parser.add_argument("-host")
+parser.add_argument("-hit")
+parser.add_argument("-worker")
+parser.add_argument("-assignment")
+parser.add_argument("-token")
+parser.add_argument("-delay")
+parser.add_argument("-trial_completed")
+parser.add_argument("-trial_passed")
+parser.add_argument("-bonus")
+parser.add_argument("-reason")
+parser.add_argument("-qual_id")
+parser.add_argument("-qual_val")

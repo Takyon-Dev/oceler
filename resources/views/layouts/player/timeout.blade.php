@@ -21,10 +21,10 @@
       </h1>
       <h3 class="text-center">
         Click the button below to end this task and
-        collect your payment.
+        collect your payment of ${{ number_format($earnings, 2) }}.
       </h3>
       <div class="text-center">
-        <a href="/player/end-task" role="button" class="btn btn-primary btn-lg">Continue</a>
+        @include('layouts.includes.mturk-external-submit-form.blade')
       </div>
     </div>
   </div>

@@ -115,9 +115,12 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
 */
   }
 
-  public static function postHitData($assignment_id, $mturk_id, $total_earnings,
-                                     $passed_trial, $completed_trial)
+  public static function postHitData($assignment_id, $mturk_id, $submit_to, $total_earnings,
+                                     $passed_trial, $completed_trial, $trial_type)
   {
+    echo "-- PHP -- ".getcwd()." -- PHP -- ";
+    $file = file_get_contents('../resources/pyscripts/turkConnector.py');
+    //echo $file;
     $mturk_hit = \DB::table('mturk_hits')
                     ->where('assignment_id', '=', $assignment_id)
                     ->where('worker_id', '=', $mturk_id)
@@ -126,12 +129,24 @@ https://tictactoe.amazon.com/gamesurvey.cgi?gameid=01523
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
 
-    $host = (strpos($mturk_hit->submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
+    $host = (strpos($submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
     $args = ' -acc_key '.$aws_access_key;
     $args .= ' -sec_key '.$aws_secret_key;
-    $args .= ' -sec_key '.$aws_secret_key;
+    $args .= ' -host '.$host;
+    $args .= ' -hit '.$mturk_hit->hit_id;
+    $args .= ' -worker '.$mturk_id;
+    $args .= ' -assignment '.$assignment_id;
+    $args .= ' -token '.$mturk_hit->unique_token;
+    $args .= ' -delay 0';
+    $args .= ' -trial_completed '.$completed_trial;
+    $args .= ' -trial_passed '.$passed_trial;
+    $args .= ' -bonus '.$total_earnings['bonus'];
+    $args .= ' -reason '.$total_earnings['bonus_reason'];
+    $args .= ' -qual_id '.env('AWS_QUALIFICATION_ID', '');;
+    $args .= ' -qual_val '.$trial_type;
 
-
-
+    $python = exec("/usr/bin/python ../resources/pyscripts/turkConnector.py".$args);
+    //$python = exec("/usr/bin/python ../resources/pyscripts/testWrite.py");
+    echo $python;
   }
 }

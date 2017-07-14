@@ -64,5 +64,5 @@ function markAsRead(user_id)
 
 function leaveQueue()
 {
-  window.location.replace("/player/trial/timeout");
+  window.location.replace("/player/end-task/timeout");
 }

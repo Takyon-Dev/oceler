@@ -84,12 +84,6 @@ Route::get('player/trial/instructions', [
 	'roles' => ['player']
 ]);
 
-Route::get('player/trial/timeout', [
-	'middleware' => ['auth', 'roles'],
-	'uses' => 'TrialController@queueTimeout',
-	'roles' => ['player']
-]);
-
 Route::get('player/trial/trial-stopped', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'TrialController@trialStopped',
@@ -132,7 +126,7 @@ Route::get('player/trial/end', [
 	'roles' => ['player']
 ]);
 
-Route::get('player/end-task', [
+Route::get('player/end-task/{reason}', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@endTask',
 	'roles' => ['player']
@@ -326,7 +320,7 @@ Route::post('/login', 'Auth\AuthController@postLogin');
 Route::get('/logout', 'Auth\AuthController@getLogout');
 
 Route::get('/MTurk-login', 'PlayerController@getMTurkLogin');
-Route::get('/MTurk-submit/{$enc_id}', 'PlayerController@getMTurksubit');
+Route::get('/MTurk-submit/{$worker_id}', 'PlayerController@getMTurksubit');
 
 // Registration routes...
 Route::get('/register', 'Auth\AuthController@getRegister');

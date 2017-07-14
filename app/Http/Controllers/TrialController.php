@@ -423,11 +423,6 @@ class TrialController extends Controller
 
     }
 
-    public function queueTimeout()
-    {
-      return View::make('layouts.player.timeout');
-    }
-
     public function trialStopped()
     {
       return View::make('layouts.player.trial-stopped');
