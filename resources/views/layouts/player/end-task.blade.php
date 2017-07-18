@@ -17,7 +17,11 @@
         collect your payment of ${{ number_format($total_earnings['bonus'], 2) }}.
       </h3>
       <div class="text-center">
-        @include('layouts.includes.mturk-external-submit-form')
+        @if($assignment_id)
+          @include('layouts.includes.mturk-external-submit-form')
+        @else
+          <h3>This concludes the experiment. Thanks for participating!</h3>
+        @endif
       </div>
     </div>
   </div>

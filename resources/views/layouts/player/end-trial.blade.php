@@ -16,7 +16,11 @@
           in addition to your base payment of ${{ $total_earnings['base_pay'] }}
           for a total of ${{ ($total_earnings['bonus'] + $total_earnings['base_pay']) }}
         </h3>
-          @include('layouts.includes.mturk-external-submit-form')
+          @if($assignment_id)
+            @include('layouts.includes.mturk-external-submit-form')
+          @else
+            <h3>This concludes the experiment. Thanks for participating!</h3>
+          @endif
       </div>
     </div>
   </div>

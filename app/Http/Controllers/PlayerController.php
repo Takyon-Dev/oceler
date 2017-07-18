@@ -335,28 +335,38 @@ class PlayerController extends Controller
         }
       }
 
+
       $total_earnings = ["bonus" => $round_earnings,
                          "bonus_reason" => "Bonus payment based on your performance.",
                          "base_pay" => $trial->payment_base];
 
 
       if(Session::get('assignment_id')){
-        \oceler\MTurk::postHitData(Session::get('assignment_id'), Auth::user()->mturk_id,
-                            $submit_to, $total_earnings, $passed_trial, true, $trial->trial_type);
+
+        $mturk_hit = \DB::table('mturk_hits')
+                        ->where('assignment_id', '=', Session::get('assignment_id'))
+                        ->where('worker_id', '=', Auth::user()->mturk_id)
+                        ->first();
+        $assignment_id = Session::get('assignment_id');
+        $submit_to = $mturk_hit->submit_to;
+        \oceler\MTurk::postHitData($assignment_id, Auth::user()->mturk_id,
+                            $submit_to, $total_earnings,
+                            $passed_trial, true, $trial->trial_type);
       }
 
+      else{
+        $assignment_id = false;
+        $submit_to = false;
+      }
 
-      $mturk_hit = \DB::table('mturk_hits')
-                      ->where('assignment_id', '=', Session::get('assignment_id'))
-                      ->where('worker_id', '=', Auth::user()->mturk_id)
-                      ->first();
 
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
                   ->with('group', $group)
                   ->with('passed_trial', $passed_trial)
                   ->with('completed_trial', true)
-                  ->with('assignmentId', Session::get('assignment_id'))
+                  ->with('assignment_id', $assignment_id)
+                  ->with('submit_to', $submit_to)
                   ->with('mturk_id', Auth::user()->mturk_id);
 
     }
@@ -368,14 +378,25 @@ class PlayerController extends Controller
                          "bonus_reason" => "Compensation for your time spent waiting for otjher players to join.",
                          "base_pay" => 0];
 
-      $mturk_hit = \DB::table('mturk_hits')
-                          ->where('assignment_id', '=', \Session::get('assignment_id'))
-                          ->where('worker_id', '=', Auth::user()->mturk_id)
-                          ->first();
+      if(\Session::get('assignment_id')){
 
-      \oceler\MTurk::postHitData(\Session::get('assignment_id'),
-                          Auth::user()->mturk_id, $mturk_hit->submit_to,
-                          $total_earnings, false, false, 0);
+        $mturk_hit = \DB::table('mturk_hits')
+                            ->where('assignment_id', '=', \Session::get('assignment_id'))
+                            ->where('worker_id', '=', Auth::user()->mturk_id)
+                            ->first();
+
+        $assignment_id = Session::get('assignment_id');
+        $submit_to = $mturk_hit->submit_to;
+
+        \oceler\MTurk::postHitData(\Session::get('assignment_id'),
+                            Auth::user()->mturk_id, $mturk_hit->submit_to,
+                            $total_earnings, false, false, 0);
+      }
+
+      else {
+        $assignment_id = false;
+        $submit_to = false;
+      }
 
       switch($reason) {
         case 'timeout':
@@ -391,7 +412,7 @@ class PlayerController extends Controller
                   ->with('assignment_id', \Session::get('assignment_id'))
                   ->with('passed_trial', false)
                   ->with('completed_trial', false)
-                  ->with('submitTo', $mturk_hit->submit_to)
+                  ->with('submit_to', $mturk_hit->submit_to)
                   ->with('msg', $msg);
     }
 
@@ -573,10 +594,11 @@ class PlayerController extends Controller
 
       // Update the mturk_hits table with trial_id (if applicable)
       if(Session::get('assignment_id')){
+        $session_id = Session::get('assignment_id');
         DB::table('mturk_hits')
-          ->update(['trial_id' => $trial->id])
           ->where('assignment_id', '=', Session::get('assignment_id'))
-          ->where('user_id', '=', Auth::user()->id);
+          ->where('user_id', '=', Auth::user()->id)
+          ->update(['trial_id' => $trial->id]);
       }
 
       return View::make('layouts.player.initialize');
@@ -625,8 +647,10 @@ class PlayerController extends Controller
 
     }
 
+    // http://oceler.loc/MTurk-login?assignmentId=1234TESTAZSXDC&hitId=QAWSED4321RFTG&workerId=A2LOZXVWUBY8MO
     public function getMTurkLogin(Request $request)
     {
+
       $worker_id = $request->workerId;
 
       /* If the user is just previewing the MTurk HIT the assignment id
@@ -637,7 +661,8 @@ class PlayerController extends Controller
 
       /* If the user accepts the HIT, we need to see if they are already
       in our database. */
-      $user = \oceler\User::where('mturk_id', $worker_id)->first();
+      $user_id = \oceler\User::where('mturk_id', $worker_id)->pluck('id');
+      $user = Auth::loginUsingId($user_id);
 
       /* If there isn't already an account for this person,
          we create one (if there is an MTurk worker ID) */
@@ -649,39 +674,32 @@ class PlayerController extends Controller
         $user->password = \Hash::make('0c3134-MtU4k');
         $user->role_id = 3;
         $user->save();
+        $user_id = $user->id;
       }
 
-      /* Then we log them in, record the MTurk HIT data,
-         and send them to the trial queue */
-      $credentials = array(
-        'email' => $user->email,
-        'password' => '0c3134-MtU4k'
-      );
+      $user = Auth::loginUsingId($user_id);
 
-      if(Auth::attempt($credentials)) {
+      /* Log their IP and user agent. This happens
+      automatically when users log in, but here we're
+      logging them in manually */
+      $user->ip_address = $_SERVER['REMOTE_ADDR'];
+      $user->user_agent = $_SERVER['HTTP_USER_AGENT'];
+      $user->save();
 
-        /* Log their IP and user agent. This happens
-        automatically when users log in, but here we're
-        logging them in manually */
-        $user->ip_address = $_SERVER['REMOTE_ADDR'];
-        $user->user_agent = $_SERVER['HTTP_USER_AGENT'];
-        $user->save();
+      DB::table('mturk_hits')->insert([
+          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'user_id' => $user->id,
+          'hit_id' => $request->hitId,
+          'assignment_id' => $request->assignmentId,
+          'worker_id' => $worker_id,
+          'submit_to' => $request->turkSubmitTo,
+          'unique_token' => uniqid()
+          ]);
 
-        DB::table('mturk_hits')->insert([
-            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'user_id' => $user->id,
-            'hit_id' => $request->hitId,
-            'assignment_id' => $request->assignmentId,
-            'worker_id' => $worker_id,
-            'submit_to' => $request->turkSubmitTo,
-            'unique_token' => uniqid()
-            ]);
+      Session::put('assignment_id', $request->assignmentId);
 
-        Session::put('assignment_id', $request->assignmentId);
-
-        return \Redirect::to('player/trial/queue');
-      }
+      return \Redirect::to('player/trial/queue');
 
     }
 
