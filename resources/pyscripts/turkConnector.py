@@ -22,8 +22,8 @@ if args.host == 'sandbox':
 else:
     host = real_host
 
-f = open("../storage/logs/turk-connector.log","a")
-#f = open("turk-connector.log","a") -- for cmd line testing
+#f = open("../storage/logs/turk-connector.log","a")
+f = open("turk-connector.log","a") -- for cmd line testing
 f.write('Connecting to ' + host + ' ' +  datetime.datetime.now().ctime() + "\r\n")
 f.write('Logging assignment: ' + args.assignment + "\r\n")
 
