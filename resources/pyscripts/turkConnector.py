@@ -44,7 +44,7 @@ else:
 if float(args.bonus) > 0:
         mturk.grant_bonus(worker_id = args.worker,
                           assignment_id = args.assignment,
-                          bonus_price = boto.mturk.price.Price( amount = args.bonus))
+                          bonus_price = (boto.mturk.price.Price( amount = args.bonus)))
         f.write('Worker: ' + args.worker + ' -- paying bonus ' + args.bonus + "\r\n")
 
 if args.trial_passed == 'true':
