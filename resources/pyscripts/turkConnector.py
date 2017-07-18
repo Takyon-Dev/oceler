@@ -35,10 +35,10 @@ mturk = boto.mturk.connection.MTurkConnection(
 )
 
 if args.trial_completed == 'true':
-    #mturk.approve_assignment(assignment_id = args.assignment)
+    mturk.approve_assignment(assignment_id = args.assignment)
     f.write('Worker: ' + args.worker + ' -- Approving assignment ' + args.assignment + "\r\n")
 else:
-        #mturk.reject_assignment(assignment_id = args.assignment)
+        mturk.reject_assignment(assignment_id = args.assignment)
         f.write('Worker: ' + args.worker + ' -- Rejecting assignment ' + args.assignment + "\r\n")
 
 if float(args.bonus) > 0:
