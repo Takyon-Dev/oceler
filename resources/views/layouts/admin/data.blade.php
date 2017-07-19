@@ -15,9 +15,11 @@
               <tr class="success">
                 <th>Trial Name</th>
                 <th>Factoidset</th>
+                <th>Base Pay</th>
                 <th>Num Players</th>
                 <th>Start Time</th>
                 <th>Trial Time</th>
+                <th></th>
                 <th></th>
                 <th></th>
               </tr>
@@ -28,6 +30,7 @@
                     {{ $fact }}
                   @endforeach
                 </td>
+                <td>{{ $s['trial']['base_pay'] }} mins.</td>
                 <td>{{ $s['trial']['num_players'] }}</td>
                 <td>{{ $s['trial']['start_time'] }}</td>
                 <td>{{ $s['trial']['total_time'] }} mins.</td>
@@ -42,7 +45,8 @@
                   <th>IP</th>
                   <th>Last Ping</th>
                   <th>Time</th>
-                  <th>Earnings<th>
+                  <th>Num Correct</th>
+                  <th>Bonus<th>
                 </tr>
                 @foreach($s['users'] as $player)
                   <tr class="table-striped">
@@ -51,7 +55,8 @@
                     <td>{{ $player['ip_address'] }}</td>
                     <td>{{ $player['last_ping'] }}</td>
                     <td>{{ $player['player_time'] }} mins.</td>
-                    <td>{{ $player['earnings'] }}</td>
+                    <td>{{ $player['num_correct'] }} / {{ $player['tot_categories'] }}</td>
+                    <td>{{ $player['bonus'] }}</td>
                   </tr>
                 @endforeach
               @endif

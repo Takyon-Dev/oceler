@@ -23,7 +23,7 @@ else:
     host = real_host
 
 #f = open("../storage/logs/turk-connector.log","a")
-f = open("turk-connector.log","a") # for cmd line testing
+f = open("turk-connector.log","a+") # for cmd line testing
 f.write('Connecting to ' + host + ' ' +  datetime.datetime.now().ctime() + "\r\n")
 f.write('Logging assignment: ' + args.assignment + "\r\n")
 
@@ -35,25 +35,35 @@ mturk = boto.mturk.connection.MTurkConnection(
 )
 
 if args.trial_completed == 'true':
-    mturk.approve_assignment(assignment_id = args.assignment)
+    response = mturk.approve_assignment(assignment_id = args.assignment)
     f.write('Worker: ' + args.worker + ' -- Approving assignment ' + args.assignment + "\r\n")
+    f.write(response + "\r\n")
 else:
-        mturk.reject_assignment(assignment_id = args.assignment)
+        response = mturk.reject_assignment(assignment_id = args.assignment)
         f.write('Worker: ' + args.worker + ' -- Rejecting assignment ' + args.assignment + "\r\n")
+        f.write(response + "\r\n")
 
 if float(args.bonus) > 0:
-        mturk.grant_bonus(worker_id = args.worker,
+        response = mturk.grant_bonus(worker_id = args.worker,
                           assignment_id = args.assignment,
                           bonus_price = (boto.mturk.price.Price( amount = args.bonus)),
                           reason = "Additional compensation")
         f.write('Worker: ' + args.worker + ' -- paying bonus ' + args.bonus + "\r\n")
+        f.write(response + "\r\n")
 
 if args.trial_passed == 'true':
-    mturk.assign_qualification(qualification_type_id = args.qual_id,
-                               worker_id = args.worker,
-                               value = args.qual_val,
-                               send_notification = True)
+    if args.qual_val == 1:
+        response = mturk.assign_qualification(qualification_type_id = args.qual_id,
+                                   worker_id = args.worker,
+                                   value = args.qual_val,
+                                   send_notification = True)
+    else:
+        response = mturk.update_qualification_score(qualification_type_id = args.qual_id,
+                                   worker_id = args.worker,
+                                   value = args.qual_val)
+                                   
     f.write('Worker: ' + args.worker + ' -- updating qualification ' + args.qual_id + " to " + args.qual_val + "\r\n")
+    f.write(response + "\r\n")
 
 f.write("END\r\n")
 f.close()

@@ -94,7 +94,7 @@ class AdminController extends Controller
   public function getData()
   {
     $stats = [];
-    $trials = \oceler\Trial::with('rounds')->get();
+    $trials = \oceler\Trial::with('rounds')->orderBy('id', 'DESC')->get();
 
     foreach ($trials as $trial) {
 
@@ -105,7 +105,7 @@ class AdminController extends Controller
       foreach ($trial->rounds as $round) {
         $total_time += $round->round_timeout;
       }
-                         
+
       $factoidsets = DB::table('factoidsets')
                        ->whereIn('id', ($trial->rounds->pluck('factoidset_id')))
                        ->lists('name');
@@ -113,6 +113,7 @@ class AdminController extends Controller
       $stats[$trial->id]['trial'] =
         array('name' => $trial->name,
         'num_players' => $trial->num_players,
+        'base_pay'   => $trial->base_pay,
         'factoidset' => $factoidsets,
         'start_time' => $trial->rounds[0]->updated_at,
         'total_time' => $total_time);
@@ -127,11 +128,14 @@ class AdminController extends Controller
                        ->where('id', '=', $trial_user->user_id)
                        ->first();
 
-        $round_earnings = DB::table('round_earnings')
-                            ->where('trial_id', '=', $trial->id)
-                            ->where('user_id', '=', $user->id)
-                            ->sum('earnings');
-        $total_earnings = $round_earnings + $trial->payment_base;
+        $performance = DB::select("SELECT SUM(earnings) AS bonus,
+                                  SUM(num_correct) AS correct,
+                                  SUM(tot_categories) AS categories
+                                  FROM round_earnings
+                                  WHERE trial_id = ?
+                                  AND user_id = ?", [$trial->id, $user->id]);
+
+        dump($performance);
 
         $player_time = \Carbon\Carbon::parse($trial_user->last_ping)
                                     ->diffInMinutes(\Carbon\Carbon::parse(
@@ -145,7 +149,12 @@ class AdminController extends Controller
                 'user_agent' => $user->user_agent,
                 'ip_address' => $user->ip_address,
                 'player_time' => $player_time,
-                'earnings' => $total_earnings);
+                'completed_trial' => $trial_user->completed_trial,
+                'passed_trial' => $trial_user->trial_passed,
+                'num_correct' => $performance[0]->correct,
+                'tot_categories' => $performance[0]->categories,
+                'bonus' => $performance[0]->bonus
+                );
       }
     }
 

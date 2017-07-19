@@ -11,7 +11,9 @@ class MTurk extends Model
 
   public static function testAwsSdk()
   {
-    // python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit QAWSED4321RFTG -worker A2LOZXVWUBY8MO -assignment 1234TESTAZSXDC -token 596e0a5f797d3 -delay 0 -trial_completed true -trial_passed false -bonus 0 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 1
+
+    // python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit 3TTPFEFXCSJKB0LHQF6O4KQX07J6H6 -worker A2LOZXVWUBY8MO -assignment 324G5B4FB37VRKRJ1J9WSQNTKZ0075 -token 596f7f4c87ba9 -delay 0 -trial_completed true -trial_passed true -bonus 1.77 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 2
+
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
@@ -61,7 +63,7 @@ class MTurk extends Model
     $args .= ' -worker '.$mturk_id;
     $args .= ' -assignment '.$assignment_id;
     $args .= ' -token '.$mturk_hit->unique_token;
-    $args .= ' -delay 20';
+    $args .= ' -delay 300';
     $args .= ' -trial_completed '.$completed_trial;
     $args .= ' -trial_passed '.$passed_trial;
     $args .= ' -bonus '.$total_earnings['bonus'];

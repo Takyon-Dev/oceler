@@ -308,16 +308,6 @@ class PlayerController extends Controller
                   ->where('id', $trial_user->group_id)
                   ->first();
 
-      // If the user hasn't already been unassigned from the
-      // trial by some other method, remove them here
-      $trial = \oceler\Trial::where('id', $trial_user->trial_id)
-                            ->with('users')
-                            ->first();
-      if($trial->users->contains(Auth::id())){
-        // true indicates that they have completed the trial
-        $trial->removePlayerFromTrial(Auth::id(), true);
-      }
-
       // Calculate the player's earnings
       $round_data = DB::table('round_earnings')
                           ->where('trial_id', '=', $trial->id)
@@ -339,6 +329,16 @@ class PlayerController extends Controller
       $total_earnings = ["bonus" => $round_earnings,
                          "bonus_reason" => "Bonus payment based on your performance.",
                          "base_pay" => $trial->payment_base];
+
+     // If the user hasn't already been unassigned from the
+     // trial by some other method, remove them here
+      $trial = \oceler\Trial::where('id', $trial_user->trial_id)
+                            ->with('users')
+                            ->first();
+      if($trial->users->contains(Auth::id())){
+        // first bool indicates that they have completed the trial
+        $trial->removePlayerFromTrial(Auth::id(), true, $passed_trial);
+      }
 
 
       if(Session::get('assignment_id')){

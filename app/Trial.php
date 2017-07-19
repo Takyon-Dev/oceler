@@ -178,11 +178,11 @@ class Trial extends Model
                       ->get();
 
       foreach ($this_users as $this_user) {
-          Trial::removePlayerFromTrial($this_user->user_id, false);
+          Trial::removePlayerFromTrial($this_user->user_id, false, false);
       }
     }
 
-    public function removePlayerFromTrial($user_id, $completed_trial)
+    public function removePlayerFromTrial($user_id, $completed_trial, $passed_trial)
     {
       $this_user = \DB::table('trial_user')
                       ->where('user_id', $user_id)
@@ -197,7 +197,8 @@ class Trial extends Model
         'trial_type' => $this->trial_type,
         'group_id' => $this_user->group_id,
         'last_ping' => $this_user->last_ping,
-        'completed_trial' => $completed_trial
+        'completed_trial' => $completed_trial,
+        'passed_trial' => $passed_trial
       ]);
 
       \DB::table('trial_user')->where('id', $this_user->id)->delete();
