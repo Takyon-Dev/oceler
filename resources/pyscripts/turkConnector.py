@@ -36,20 +36,20 @@ mturk = boto.mturk.connection.MTurkConnection(
 
 if args.trial_completed == 'true':
     response = mturk.approve_assignment(assignment_id = args.assignment)
-    f.write('Worker: ' + args.worker + ' -- Approving assignment ' + args.assignment + "\r\n")
-    f.write(response + "\r\n")
+    f.write("\r\nWorker: " + args.worker + ' -- Approving assignment ' + args.assignment + "\r\n")
+    f.write(response)
 else:
         response = mturk.reject_assignment(assignment_id = args.assignment)
-        f.write('Worker: ' + args.worker + ' -- Rejecting assignment ' + args.assignment + "\r\n")
-        f.write(response + "\r\n")
+        f.write("\r\nWorker: " + args.worker + ' -- Rejecting assignment ' + args.assignment + "\r\n")
+        f.write(response)
 
 if float(args.bonus) > 0:
         response = mturk.grant_bonus(worker_id = args.worker,
                           assignment_id = args.assignment,
                           bonus_price = (boto.mturk.price.Price( amount = args.bonus)),
                           reason = "Additional compensation")
-        f.write('Worker: ' + args.worker + ' -- paying bonus ' + args.bonus + "\r\n")
-        f.write(response + "\r\n")
+        f.write("\r\nWorker: " + args.worker + ' -- paying bonus ' + args.bonus + "\r\n")
+        f.write(response)
 
 if args.trial_passed == 'true':
     if args.qual_val == 1:
@@ -61,10 +61,10 @@ if args.trial_passed == 'true':
         response = mturk.update_qualification_score(qualification_type_id = args.qual_id,
                                    worker_id = args.worker,
                                    value = args.qual_val)
-                                   
-    f.write('Worker: ' + args.worker + ' -- updating qualification ' + args.qual_id + " to " + args.qual_val + "\r\n")
-    f.write(response + "\r\n")
 
-f.write("END\r\n")
+    f.write("\r\nWorker: " + args.worker + ' -- updating qualification ' + args.qual_id + " to " + args.qual_val + "\r\n")
+    f.write(response)
+
+f.write("\r\nEND\r\n")
 f.close()
 exit()
