@@ -304,6 +304,10 @@ class PlayerController extends Controller
     {
       $trial_user = Session::get('trial_user');
 
+      $trial = \oceler\Trial::where('id', $trial_user->trial_id)
+                            ->with('users')
+                            ->first();
+
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
                   ->first();
@@ -332,9 +336,6 @@ class PlayerController extends Controller
 
      // If the user hasn't already been unassigned from the
      // trial by some other method, remove them here
-      $trial = \oceler\Trial::where('id', $trial_user->trial_id)
-                            ->with('users')
-                            ->first();
       if($trial->users->contains(Auth::id())){
         // first bool indicates that they have completed the trial
         $trial->removePlayerFromTrial(Auth::id(), true, $passed_trial);

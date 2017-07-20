@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
           \oceler\MTurk::testAwsSdk();
-        })->everyMinute();
+        })->everyMinute();bv 
 
     }
 }
