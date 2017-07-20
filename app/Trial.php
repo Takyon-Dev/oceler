@@ -198,7 +198,7 @@ class Trial extends Model
         'group_id' => $this_user->group_id,
         'last_ping' => $this_user->last_ping,
         'completed_trial' => $completed_trial,
-        'passed_trial' => $passed_trial
+        'trial_passed' => $passed_trial
       ]);
 
       \DB::table('trial_user')->where('id', $this_user->id)->delete();
