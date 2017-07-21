@@ -1,1 +1,0 @@
-HEYConnecting to mechanicalturk.sandbox.amazonaws.com Tue Jul 18 10:28:17 2017Worker: A2LOZXVWUBY8MO -- Approving assignment 1234TESTAZSXDC

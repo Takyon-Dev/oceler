@@ -22,8 +22,8 @@ if args.host == 'sandbox':
 else:
     host = real_host
 
-#f = open("../storage/logs/turk-connector.log","a")
-f = open("turk-connector.log","a+") # for cmd line testing
+f = open("../storage/logs/turk-connector.log","a")
+#f = open("turk-connector.log","a+") # for cmd line testing
 f.write('Connecting to ' + host + ' ' +  datetime.datetime.now().ctime() + "\r\n")
 f.write('Logging assignment: ' + args.assignment + "\r\n")
 
@@ -37,11 +37,11 @@ mturk = boto.mturk.connection.MTurkConnection(
 if args.trial_completed == 'true':
     response = mturk.approve_assignment(assignment_id = args.assignment)
     f.write("\r\nWorker: " + args.worker + ' -- Approving assignment ' + args.assignment + "\r\n")
-    f.write(response)
+    f.write(str(response))
 else:
         response = mturk.reject_assignment(assignment_id = args.assignment)
         f.write("\r\nWorker: " + args.worker + ' -- Rejecting assignment ' + args.assignment + "\r\n")
-        f.write(response)
+        f.write(str(response))
 
 if float(args.bonus) > 0:
         response = mturk.grant_bonus(worker_id = args.worker,
@@ -49,7 +49,7 @@ if float(args.bonus) > 0:
                           bonus_price = (boto.mturk.price.Price( amount = args.bonus)),
                           reason = "Additional compensation")
         f.write("\r\nWorker: " + args.worker + ' -- paying bonus ' + args.bonus + "\r\n")
-        f.write(response)
+        f.write(str(response))
 
 if args.trial_passed == 'true':
     if args.qual_val == 1:
@@ -63,7 +63,7 @@ if args.trial_passed == 'true':
                                    value = args.qual_val)
 
     f.write("\r\nWorker: " + args.worker + ' -- updating qualification ' + args.qual_id + " to " + args.qual_val + "\r\n")
-    f.write(response)
+    f.write(str(response))
 
 f.write("\r\nEND\r\n")
 f.close()
