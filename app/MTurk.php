@@ -16,7 +16,7 @@ class MTurk extends Model
     return;
 
     // python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit 3TTPFEFXCSJKB0LHQF6O4KQX07J6H6 -worker A2LOZXVWUBY8MO -assignment 324G5B4FB37VRKRJ1J9WSQNTKZ0075 -token 596f7f4c87ba9 -delay 0 -trial_completed true -trial_passed true -bonus 1.77 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 2
-    //python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit 3D5G8J4N593VVZRDRHVLUV9KSV1VTU -worker A2LOZXVWUBY8MO -assignment 33C7UALJVLXZYNHK7752KV2Y1CZ81T -token 596fa56cbe1d4 -delay 0 -trial_completed true -trial_passed true -bonus 5.30 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 2
+    //python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit 3NZ1E5QA6Y0E1JIHL4MNQ39Z91F5BP -worker A2LOZXVWUBY8MO -assignment 3K3R2QNK8B2FLPRSENL0VT26WG59UB -token 596fa56cbe1d4 -delay 0 -trial_completed true -trial_passed true -bonus 5.30 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 2
 
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
