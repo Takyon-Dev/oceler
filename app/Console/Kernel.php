@@ -29,7 +29,6 @@ class Kernel extends ConsoleKernel
                  ->hourly();
       */
 
-
         $schedule->call(function () {
           \oceler\MTurk::testAwsSdk();
         })->everyMinute();

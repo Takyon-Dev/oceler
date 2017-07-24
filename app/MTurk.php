@@ -12,7 +12,7 @@ class MTurk extends Model
   public static function testAwsSdk()
   {
 
-    \File::put(uniqid(), "FOOBARFOOBAR");
+    \File::put('crontest.txt', "FOOBAR\n");
     return;
 
     // python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit 3TTPFEFXCSJKB0LHQF6O4KQX07J6H6 -worker A2LOZXVWUBY8MO -assignment 324G5B4FB37VRKRJ1J9WSQNTKZ0075 -token 596f7f4c87ba9 -delay 0 -trial_completed true -trial_passed true -bonus 1.77 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 2
