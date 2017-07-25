@@ -17,7 +17,6 @@ class PlayerController extends Controller
 {
     public function home()
     {
-      Session::put('assignment_id', '3BQU611VFPJH1X3PGCQ9ZXFSIR099G');
       return View::make('layouts.player.home');
     }
 
@@ -350,7 +349,7 @@ class PlayerController extends Controller
                         ->first();
         $assignment_id = Session::get('assignment_id');
         $submit_to = $mturk_hit->submit_to;
-        \oceler\MTurk::postHitData($assignment_id, Auth::user()->mturk_id,
+        \oceler\MTurk::storeHitData($assignment_id, Auth::user()->mturk_id,
                             $submit_to, $total_earnings,
                             $passed_trial, true, $trial->trial_type);
       }
@@ -389,7 +388,7 @@ class PlayerController extends Controller
         $assignment_id = Session::get('assignment_id');
         $submit_to = $mturk_hit->submit_to;
 
-        \oceler\MTurk::postHitData(\Session::get('assignment_id'),
+        \oceler\MTurk::storeHitData(\Session::get('assignment_id'),
                             Auth::user()->mturk_id, $mturk_hit->submit_to,
                             $total_earnings, false, false, 0);
       }
@@ -756,7 +755,7 @@ class PlayerController extends Controller
 
     public function testMTurk()
     {
-      \oceler\MTurk::testAwsSdk();
+      \oceler\MTurk::processQualification();
       return;
     }
 

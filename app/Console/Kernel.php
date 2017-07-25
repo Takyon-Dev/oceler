@@ -30,8 +30,16 @@ class Kernel extends ConsoleKernel
       */
 
         $schedule->call(function () {
-          \oceler\MTurk::testAwsSdk();
-        })->everyMinute();
+          \oceler\MTurk::processAssignments();
+        })->hourly();
+
+        $schedule->call(function () {
+          \oceler\MTurk::processBonus();
+        })->cron('5 * * * *');
+
+        $schedule->call(function () {
+          \oceler\MTurk::processQualification();
+        })->cron('10 * * * *');
 
     }
 }
