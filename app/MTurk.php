@@ -15,6 +15,8 @@ class MTurk extends Model
     echo getcwd();
     return;
 
+    // * * * * * php /var/www/netlabexperiments.org/public_html/oceler/artisan schedule:run >> /dev/null 2>&1
+
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
 
@@ -73,7 +75,7 @@ class MTurk extends Model
       $args .= ' -assignment '.$hit->assignment_id;
       $args .= ' -trial_completed '.$hit->trial_completed;
 
-      exec("/usr/bin/python " + $PATH_TO_PYSCRIPTS + "pyscripts/turkConnector.py".$args, $output, $return_val);
+      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
 
       if($return_val == 0){
         $mturk_hit = \DB::table('mturk_hits')
@@ -105,7 +107,7 @@ class MTurk extends Model
       $args .= ' -assignment '.$hit->assignment_id;
       $args .= ' -bonus '.$hit->bonus;
       $args .= ' -unique_token '.$hit->unique_token;
-      exec("/usr/bin/python " + $PATH_TO_PYSCRIPTS + "pyscripts/turkConnector.py".$args, $output, $return_val);
+      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
 
       if($return_val == 0){
         $mturk_hit = \DB::table('mturk_hits')
@@ -138,7 +140,7 @@ class MTurk extends Model
       $args .= ' -qual_id '.env('AWS_QUALIFICATION_ID', '');
       $args .= ' -qual_val '.$hit->trial_type;
 
-      exec("/usr/bin/python " + $PATH_TO_PYSCRIPTS + "pyscripts/turkConnector.py".$args, $output, $return_val);
+      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
       print_r($output);
       echo $return_val;
       if($return_val == 0){
@@ -164,7 +166,7 @@ class MTurk extends Model
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
-    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')  
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
 
     $host = (strpos($submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
     $args = ' -acc_key '.$aws_access_key;
@@ -181,7 +183,7 @@ class MTurk extends Model
     $args .= ' -qual_id '.env('AWS_QUALIFICATION_ID', '');
     $args .= ' -qual_val '.$trial_type;
 
-    exec("/usr/bin/python " + $PATH_TO_PYSCRIPTS + "pyscripts/turkConnector.py".$args, $output, $return_val);
+    exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
 
   }
 }
