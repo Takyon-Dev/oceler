@@ -15,10 +15,6 @@ class MTurk extends Model
     \File::put('crontest.txt', "FOOBAR\n");
     return;
 
-    // python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit 3TTPFEFXCSJKB0LHQF6O4KQX07J6H6 -worker A2LOZXVWUBY8MO -assignment 324G5B4FB37VRKRJ1J9WSQNTKZ0075 -token 596f7f4c87ba9 -delay 0 -trial_completed true -trial_passed true -bonus 1.77 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 2
-    //python resources/pyscripts/turkConnector.py -acc_key AKIAJTMGGTPGKJJS2SGA -sec_key ZPIdUj0nmu/N9vk8mv2S7y3FaLcNolS+G1lkAZda -host sandbox -hit 3FJ2RVH25Y53ETKX516T1QBX1PC29Y -worker A2LOZXVWUBY8MO -assignment 3W2LOLRXLBE7MTI2EQHKGRT2Z90KRU -token 596fa56cbe1d4 -delay 0 -trial_completed true -trial_passed true -bonus 15.45 -qual_id 3DDNYIPUQNTSBR52F1XBRX6XW33RZA -qual_val 2
-
-
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
 

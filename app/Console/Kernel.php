@@ -31,15 +31,15 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
           \oceler\MTurk::processAssignments();
-        })->hourly();
+        })->everyMinute();
 
         $schedule->call(function () {
           \oceler\MTurk::processBonus();
-        })->cron('5 * * * *');
+        })->everyFiveMinutes();
 
         $schedule->call(function () {
           \oceler\MTurk::processQualification();
-        })->cron('10 * * * *');
+        })->everyFiveMinutes();
 
     }
 }
