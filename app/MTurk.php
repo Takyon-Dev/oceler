@@ -12,7 +12,7 @@ class MTurk extends Model
   public static function testAwsSdk()
   {
 
-    \File::put('crontest.txt', "FOOBAR\n");
+    echo getcwd();
     return;
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
