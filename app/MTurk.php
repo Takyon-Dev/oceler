@@ -57,6 +57,7 @@ class MTurk extends Model
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
 
     $mturk_hits = \DB::table('mturk_hits')
                      ->where('hit_processed', '=', 0)
@@ -72,7 +73,7 @@ class MTurk extends Model
       $args .= ' -assignment '.$hit->assignment_id;
       $args .= ' -trial_completed '.$hit->trial_completed;
 
-      exec("/usr/bin/python pyscripts/turkConnector.py".$args, $output, $return_val);
+      exec("/usr/bin/python " + $PATH_TO_PYSCRIPTS + "pyscripts/turkConnector.py".$args, $output, $return_val);
 
       if($return_val == 0){
         $mturk_hit = \DB::table('mturk_hits')
