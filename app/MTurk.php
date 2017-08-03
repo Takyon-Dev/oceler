@@ -11,7 +11,7 @@ class MTurk extends Model
 
   public static function testAwsSdk()
   {
-
+    echo 'Current working directory: ';
     echo getcwd();
     return;
 
