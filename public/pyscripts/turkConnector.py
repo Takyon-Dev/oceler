@@ -47,6 +47,10 @@ def process_qualification(mturk, args):
         else:
             return 1
 
+def test_connection(mturk, args):
+    response = mturk.get_account_balance()
+    print(response)
+
 sandbox_host = 'mechanicalturk.sandbox.amazonaws.com'
 real_host = 'mechanicalturk.amazonaws.com'
 
@@ -76,3 +80,6 @@ if args.func == 'process_bonus':
 
 if args.func == 'process_qualification':
     result = process_qualification(mturk, args)
+
+if args.func == 'test_connection':
+    result = test_connection(mturk, args)

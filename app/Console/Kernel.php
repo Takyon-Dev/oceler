@@ -29,6 +29,14 @@ class Kernel extends ConsoleKernel
                  ->hourly();
       */
 
+     $file_path = env('CRON_OUTPUT_LOG', '')
+
+        $schedule->call(function () {
+          \oceler\MTurk::testConnection();
+        })->everyMinute()
+        ->appendOutputTo($filePath);
+
+        /*
         $schedule->call(function () {
           \oceler\MTurk::processAssignments();
         })->everyMinute();
@@ -40,6 +48,6 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
           \oceler\MTurk::processQualification();
         })->everyFiveMinutes();
-
+        */
     }
 }

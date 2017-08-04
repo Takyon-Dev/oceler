@@ -9,6 +9,27 @@ use GuzzleHttp\Client;
 class MTurk extends Model
 {
 
+  public static testConnection()
+  {
+    $mturk = \DB::table('mturk_hits')
+                  where('id', '=', 5)
+                  ->update(['unique_token' => 'ABC123DEF456']);
+
+
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
+
+    $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
+    $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
+
+    $args = ' -acc_key '.$aws_access_key;
+    $args .= ' -sec_key '.$aws_secret_key;
+    $args .= ' -func test_connection'
+
+    exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
+    echo $output
+
+  }
+
   public static function testAwsSdk()
   {
     echo 'Current working directory: ';
