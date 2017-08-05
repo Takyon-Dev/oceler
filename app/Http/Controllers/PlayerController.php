@@ -755,7 +755,7 @@ class PlayerController extends Controller
 
     public function testMTurk()
     {
-      \oceler\MTurk::testAwsSdk();
+      \oceler\MTurk::testConnection();
       return;
     }
 

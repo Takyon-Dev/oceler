@@ -29,24 +29,21 @@ class Kernel extends ConsoleKernel
                  ->hourly();
       */
 
-     $file_path = env('CRON_OUTPUT_LOG', '')
-
-        $schedule->call(function () {
-          \oceler\MTurk::testConnection();
-        })->everyMinute()
-        ->appendOutputTo($filePath);
+     $schedule->call(
+       '\oceler\MTurk@testConnection'
+     )->everyMinute();
 
         /*
         $schedule->call(function () {
-          \oceler\MTurk::processAssignments();
+        '\oceler\MTurk@processAssignments'
         })->everyMinute();
 
         $schedule->call(function () {
-          \oceler\MTurk::processBonus();
+          '\oceler\MTurk@processBonus'
         })->everyFiveMinutes();
 
         $schedule->call(function () {
-          \oceler\MTurk::processQualification();
+          '\oceler\MTurk@processQualification'
         })->everyFiveMinutes();
         */
     }

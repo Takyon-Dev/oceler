@@ -9,25 +9,29 @@ use GuzzleHttp\Client;
 class MTurk extends Model
 {
 
-  public static testConnection()
+
+
+
+  public static function testConnection()
   {
     $mturk = \DB::table('mturk_hits')
-                  where('id', '=', 5)
+                  ->where('id', '=', 5)
                   ->update(['unique_token' => 'ABC123DEF456']);
 
 
-    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '');
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
+    $host = 'sandbox';
 
     $args = ' -acc_key '.$aws_access_key;
     $args .= ' -sec_key '.$aws_secret_key;
-    $args .= ' -func test_connection'
+    $args .= ' -host '.$host;
+    $args .= ' -func test_connection';
 
     exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
-    echo $output
-
+    dump($output);
   }
 
   public static function testAwsSdk()
@@ -80,7 +84,7 @@ class MTurk extends Model
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
-    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '');
 
     $mturk_hits = \DB::table('mturk_hits')
                      ->where('hit_processed', '=', 0)
@@ -111,7 +115,7 @@ class MTurk extends Model
   {
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
-    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '');
 
     $mturk_hits = \DB::table('mturk_hits')
                      ->where('bonus_processed', '=', 0)
@@ -142,7 +146,7 @@ class MTurk extends Model
   {
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
-    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '');
 
     $mturk_hits = \DB::table('mturk_hits')
                      ->where('qualification_processed', '=', 0)
@@ -187,7 +191,7 @@ class MTurk extends Model
 
     $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
-    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '')
+    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '');
 
     $host = (strpos($submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
     $args = ' -acc_key '.$aws_access_key;
