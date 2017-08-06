@@ -9,9 +9,6 @@ use GuzzleHttp\Client;
 class MTurk extends Model
 {
 
-
-
-
   public static function testConnection()
   {
     $mturk = \DB::table('mturk_hits')
@@ -30,7 +27,7 @@ class MTurk extends Model
     $args .= ' -host '.$host;
     $args .= ' -func test_connection';
 
-    exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
+    exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector3.py".$args, $output, $return_val);
     dump($output);
   }
 
@@ -61,7 +58,7 @@ class MTurk extends Model
 
     echo "python resources/pyscripts/turkConnector.py ".$args;
 
-    $python = exec("/usr/bin/python ../resources/pyscripts/turkConnector.py".$args);
+    $python = exec("/usr/bin/python ../resources/pyscripts/turkConnector3.py".$args, $output, $return_val);
     echo $python;
 
   }
@@ -100,7 +97,7 @@ class MTurk extends Model
       $args .= ' -assignment '.$hit->assignment_id;
       $args .= ' -trial_completed '.$hit->trial_completed;
 
-      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
+      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector3.py".$args, $output, $return_val);
 
       if($return_val == 0){
         $mturk_hit = \DB::table('mturk_hits')
@@ -132,7 +129,7 @@ class MTurk extends Model
       $args .= ' -assignment '.$hit->assignment_id;
       $args .= ' -bonus '.$hit->bonus;
       $args .= ' -unique_token '.$hit->unique_token;
-      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
+      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector3.py".$args, $output, $return_val);
 
       if($return_val == 0){
         $mturk_hit = \DB::table('mturk_hits')
@@ -165,9 +162,7 @@ class MTurk extends Model
       $args .= ' -qual_id '.env('AWS_QUALIFICATION_ID', '');
       $args .= ' -qual_val '.$hit->trial_type;
 
-      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
-      print_r($output);
-      echo $return_val;
+      exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector3.py".$args, $output, $return_val);
       if($return_val == 0){
         $mturk_hit = \DB::table('mturk_hits')
                         ->where('id', '=', $hit->id)
@@ -208,7 +203,7 @@ class MTurk extends Model
     $args .= ' -qual_id '.env('AWS_QUALIFICATION_ID', '');
     $args .= ' -qual_val '.$trial_type;
 
-    exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector.py".$args, $output, $return_val);
+    exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector3.py".$args, $output, $return_val);
 
   }
 }

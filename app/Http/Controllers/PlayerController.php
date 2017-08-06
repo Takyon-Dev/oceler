@@ -256,6 +256,11 @@ class PlayerController extends Controller
         }
       }
 
+      $MAX_PAYMENT = env('MAX_PAYMENT', '15.00');
+      if($amt_earned > $MAX_PAYMENT) {
+        $amt_earned = $MAX_PAYMENT;
+      }
+
     // Add the earnings for this round to the round_earnings table
 
     $dt = \Carbon\Carbon::now()->toDateTimeString();
@@ -326,6 +331,11 @@ class PlayerController extends Controller
         if(($round->num_correct / $round->tot_categories) < ($trial->passing_score / 100)){
           $passed_trial = false;
         }
+      }
+
+      $MAX_PAYMENT = env('MAX_PAYMENT', '15.00');
+      if($round_earnings > $MAX_PAYMENT) {
+        $round_earnings = $MAX_PAYMENT;
       }
 
 
@@ -755,7 +765,15 @@ class PlayerController extends Controller
 
     public function testMTurk()
     {
-      \oceler\MTurk::testConnection();
+      $hits = DB::table('mturk_hits')
+                              ->where('hit_processed', '=', 0)
+                              ->orWhere('bonus_processed', '=', 0)
+                              ->orWhere('qualification_processed', '=', 0)
+                              ->get();
+
+      $turk = new \oceler\MTurk\MTurk();
+      dump($turk->testConnection());
+      $turk->hits = $hits;
       return;
     }
 

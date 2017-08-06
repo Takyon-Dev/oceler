@@ -9,38 +9,40 @@ def log(s):
     f.write(datetime.datetime.now().ctime() + " :: " + s + "\n")
     f.close()
 
-def process_assignment(mturk, args):
-    if args.trial_completed == '1':
-        response = mturk.approve_assignment(AssignmentId = args.assignment)
-        log("Approved assignment " + args.assignment)
+def approve_assignment(mturk, args):
+    response = mturk.approve_assignment(AssignmentId = args.assignment)
+    log("Approved assignment " + args.assignment)
+    log(response)
+    if not response:
+        return 0
     else:
-        response = mturk.reject_assignment(AssignmentId = args.assignment)
-        log("Rejected assignment " + args.assignment)
+        return 1
 
+def reject_assignment(mturk, args):
+    response = mturk.reject_assignment(AssignmentId = args.assignment)
+    log("Rejected assignment " + args.assignment)
+    log(response)
     if not response:
         return 0
     else:
         return 1
 
 def process_bonus(mturk, args):
-    if float(args.bonus) > 0:
-        if float(args.bonus) > 15.00:
-            args.bonus = '15.00'
-        response = mturk.send_bonus(WorkerId = args.worker,
-                              AssignmentId = args.assignment,
-                              #bonus_price = (boto.mturk.price.Price( amount = args.bonus)),
-                              BonusAmount = args.bonus
-                              Reason = "Additional compensation",
-                              UniqueRequestToken = args.unique_token)
-        log("Paid " + args.bonus + " bonus to " + args.worker " for assignment " + args.assignment)
-
+    if float(args.bonus) > 15.00:
+        args.bonus = '15.00'
+    response = mturk.send_bonus(WorkerId = args.worker,
+                          AssignmentId = args.assignment,
+                          #bonus_price = (boto.mturk.price.Price( amount = args.bonus)),
+                          BonusAmount = args.bonus,
+                          Reason = "Additional compensation",
+                          UniqueRequestToken = args.unique_token)
+    log("Paid " + args.bonus + " bonus to " + args.worker + " for assignment " + args.assignment)
     if not response:
         return 0
     else:
         return 1
 
 def process_qualification(mturk, args):
-
     response = mturk.associate_qualification_with_worker(QualificationTypeId = args.qual_id,
                                WorkerId = args.worker,
                                IntegerValue = args.qual_val,
@@ -48,13 +50,17 @@ def process_qualification(mturk, args):
 
 
     if not response:
-        log("Updated qualification for " + args.worker " to " + args.qual_val)
+        log("Updated qualification for " + args.worker + " to " + args.qual_val)
         return 0
     else:
         return 1
 
+def test_connection(mturk, args):
+    response = mturk.get_account_balance()
+    print(response)
+
 sandbox_endpoint = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
-real_endpoint = 'https://mturk-requester.us-east-1.amazonaws.com
+real_endpoint = 'https://mturk-requester.us-east-1.amazonaws.com'
 
 args = oceler_args.parser.parse_args()
 
@@ -67,7 +73,7 @@ mturk = boto3.client('mturk',
                      aws_access_key_id = args.acc_key,
                      aws_secret_access_key = args.sec_key,
                      endpoint_url = endpoint,
-                     region_name='us-west-2'
+                     region_name='us-east-1'
 )
 
 
@@ -79,3 +85,7 @@ if args.func == 'process_bonus':
 
 if args.func == 'process_qualification':
     result = process_qualification(mturk, args)
+
+if args.func == 'test_connection':
+    print("TEST")
+    result = test_connection(mturk, args)
