@@ -765,15 +765,23 @@ class PlayerController extends Controller
 
     public function testMTurk()
     {
+      /*
       $hits = DB::table('mturk_hits')
                               ->where('hit_processed', '=', 0)
                               ->orWhere('bonus_processed', '=', 0)
                               ->orWhere('qualification_processed', '=', 0)
                               ->get();
+      */
+
+      $hits = \oceler\MturkHit::where('hit_processed', '=', 0)
+                              ->orWhere('bonus_processed', '=', 0)
+                              ->orWhere('qualification_processed', '=', 0)
+                              ->get();
+
 
       $turk = new \oceler\MTurk\MTurk();
-      dump($turk->testConnection());
       $turk->hits = $hits;
+      $turk->testConnection();
       return;
     }
 

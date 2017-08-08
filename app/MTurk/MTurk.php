@@ -19,7 +19,7 @@ class MTurk
 
   }
 
-  public function testConnection()
+  public function testConnectionManual()
   {
     $this->hits = DB::table('mturk_hits')
                   ->where('id', '=', 5)
@@ -49,8 +49,8 @@ class MTurk
   {
     $host = (strpos($hit->submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
 
-    $args = ' -acc_key '.$aws_access_key;
-    $args .= ' -sec_key '.$aws_secret_key;
+    $args = ' -acc_key '.$this->aws_access_key;
+    $args .= ' -sec_key '.$this->aws_secret_key;
     $args .= ' -host '.$host;
     $args .= ' -worker '.$hit->worker_id;
     $args .= ' -assignment '.$hit->assignment_id;
@@ -66,8 +66,28 @@ class MTurk
           . $this->PATH_TO_PYSCRIPTS
           . "pyscripts/turkConnector3.py"
           .$args, $output, $return_val);
-    // log output
-    return $return_val;
+
+    return $output;
+  }
+
+  public function process_assignments()
+  {
+    foreach ($this->hits as $hit) {
+      if($hit->trial_completed == 1){
+        $result = $this->pythonConnect($hit, 'approve_assignment');
+      }
+      else {
+        $this->pythonConnect($hit, 'reject_assignment');
+      }
+    }
+  }
+
+  public function testConnection()
+  {
+
+    foreach ($this->hits as $hit) {
+      $this->pythonConnect($hit, 'test_connection');
+    }
   }
 
 }

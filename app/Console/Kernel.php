@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \oceler\Console\Commands\Inspire::class,
+        Commands\MTurkTestConnection::class,
     ];
 
     /**
@@ -29,11 +30,15 @@ class Kernel extends ConsoleKernel
                  ->hourly();
       */
 
-     $schedule->call(
-       '\oceler\MTurk@testConnection'
-     )->everyMinute();
+        $schedule->command('MTurkTestConnection')
+                 ->everyMinute();
 
-        /*
+      /*
+       $schedule->call(
+         '\oceler\MTurk@testConnection'
+       )->everyMinute();
+
+
         $schedule->call(function () {
         '\oceler\MTurk@processAssignments'
         })->everyMinute();
