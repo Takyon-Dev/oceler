@@ -771,19 +771,28 @@ class PlayerController extends Controller
                               ->orWhere('bonus_processed', '=', 0)
                               ->orWhere('qualification_processed', '=', 0)
                               ->get();
-      */
+
 
       $hits = \oceler\MturkHit::where('hit_processed', '=', 0)
                               ->orWhere('bonus_processed', '=', 0)
                               ->orWhere('qualification_processed', '=', 0)
                               ->get();
 
+      */
 
-      $turk = new \oceler\MTurk\MTurk();
-      $turk->hits = $hits;
-      $turk->testConnection();
+      $hits = \oceler\MturkHit::where('hit_processed', '=', 0)
+                              ->get();
+
+      dump($hits);
+
+      $mturks = [];
+
+      foreach ($hits as $key=>$hit) {
+        $mturks[$key] = new \oceler\MTurk\MTurk();
+        $mturks[$key]->hit = $hit;
+        $mturks[$key]->process_assignment();
       return;
+      }
     }
-
 
 }

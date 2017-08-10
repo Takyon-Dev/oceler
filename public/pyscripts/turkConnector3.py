@@ -68,10 +68,10 @@ real_endpoint = 'https://mturk-requester.us-east-1.amazonaws.com'
 
 args = oceler_args.parser.parse_args()
 
-if args.host == 'sandbox':
-    endpoint = sandbox_endpoint
-else:
+if args.host == 'real':
     endpoint = real_endpoint
+else:
+    endpoint = sandbox_endpoint
 
 mturk = boto3.client('mturk',
                      aws_access_key_id = args.acc_key,

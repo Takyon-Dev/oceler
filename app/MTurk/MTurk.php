@@ -8,7 +8,8 @@ class MTurk
   private $PATH_TO_PYSCRIPTS;
   private $aws_access_key;
   private $aws_secret_key;
-  public $hits;
+  private $aws_qualification_id;
+  public $hit;
 
   public function __construct()
   {
@@ -16,51 +17,29 @@ class MTurk
     $this->PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '');
     $this->aws_access_key = env('AWS_ACCESS_KEY_ID', '');
     $this->aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
+    $this->aws_qualification_id = env('AWS_QUALIFICATION_ID', '');
 
   }
 
-  public function testConnectionManual()
+  private function pythonConnect($operation)
   {
-    $this->hits = DB::table('mturk_hits')
-                  ->where('id', '=', 5)
-                  ->update(['unique_token' => 'ABC123DEF456']);
-
-
-    $PATH_TO_PYSCRIPTS = env('PATH_TO_PYSCRIPTS', '');
-
-    $aws_access_key = env('AWS_ACCESS_KEY_ID', '');
-    $aws_secret_key = env('AWS_SECRET_ACCESS_KEY', '');
-    $host = 'sandbox';
-
-    $args = ' -acc_key '.$aws_access_key;
-    $args .= ' -sec_key '.$aws_secret_key;
-    $args .= ' -host '.$host;
-    $args .= ' -func test_connection';
-
-    exec($this->PATH_TO_PYTHON. " "
-          . $this->PATH_TO_PYSCRIPTS
-          . "pyscripts/turkConnector3.py"
-          .$args, $output, $return_val);
-
-    return $output;
-  }
-
-  public function pythonConnect($hit, $operation)
-  {
-    $host = (strpos($hit->submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
 
     $args = ' -acc_key '.$this->aws_access_key;
     $args .= ' -sec_key '.$this->aws_secret_key;
-    $args .= ' -host '.$host;
-    $args .= ' -worker '.$hit->worker_id;
-    $args .= ' -assignment '.$hit->assignment_id;
-    $args .= ' -bonus '.$hit->bonus;
-    $args .= ' -unique_token '.$hit->unique_token;
-    $args .= ' -trial_completed '.$hit->trial_completed;
-    $args .= ' -trial_passed '.$hit->trial_passed;
-    $args .= ' -qual_id '.env('AWS_QUALIFICATION_ID', '');
-    $args .= ' -qual_val '.$hit->trial_type;
+    $args .= ' -qual_id '.$this->aws_qualification_id;
     $args .= ' -func '.$operation;
+
+    if($this->hit) {
+      $host = (strpos($this->hit->submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';
+      $args .= ' -host '.$host;
+      $args .= ' -worker '.$this->hit->worker_id;
+      $args .= ' -assignment '.$this->hit->assignment_id;
+      $args .= ' -bonus '.$this->hit->bonus;
+      $args .= ' -unique_token '.$this->hit->unique_token;
+      $args .= ' -trial_completed '.$this->hit->trial_completed;
+      $args .= ' -trial_passed '.$this->hit->trial_passed;
+      $args .= ' -qual_val '.$this->hit->trial_type;
+    }
 
     exec($this->PATH_TO_PYTHON. " "
           . $this->PATH_TO_PYSCRIPTS
@@ -70,24 +49,37 @@ class MTurk
     return $output;
   }
 
-  public function process_assignments()
+  public function process_assignment()
   {
-    foreach ($this->hits as $hit) {
-      if($hit->trial_completed == 1){
-        $result = $this->pythonConnect($hit, 'approve_assignment');
-      }
-      else {
-        $this->pythonConnect($hit, 'reject_assignment');
-      }
+    dump($this->hit);
+    if($this->hit->trial_completed == 1){
+      echo 'APPROVING ASSIGNMENT';
+      $result = $this->pythonConnect('approve_assignment');
     }
+    else {
+      $result = $this->pythonConnect('reject_assignment');
+    }
+    if($result == 1){
+      $this->hit->hit_processed = 1;
+      $this->hit->save();
+    }
+  }
+
+  public function send_bonus()
+  {
+    if($this->$hit->bonus > 0){
+      $result = $this->pythonConnect('process_bonus');
+    }
+  }
+
+  public function update_qualification()
+  {
+
   }
 
   public function testConnection()
   {
-
-    foreach ($this->hits as $hit) {
-      $this->pythonConnect($hit, 'test_connection');
-    }
+      $this->pythonConnect('test_connection');
   }
 
 }

@@ -3,7 +3,7 @@
 namespace oceler\Console\Commands;
 use Illuminate\Console\Command;
 
-class MTurkTestConnection extends Command
+class MTurkProcessAssignments extends Command
 {
 
     /**
@@ -11,14 +11,14 @@ class MTurkTestConnection extends Command
      *
      * @var string
      */
-    protected $signature = 'MTurkTestConnection';
+    protected $signature = 'MTurkProcessAssignments';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Tests the connection to the MTurk API';
+    protected $description = 'Processes HIT assignments using the MTurk API';
 
     private $hits;
 
@@ -31,8 +31,8 @@ class MTurkTestConnection extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->hits = \DB::table('mturk_hits')
-                          ->first();
+        $this->hits = \oceler\MturkHit::where('hit_processed', '=', 0)
+                                      ->get();
     }
 
     /**
@@ -42,8 +42,11 @@ class MTurkTestConnection extends Command
      */
     public function handle()
     {
-        $mturk = new \oceler\MTurk\MTurk();
-        $mturk->hit = $this->hits;
-        $mturk->testConnection();
+        $mturks = [];
+        foreach ($this->hits as $key->$hit) {
+          $mturks[$key] = new \oceler\MTurk\MTurk();
+          $mturks[$key]->hit = $hit;
+          $mturks[$key]->process_assignment();
+        }
     }
 }
