@@ -3,7 +3,7 @@
 namespace oceler\Console\Commands;
 use Illuminate\Console\Command;
 
-class MTurkProcessAssignments extends Command
+class MTurkProcessQualification extends Command
 {
 
     /**
@@ -11,14 +11,14 @@ class MTurkProcessAssignments extends Command
      *
      * @var string
      */
-    protected $signature = 'MTurkProcessAssignments';
+    protected $signature = 'MTurkProcessQualification';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Processes HIT assignments using the MTurk API';
+    protected $description = 'Updates HIT qualifications using the MTurk API';
 
     private $hits;
 
@@ -31,7 +31,7 @@ class MTurkProcessAssignments extends Command
     public function __construct()
     {
         parent::__construct();
-        $this->hits = \oceler\MturkHit::where('hit_processed', '=', 0)
+        $this->hits = \oceler\MturkHit::where('qualification_processed', '=', 0)
                                       ->get();
     }
 
@@ -46,7 +46,7 @@ class MTurkProcessAssignments extends Command
         foreach ($this->hits as $key => $hit) {
           $mturks[$key] = new \oceler\MTurk\MTurk();
           $mturks[$key]->hit = $hit;
-          $mturks[$key]->process_assignment();
+          $mturks[$key]->process_qualification();
         }
     }
 }

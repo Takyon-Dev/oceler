@@ -46,35 +46,43 @@ class MTurk
           . "pyscripts/turkConnector3.py"
           .$args, $output, $return_val);
 
-    return $output;
+    return $return_val;
   }
 
   public function process_assignment()
   {
-    dump($this->hit);
     if($this->hit->trial_completed == 1){
-      echo 'APPROVING ASSIGNMENT';
       $result = $this->pythonConnect('approve_assignment');
     }
     else {
       $result = $this->pythonConnect('reject_assignment');
     }
-    if($result == 1){
+    if($result == 0){
       $this->hit->hit_processed = 1;
       $this->hit->save();
     }
   }
 
-  public function send_bonus()
+  public function process_bonus()
   {
-    if($this->$hit->bonus > 0){
+    if($this->hit->bonus > 0){
       $result = $this->pythonConnect('process_bonus');
+    }
+    if($result == 0){
+      $this->hit->bonus_processed = 1;
+      $this->hit->save();
     }
   }
 
-  public function update_qualification()
+  public function process_qualification()
   {
-
+    if($this->hit->trial_completed == 1 && $this->hit->trial_passed == 1){
+      $result = $this->pythonConnect('process_qualification');
+    }
+    if($result == 0){
+      $this->hit->qualification_processed = 1;
+      $this->hit->save();
+    }
   }
 
   public function testConnection()

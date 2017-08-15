@@ -353,15 +353,18 @@ class PlayerController extends Controller
 
       if(Session::get('assignment_id')){
 
-        $mturk_hit = \DB::table('mturk_hits')
-                        ->where('assignment_id', '=', Session::get('assignment_id'))
-                        ->where('worker_id', '=', Auth::user()->mturk_id)
-                        ->first();
+        $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id')
+                                     ->where('worker_id', '=', Auth::user()->mturk_id)
+                                     ->first();
+
+        $hit_data->trial_type = $trial->trial_type;
+        $hit_data->trial_completed = true;
+        $hit_data->trial_passed = $passed_trial;
+        $hit_data->bonus = $total_earnings['bonus'];
+        $hit_data->save();
+
         $assignment_id = Session::get('assignment_id');
-        $submit_to = $mturk_hit->submit_to;
-        \oceler\MTurk::storeHitData($assignment_id, Auth::user()->mturk_id,
-                            $submit_to, $total_earnings,
-                            $passed_trial, true, $trial->trial_type);
+        $submit_to = $hit_data->submit_to;
       }
 
       else{
@@ -390,17 +393,16 @@ class PlayerController extends Controller
 
       if(\Session::get('assignment_id')){
 
-        $mturk_hit = \DB::table('mturk_hits')
-                            ->where('assignment_id', '=', \Session::get('assignment_id'))
-                            ->where('worker_id', '=', Auth::user()->mturk_id)
-                            ->first();
-
-        $assignment_id = Session::get('assignment_id');
-        $submit_to = $mturk_hit->submit_to;
-
-        \oceler\MTurk::storeHitData(\Session::get('assignment_id'),
-                            Auth::user()->mturk_id, $mturk_hit->submit_to,
-                            $total_earnings, false, false, 0);
+        $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id')
+                                     ->where('worker_id', '=', Auth::user()->mturk_id)
+                                     ->first();
+        $hit_data->trial_type = 0;
+        $hit_data->trial_completed = false;
+        $hit_data->trial_passed = false;
+        $hit_data->bonus = $total_earnings['bonus'];
+        $hit_data->save();
+        $assignment_id = \Session::get('assignment_id');
+        $submit_to = $hit_data->submit_to;
       }
 
       else {
@@ -419,10 +421,10 @@ class PlayerController extends Controller
 
       return View::make('layouts.player.end-task')
                   ->with('total_earnings', $total_earnings)
-                  ->with('assignment_id', \Session::get('assignment_id'))
+                  ->with('assignment_id', $assignment_id)
                   ->with('passed_trial', false)
                   ->with('completed_trial', false)
-                  ->with('submit_to', $mturk_hit->submit_to)
+                  ->with('submit_to', $submit_to)
                   ->with('msg', $msg);
     }
 
@@ -657,7 +659,6 @@ class PlayerController extends Controller
 
     }
 
-    // http://oceler.loc/MTurk-login?assignmentId=1234TESTAZSXDC&hitId=QAWSED4321RFTG&workerId=A2LOZXVWUBY8MO
     public function getMTurkLogin(Request $request)
     {
 
@@ -696,16 +697,15 @@ class PlayerController extends Controller
       $user->user_agent = $_SERVER['HTTP_USER_AGENT'];
       $user->save();
 
-      DB::table('mturk_hits')->insert([
-          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-          'user_id' => $user->id,
-          'hit_id' => $request->hitId,
-          'assignment_id' => $request->assignmentId,
-          'worker_id' => $worker_id,
-          'submit_to' => $request->turkSubmitTo,
-          'unique_token' => uniqid()
-          ]);
+      // Record the hit data
+      $hit_data = new \oceler\MturkHit();
+      $hit_data->user_id = $user->id;
+      $hit_data->hit_id = $request->hitId;
+      $hit_data->assignment_id = $request->assignmentId;
+      $hit_data->worker_id = $worker_id;
+      $hit_data->submit_to = $request->turkSubmitTo;
+      $hit_data->unique_token = uniqid();
+      $hit_data->save();
 
       Session::put('assignment_id', $request->assignmentId);
 
@@ -781,10 +781,10 @@ class PlayerController extends Controller
       */
 
       $hits = \oceler\MturkHit::where('hit_processed', '=', 0)
-                              ->get();
+                                    ->get();
 
       dump($hits);
-
+      return;
       $mturks = [];
 
       foreach ($hits as $key=>$hit) {

@@ -16,6 +16,8 @@ class Kernel extends ConsoleKernel
         \oceler\Console\Commands\Inspire::class,
         Commands\MTurkTestConnection::class,
         Commands\MTurkProcessAssignments::class,
+        Commands\MTurkProcessBonus::class,
+        Commands\MTurkProcessQualification::class,
     ];
 
     /**
@@ -33,6 +35,12 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('MTurkProcessAssignments')
                  ->everyMinute();
+
+        $schedule->command('MTurkProcessBonus')
+                 ->everyFiveMinutes();
+
+        $schedule->command('MTurkProcessQualification')
+                 ->everyFiveMinutes();
 
     }
 }

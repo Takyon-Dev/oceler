@@ -14,9 +14,9 @@ response = client.create_hit(
     LifetimeInSeconds=50000, # REQUIRED - Time, in seconds, after which the HIT is no longer available for users to accept.
     AssignmentDurationInSeconds=500, # REQUIRED - Seconds that a Worker has to complete the HIT after accepting it.
     Reward='19.78', # REQUIRED
-    Title='testing oceler_05 level 1',
+    Title='testing oceler_10 level 1',
     Keywords='oceler',
-    Description='Testing OCELER MTURK Integration - level 3',
+    Description='Testing OCELER MTURK Integration - level 1',
     Question=external_content,
     QualificationRequirements=[
         {
