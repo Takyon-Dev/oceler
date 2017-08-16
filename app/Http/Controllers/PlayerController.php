@@ -353,7 +353,7 @@ class PlayerController extends Controller
 
       if(Session::get('assignment_id')){
 
-        $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id')
+        $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id'))
                                      ->where('worker_id', '=', Auth::user()->mturk_id)
                                      ->first();
 
@@ -393,7 +393,7 @@ class PlayerController extends Controller
 
       if(\Session::get('assignment_id')){
 
-        $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id')
+        $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id'))
                                      ->where('worker_id', '=', Auth::user()->mturk_id)
                                      ->first();
         $hit_data->trial_type = 0;
