@@ -28,6 +28,7 @@ class MTurk
     $args .= ' -sec_key '.$this->aws_secret_key;
     $args .= ' -qual_id '.$this->aws_qualification_id;
     $args .= ' -func '.$operation;
+    $args .= ' -log_path '.$this->PATH_TO_PYSCRIPTS.'pyscripts/turk-connector.log';
 
     if($this->hit) {
       $host = (strpos($this->hit->submit_to, 'sandbox') !== false) ? 'sandbox' : 'real';

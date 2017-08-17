@@ -6,7 +6,7 @@ import datetime
 import oceler_args
 
 def log(s):
-    f = open('/Applications/MAMP/htdocs/oceler/public/pyscripts/turk-connector.log','a')
+    f = open(args.log_path,'a')
     f.write(datetime.datetime.now().ctime() + " :: " + s + "\n")
     f.close()
 
