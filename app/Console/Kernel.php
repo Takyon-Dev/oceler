@@ -31,8 +31,9 @@ class Kernel extends ConsoleKernel
       /*
         $schedule->command('inspire')
                  ->hourly();
-      */
 
+      */
+     
         $schedule->command('MTurkProcessAssignments')
                  ->everyMinute();
 
@@ -41,6 +42,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('MTurkProcessQualification')
                  ->everyFiveMinutes();
+
 
     }
 }

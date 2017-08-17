@@ -357,6 +357,7 @@ class PlayerController extends Controller
                                      ->where('worker_id', '=', Auth::user()->mturk_id)
                                      ->first();
 
+        $hit_data->trial_id = $trial->trial_id;
         $hit_data->trial_type = $trial->trial_type;
         $hit_data->trial_completed = true;
         $hit_data->trial_passed = $passed_trial;
@@ -604,15 +605,6 @@ class PlayerController extends Controller
         }
       }
 
-      // Update the mturk_hits table with trial_id (if applicable)
-      if(Session::get('assignment_id')){
-        $session_id = Session::get('assignment_id');
-        DB::table('mturk_hits')
-          ->where('assignment_id', '=', Session::get('assignment_id'))
-          ->where('user_id', '=', Auth::user()->id)
-          ->update(['trial_id' => $trial->id]);
-      }
-
       return View::make('layouts.player.initialize');
 
     }
@@ -765,23 +757,11 @@ class PlayerController extends Controller
 
     public function testMTurk()
     {
-      /*
-      $hits = DB::table('mturk_hits')
-                              ->where('hit_processed', '=', 0)
-                              ->orWhere('bonus_processed', '=', 0)
-                              ->orWhere('qualification_processed', '=', 0)
-                              ->get();
 
-
+      //$active_players = DB::table('trial_user')->lists('user_id');
       $hits = \oceler\MturkHit::where('hit_processed', '=', 0)
-                              ->orWhere('bonus_processed', '=', 0)
-                              ->orWhere('qualification_processed', '=', 0)
-                              ->get();
-
-      */
-
-      $hits = \oceler\MturkHit::where('hit_processed', '=', 0)
-                                    ->get();
+                               ->whereNotIn('user_id', $active_players)
+                               ->get();
 
       dump($hits);
       return;
@@ -791,7 +771,6 @@ class PlayerController extends Controller
         $mturks[$key] = new \oceler\MTurk\MTurk();
         $mturks[$key]->hit = $hit;
         $mturks[$key]->process_assignment();
-      return;
       }
     }
 

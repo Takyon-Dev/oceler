@@ -2,6 +2,7 @@
 
 namespace oceler\Console\Commands;
 use Illuminate\Console\Command;
+use DB;
 
 class MTurkProcessQualification extends Command
 {
@@ -31,7 +32,10 @@ class MTurkProcessQualification extends Command
     public function __construct()
     {
         parent::__construct();
+
+        $active_players = DB::table('trial_user')->lists('user_id');
         $this->hits = \oceler\MturkHit::where('qualification_processed', '=', 0)
+                                      ->whereNotIn('user_id', $active_players)
                                       ->get();
     }
 
