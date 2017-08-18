@@ -20,8 +20,6 @@
                 <th>Start Time</th>
                 <th>Trial Time</th>
                 <th></th>
-                <th></th>
-                <th></th>
               </tr>
               <tr>
                 <td>{{ $s['trial']['name'] }}</td>
@@ -30,10 +28,11 @@
                     {{ $fact }}
                   @endforeach
                 </td>
-                <td>{{ $s['trial']['base_pay'] }} mins.</td>
+                <td>{{ $s['trial']['base_pay'] }}</td>
                 <td>{{ $s['trial']['num_players'] }}</td>
                 <td>{{ $s['trial']['start_time'] }}</td>
                 <td>{{ $s['trial']['total_time'] }} mins.</td>
+                <td></td>
               </tr>
               @if(array_key_exists('users', $s))
                 <tr>
@@ -46,7 +45,7 @@
                   <th>Last Ping</th>
                   <th>Time</th>
                   <th>Num Correct</th>
-                  <th>Bonus<th>
+                  <th>Bonus</th>
                 </tr>
                 @foreach($s['users'] as $player)
                   <tr class="table-striped">

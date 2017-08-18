@@ -303,6 +303,12 @@ Route::get('/admin/data', [
 	'roles' => ['administrator']
 ]);
 
+Route::get('/admin/mturk-log', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'AdminController@viewMturkLog',
+	'roles' => ['administrator']
+]);
+
 // Testing routes...
 Route::get('/player/timer-test', 'PlayerController@timerTest');
 

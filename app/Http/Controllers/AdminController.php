@@ -113,7 +113,7 @@ class AdminController extends Controller
       $stats[$trial->id]['trial'] =
         array('name' => $trial->name,
         'num_players' => $trial->num_players,
-        'base_pay'   => $trial->base_pay,
+        'base_pay'   => $trial->payment_base,
         'factoidset' => $factoidsets,
         'start_time' => $trial->rounds[0]->updated_at,
         'total_time' => $total_time);
@@ -135,7 +135,6 @@ class AdminController extends Controller
                                   WHERE trial_id = ?
                                   AND user_id = ?", [$trial->id, $user->id]);
 
-        dump($performance);
 
         $player_time = \Carbon\Carbon::parse($trial_user->last_ping)
                                     ->diffInMinutes(\Carbon\Carbon::parse(
@@ -160,6 +159,21 @@ class AdminController extends Controller
 
     return View::make('layouts.admin.data')
                 ->with('stats', $stats);
+
+  }
+
+  public function viewMturkLog()
+  {
+    $log = env('PATH_TO_PYSCRIPTS', '').'pyscripts/turk-connector.log';
+
+    $fh = fopen($log, 'r');
+    $display = nl2br(fread($fh, 25000));
+
+    /*
+    return View::make('layouts.admin.mturk-log')
+                ->with('log', $display);
+    */
+    return \Response::make($display, 200);
 
   }
 

@@ -29,7 +29,8 @@ def reject_assignment(mturk, args):
     log("Rejecting assignment " + args.assignment)
 
     try:
-        mturk.reject_assignment(AssignmentId = args.assignment)
+        mturk.reject_assignment(AssignmentId = args.assignment,
+                                RequesterFeedback = "We were not able to run a complete trial. We will send the consololation fee as a bonus payment.")
         return 0
 
     except ClientError as e:
