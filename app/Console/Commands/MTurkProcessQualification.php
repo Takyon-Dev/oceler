@@ -34,9 +34,13 @@ class MTurkProcessQualification extends Command
         parent::__construct();
 
         $active_players = DB::table('trial_user')->lists('user_id');
-        $this->hits = \oceler\MturkHit::where('qualification_processed', '=', 0)
-                                      ->whereNotIn('user_id', $active_players)
-                                      ->get();
+        $this->hits = \oceler\MturkHit::whereNotIn('user_id', $active_players)
+                                 ->where('hit_processed', '=', 0)
+                                 ->where('trial_id', '>', 0)
+                                 ->orWhere('trial_id', '=', -1)
+                                 ->whereNotIn('user_id', $active_players)
+                                 ->where('hit_processed', '=', 0)
+                                 ->get();
     }
 
     /**

@@ -357,7 +357,7 @@ class PlayerController extends Controller
                                      ->where('worker_id', '=', Auth::user()->mturk_id)
                                      ->first();
 
-        $hit_data->trial_id = $trial->trial_id;
+        $hit_data->trial_id = $trial->id;
         $hit_data->trial_type = $trial->trial_type;
         $hit_data->trial_completed = true;
         $hit_data->trial_passed = $passed_trial;
@@ -397,6 +397,8 @@ class PlayerController extends Controller
         $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id'))
                                      ->where('worker_id', '=', Auth::user()->mturk_id)
                                      ->first();
+
+        $hit_data->trial_id = -1;
         $hit_data->trial_type = 0;
         $hit_data->trial_completed = false;
         $hit_data->trial_passed = false;
@@ -758,9 +760,13 @@ class PlayerController extends Controller
     public function testMTurk()
     {
 
-      //$active_players = DB::table('trial_user')->lists('user_id');
-      $hits = \oceler\MturkHit::where('hit_processed', '=', 0)
+      $active_players = DB::table('trial_user')->lists('user_id');
+      $hits = \oceler\MturkHit::whereNotIn('user_id', $active_players)
+                               ->where('hit_processed', '=', 0)
+                               ->where('trial_id', '>', 0)
+                               ->orWhere('trial_id', '=', -1)
                                ->whereNotIn('user_id', $active_players)
+                               ->where('hit_processed', '=', 0)
                                ->get();
 
       dump($hits);
