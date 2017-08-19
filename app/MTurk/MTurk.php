@@ -69,7 +69,7 @@ class MTurk
     if($this->hit->bonus > 0){
       $result = $this->pythonConnect('process_bonus');
     }
-    if($result == 0){
+    if(!(isset($result)) || $result == 0){
       $this->hit->bonus_processed = 1;
       $this->hit->save();
     }
@@ -80,7 +80,7 @@ class MTurk
     if($this->hit->trial_completed == 1 && $this->hit->trial_passed == 1){
       $result = $this->pythonConnect('process_qualification');
     }
-    if($result == 0){
+    if(!(isset($result)) || $result == 0){
       $this->hit->qualification_processed = 1;
       $this->hit->save();
     }
