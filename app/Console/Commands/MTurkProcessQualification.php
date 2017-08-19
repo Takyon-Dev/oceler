@@ -39,7 +39,7 @@ class MTurkProcessQualification extends Command
                                  ->where('trial_id', '>', 0)
                                  ->orWhere('trial_id', '=', -1)
                                  ->whereNotIn('user_id', $active_players)
-                                 ->where('hit_processed', '=', 0)
+                                 ->where('qualification_processed', '=', 0)
                                  ->get();
     }
 

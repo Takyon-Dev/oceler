@@ -13,17 +13,17 @@ response = client.create_hit(
     MaxAssignments=9,
     LifetimeInSeconds=50000, # REQUIRED - Time, in seconds, after which the HIT is no longer available for users to accept.
     AssignmentDurationInSeconds=500, # REQUIRED - Seconds that a Worker has to complete the HIT after accepting it.
-    Reward='19.78', # REQUIRED
-    Title='testing oceler_14 level 3',
+    Reward='5.00', # REQUIRED
+    Title='OCELER FULL TEST 01',
     Keywords='oceler',
-    Description='Testing OCELER MTURK Integration - level 3',
+    Description='Testing OCELER - Entered queue, no trial avalable',
     Question=external_content,
     QualificationRequirements=[
         {
             'QualificationTypeId': '3DDNYIPUQNTSBR52F1XBRX6XW33RZA',
             'Comparator': 'EqualTo',
             'IntegerValues': [
-                2,
+                3,
             ]
         },
     ]
