@@ -655,13 +655,25 @@ class PlayerController extends Controller
 
     public function getMTurkLogin(Request $request)
     {
+      if(!$request->workerId || !$request->assignmentId)
+      {
+        return;
+      }
 
       $worker_id = $request->workerId;
 
       /* If the user is just previewing the MTurk HIT the assignment id
        will not be available. Show a default page. */
       if($request->assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE"){
-        return View::make('layouts.player.default');
+        if($user_id = \oceler\User::where('mturk_id', $worker_id)->pluck('id'))
+        {
+          echo 'WELCOME BACK';
+          return;
+          //return View::make('layouts.player.default');
+        }
+        else {
+          return View::make('layouts.player.default');
+        }
       }
 
       /* If the user accepts the HIT, we need to see if they are already

@@ -214,6 +214,7 @@ class Trial extends Model
     public function logConfig()
     {
 
+
       $config = "\n================================================\nTrial Config:\n";
       $config .= "Name: " . $this->name . "\n";
       $config .= "Type: " . $this->trial_type . "\n";
@@ -233,7 +234,7 @@ class Trial extends Model
 
       foreach ($rounds as $round) {
 
-        $factoidset = \oceler\Factoidset::find($round->factoidset_id);
+        $factoidset = \oceler\Factoidset::where('id', $round->factoidset_id)->first();
         $nameset = \oceler\Nameset::where('id', $round->nameset_id)->first();
         $config .= "Round ".$round->round." :\n";
         $config .= "Factoid set: ".$factoidset->name."\n";

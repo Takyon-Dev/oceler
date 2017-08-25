@@ -22,6 +22,7 @@
         $("#instructions").hide();
         markAsRead(user_id);
         waitForInstructions(trial_id);
+        
       });
 
       $("#instructions").show();

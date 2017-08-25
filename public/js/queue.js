@@ -45,7 +45,8 @@ function waitForInstructions(trial_id)
       }, 1000);
     }
   });
-
+  
+  setTimeout(leaveQueue, 120000);
 }
 
 function markAsRead(user_id)

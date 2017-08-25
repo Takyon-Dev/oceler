@@ -31,11 +31,7 @@ class MTurkProcessBonus extends Command
      */
     public function __construct()
     {
-        $log = env('CRON_OUTPUT_LOG', '');
-        $file = fopen($log,"a");
-        echo fwrite($file,"Running ProcessBonus cmd\n");
-        fclose($file);
-
+      
         parent::__construct();
 
         $active_players = DB::table('trial_user')->lists('user_id');
