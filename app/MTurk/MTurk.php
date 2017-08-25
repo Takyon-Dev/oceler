@@ -52,12 +52,8 @@ class MTurk
 
   public function process_assignment()
   {
-    if($this->hit->trial_completed == 1){
-      $result = $this->pythonConnect('approve_assignment');
-    }
-    else {
-      $result = $this->pythonConnect('reject_assignment');
-    }
+    $result = $this->pythonConnect('approve_assignment');
+    
     if($result == 0){
       $this->hit->hit_processed = 1;
       $this->hit->save();
