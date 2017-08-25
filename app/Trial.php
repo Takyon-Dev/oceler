@@ -137,6 +137,7 @@ class Trial extends Model
         ]);
 
       }
+      return $this;
     }
 
     /*
@@ -157,7 +158,7 @@ class Trial extends Model
         $request->merge($trial_config);
 
         try{
-          $trial->storeTrialConfig($request);
+          $trial = $trial->storeTrialConfig($request);
           $trial->logConfig();
         }
         catch(\Exception $e){
