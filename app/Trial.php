@@ -84,19 +84,21 @@ class Trial extends Model
 
         if(!is_numeric($request->factoidset_id[$i])){
           $factoidset_id = DB::table('factoidsets')
-                                          ->where('name', '=', $request->factoidset_id[$i])
-                                          ->orderBy('id', 'DESC')
-                                          ->pluck('id');
+                              ->where('name', '=', $request->factoidset_id[$i])
+                              ->orderBy('id', 'DESC')
+                              ->pluck('id');
 
         }
 
         else $factoidset_id = $request->factoidset_id[$i];
 
+        dump($factoidset_id);
+
         if(!is_numeric($request->nameset_id[$i])){
           $nameset_id = DB::table('namesets')
-                                          ->where('name', '=', $request->nameset_id[$i])
-                                          ->orderBy('id', 'DESC')
-                                          ->pluck('id');
+                          ->where('name', '=', $request->nameset_id[$i])
+                          ->orderBy('id', 'DESC')
+                          ->pluck('id');
         }
 
         else $nameset_id = $request->nameset_id[$i];
@@ -231,7 +233,8 @@ class Trial extends Model
       $rounds = \oceler\Round::where('trial_id', $this->id)
                               ->orderBy('round', 'ASC')
                               ->get();
-
+      dump($rounds);
+      exit;
       foreach ($rounds as $round) {
 
         $factoidset = \oceler\Factoidset::where('id', $round->factoidset_id)->first();
