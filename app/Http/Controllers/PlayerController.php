@@ -299,6 +299,24 @@ class PlayerController extends Controller
                   ->with('group', $group)
                   ->with('mturk_id', Auth::user()->mturk_id);
     }
+
+    public function showPostTrialSurvey()
+    {
+      $trial_user = Session::get('trial_user');
+
+      $trial = \oceler\Trial::where('id', $trial_user->trial_id)
+                            ->with('users')
+                            ->first();
+
+      return View::make('layouts.player.post-trial-survey')
+                  ->with('trial_type', $trial->trial_type);
+    }
+
+
+    public function postInitialSurvey(Request $request)
+    {
+      dump($request);
+    }
     /**
      * Removes the player from the trial, marks them as
      * having completed the trial, and displays the
@@ -781,15 +799,29 @@ class PlayerController extends Controller
                                ->where('hit_processed', '=', 0)
                                ->get();
 
+      dump($active_players);
       dump($hits);
-      return;
-      $mturks = [];
 
-      foreach ($hits as $key=>$hit) {
+      $mturks = [];
+      foreach ($hits as $key => $hit) {
         $mturks[$key] = new \oceler\MTurk\MTurk();
         $mturks[$key]->hit = $hit;
-        $mturks[$key]->process_assignment();
+        $mturks[$key]->testConnection();
       }
+    }
+
+    public function testInitialPostTrialSurvey()
+    {
+      $trial_type = 1;
+      return View::make('layouts.player.post-trial-survey')
+                  ->with('trial_type', $trial_type);
+    }
+
+    public function testPostTrialSurvey()
+    {
+      $trial_type = 2;
+      return View::make('layouts.player.post-trial-survey')
+                  ->with('trial_type', $trial_type);
     }
 
 }

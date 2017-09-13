@@ -108,9 +108,9 @@ Route::get('player/trial/end-round', [
 	'roles' => ['player']
 ]);
 
-Route::get('player/continue-survey', [
+Route::get('player/post-trial-survey', [
 	'middleware' => ['auth', 'roles'],
-	'uses' => 'PlayerController@getContinueSurvey',
+	'uses' => 'PlayerController@showPostTrialSurvey',
 	'roles' => ['player']
 ]);
 
@@ -319,6 +319,9 @@ Route::get('/player/message-listen-test', 'MessageController@messageListenTest')
 Route::get('/player/date-debug', 'PlayerController@dateDebug');
 Route::get('/test-mturk', 'PlayerController@testMTurk');
 
+Route::get('/initial-post-trial-survey', 'PlayerController@testInitialPostTrialSurvey');
+Route::get('/post-trial-survey', 'PlayerController@testPostTrialSurvey');
+Route::post('/player/submit-initial-survey', 'PlayerController@postInitialSurvey');
 
 // Authentication routes...
 Route::get('/login', 'Auth\AuthController@getLogin');

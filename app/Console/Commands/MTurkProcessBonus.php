@@ -31,7 +31,7 @@ class MTurkProcessBonus extends Command
      */
     public function __construct()
     {
-      
+
         parent::__construct();
 
         $active_players = DB::table('trial_user')->lists('user_id');
