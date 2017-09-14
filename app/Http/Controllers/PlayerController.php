@@ -309,13 +309,15 @@ class PlayerController extends Controller
                             ->first();
 
       return View::make('layouts.player.post-trial-survey')
-                  ->with('trial_type', $trial->trial_type);
+                  ->with('trial_type', $trial->trial_type)
+                  ->with('trial_id', $trial->id);
     }
 
 
     public function postInitialSurvey(Request $request)
     {
       dump($request);
+      
     }
     /**
      * Removes the player from the trial, marks them as
@@ -812,16 +814,26 @@ class PlayerController extends Controller
 
     public function testInitialPostTrialSurvey()
     {
+      // For testing purposes, find a trial of type 1
+      $trial = DB::table('trials')
+                  ->where('trial_type', '=', 1)
+                  ->first();
       $trial_type = 1;
       return View::make('layouts.player.post-trial-survey')
-                  ->with('trial_type', $trial_type);
+      ->with('trial_type', $trial->trial_type)
+      ->with('trial_id', $trial->id);
     }
 
     public function testPostTrialSurvey()
     {
-      $trial_type = 2;
+      // For testing purposes, find a trial of type 1
+      $trial = DB::table('trials')
+                  ->where('trial_type', '>', 1)
+                  ->first();
+
       return View::make('layouts.player.post-trial-survey')
-                  ->with('trial_type', $trial_type);
+                  ->with('trial_type', $trial->trial_type)
+                  ->with('trial_id', $trial->id);
     }
 
 }

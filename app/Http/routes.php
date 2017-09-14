@@ -323,6 +323,30 @@ Route::get('/initial-post-trial-survey', 'PlayerController@testInitialPostTrialS
 Route::get('/post-trial-survey', 'PlayerController@testPostTrialSurvey');
 Route::post('/player/submit-initial-survey', 'PlayerController@postInitialSurvey');
 
+Route::get('/initial-post-trial-survey', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@testInitialPostTrialSurvey',
+	'roles' => ['player']
+]);
+
+Route::get('/post-trial-survey', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@testPostTrialSurvey',
+	'roles' => ['player']
+]);
+
+Route::post('/player/submit-initial-survey', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@postInitialSurvey',
+	'roles' => ['player']
+]);
+
+Route::post('/player/submit-post-trial-survey', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@postInitialSurvey',
+	'roles' => ['player']
+]);
+
 // Authentication routes...
 Route::get('/login', 'Auth\AuthController@getLogin');
 Route::post('/login', 'Auth\AuthController@postLogin');

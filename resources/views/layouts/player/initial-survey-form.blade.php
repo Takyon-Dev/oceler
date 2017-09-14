@@ -55,6 +55,7 @@
           </label>
           <textarea name="comments" class="form-control" rows="3"></textarea>
         </div>
+        <input type="hidden" name="trial_id" value="{{ $trial_id }}">
         <div class="text-center">
           {!! Form::submit('Continue', ['class' => 'btn btn-primary btn-lg'] ) !!}
         </div>

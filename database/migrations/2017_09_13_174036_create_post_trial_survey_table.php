@@ -15,6 +15,7 @@ class CreatePostTrialSurveyTable extends Migration
        Schema::create('post_trial_survey', function (Blueprint $table) {
            $table->string('id')->unique();
            $table->integer('user_id')->unsigned();
+           $table->integer('trial_id')->unsigned();
            $table->integer('enjoy');
            $table->integer('confident');
            $table->text('comments');
@@ -23,8 +24,11 @@ class CreatePostTrialSurveyTable extends Migration
            $table->foreign('user_id')
                  ->references('id')->on('users')
                  ->onDelete('cascade');
-         });
-       });
+
+           $table->foreign('trial_id')
+                 ->references('id')->on('trials')
+                 ->onDelete('cascade');
+        });
      }
 
      /**
