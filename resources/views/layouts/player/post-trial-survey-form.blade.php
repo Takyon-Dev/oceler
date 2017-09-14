@@ -1,5 +1,6 @@
 <div class="col-md-8 col-md-offset-2">
       <form class="survey" action="/player/submit-post-trial-survey" method="POST">
+        {{ csrf_field() }}
         <label class="statement">
           How much did you enjoy this HIT?
         </label>

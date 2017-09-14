@@ -343,7 +343,7 @@ Route::post('/player/submit-initial-survey', [
 
 Route::post('/player/submit-post-trial-survey', [
 	'middleware' => ['auth', 'roles'],
-	'uses' => 'PlayerController@postInitialSurvey',
+	'uses' => 'PlayerController@postTrialSurvey',
 	'roles' => ['player']
 ]);
 

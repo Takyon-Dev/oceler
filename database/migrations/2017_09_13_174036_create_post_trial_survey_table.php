@@ -13,7 +13,7 @@ class CreatePostTrialSurveyTable extends Migration
      public function up()
      {
        Schema::create('post_trial_survey', function (Blueprint $table) {
-           $table->string('id')->unique();
+           $table->increments('id');
            $table->integer('user_id')->unsigned();
            $table->integer('trial_id')->unsigned();
            $table->integer('enjoy');

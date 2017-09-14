@@ -316,9 +316,47 @@ class PlayerController extends Controller
 
     public function postInitialSurvey(Request $request)
     {
-      dump($request);
-      
+
+      DB::table('initial_survey')->insert([
+          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'user_id' => Auth::id(),
+          'trial_id' => $request->trial_id,
+          'understand' => $request->understand,
+          'confident' => $request->confident,
+          'email' => $request->email,
+          'comments' => $request->comments
+        ]);
+        // If we're testing, don't continue
+        if($request->server('HTTP_REFERER') == 'http://oceler.loc/initial-post-trial-survey'
+           || $request->server('HTTP_REFERER') == 'http://netlabexperiments.org/initial-post-trial-survey'){
+          echo 'TESTING :: SUBMITTED. This message will not display during actual trial.';
+          return;
+        }
+        return \Redirect::to('/player/trial/end');
     }
+
+    public function postTrialSurvey(Request $request)
+    {
+
+      DB::table('post_trial_survey')->insert([
+          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'user_id' => Auth::id(),
+          'trial_id' => $request->trial_id,
+          'enjoy' => $request->enjoy,
+          'confident' => $request->confident,
+          'comments' => $request->comments
+        ]);
+        // If we're testing, don't continue
+        if($request->server('HTTP_REFERER') == 'http://oceler.loc/post-trial-survey'
+          || $request->server('HTTP_REFERER') == 'http://netlabexperiments.org/post-trial-survey'){
+          echo 'TESTING :: SUBMITTED. This message will not display during actual trial.';
+          return;
+        }
+        return \Redirect::to('/player/trial/end');
+    }
+
     /**
      * Removes the player from the trial, marks them as
      * having completed the trial, and displays the
@@ -370,27 +408,29 @@ class PlayerController extends Controller
         $trial->removePlayerFromTrial(Auth::id(), true, $passed_trial);
       }
 
+      $mturk_hit = \oceler\MturkHit::where('user_id', '=', Auth::id())
+                                    ->where('trial_id', '=', $trial_user->trial_id)
+                                    ->first();
+      dump($trial_user->trial_id);
 
-      if(Session::get('assignment_id')){
+      if($mturk_hit){
 
-        $hit_data = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id'))
-                                     ->where('worker_id', '=', Auth::user()->mturk_id)
-                                     ->first();
+        $mturk_hit->trial_id = $trial->id;
+        $mturk_hit->trial_type = $trial->trial_type;
+        $mturk_hit->trial_completed = true;
+        $mturk_hit->trial_passed = $passed_trial;
+        $mturk_hit->bonus = $total_earnings['bonus'];
+        $mturk_hit->save();
 
-        $hit_data->trial_id = $trial->id;
-        $hit_data->trial_type = $trial->trial_type;
-        $hit_data->trial_completed = true;
-        $hit_data->trial_passed = $passed_trial;
-        $hit_data->bonus = $total_earnings['bonus'];
-        $hit_data->save();
-
-        $assignment_id = Session::get('assignment_id');
-        $submit_to = $hit_data->submit_to;
+        $assignment_id = $mturk_hit->assignment_id;
+        $submit_to = $mturk_hit->submit_to;
+        $mturk_id = $mturk_hit->worker_id;
       }
 
       else{
         $assignment_id = false;
         $submit_to = false;
+        $mturk_id = false;
       }
 
 
@@ -401,7 +441,7 @@ class PlayerController extends Controller
                   ->with('completed_trial', true)
                   ->with('assignment_id', $assignment_id)
                   ->with('submit_to', $submit_to)
-                  ->with('mturk_id', Auth::user()->mturk_id);
+                  ->with('mturk_id', $mturk_id);
 
     }
 
@@ -675,35 +715,28 @@ class PlayerController extends Controller
 
     public function getMTurkLogin(Request $request)
     {
-      if(!$request->workerId || !$request->assignmentId)
+      if(!$request->assignmentId)
       {
         return;
       }
 
-      $worker_id = $request->workerId;
-
       /* If the user is just previewing the MTurk HIT the assignment id
        will not be available. Show a default page. */
       if($request->assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE"){
-        if($user_id = \oceler\User::where('mturk_id', $worker_id)->pluck('id'))
-        {
-          echo 'WELCOME BACK';
-          return;
-          //return View::make('layouts.player.default');
-        }
-        else {
-          return View::make('layouts.player.default');
-        }
+        return View::make('layouts.player.default');
       }
+
+      $worker_id = $request->workerId;
 
       /* If the user accepts the HIT, we need to see if they are already
       in our database. */
       $user_id = \oceler\User::where('mturk_id', $worker_id)->pluck('id');
-      $user = Auth::loginUsingId($user_id);
+
+      //$user = Auth::loginUsingId($user_id);
 
       /* If there isn't already an account for this person,
          we create one (if there is an MTurk worker ID) */
-      if(!$user && $worker_id) {
+      if(!$user_id && $worker_id) {
         $user = new \oceler\User();
         $user->name = "Mturk Worker";
         $user->email = $worker_id;
@@ -736,8 +769,8 @@ class PlayerController extends Controller
       Session::put('assignment_id', $request->assignmentId);
 
       return \Redirect::to('player/trial/queue');
-
-    }
+      //workerId=1234ABCD5678&assignmentId=987654321&hitId=321ZYX654&turkSubmitTo=https://workersandbox.mturk.com
+  }
 
     /*
       Testing functions...
