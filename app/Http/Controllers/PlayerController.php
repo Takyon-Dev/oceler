@@ -408,10 +408,10 @@ class PlayerController extends Controller
         $trial->removePlayerFromTrial(Auth::id(), true, $passed_trial);
       }
 
-      $mturk_hit = \oceler\MturkHit::where('user_id', '=', Auth::id())
-                                    ->where('trial_id', '=', $trial_user->trial_id)
-                                    ->first();
-      dump($trial_user->trial_id);
+      $mturk_hit = \oceler\MturkHit::where('assignment_id', '=', \Session::get('assignment_id'))
+                                   ->where('worker_id', '=', Auth::user()->mturk_id)
+                                   ->first();
+
 
       if($mturk_hit){
 
