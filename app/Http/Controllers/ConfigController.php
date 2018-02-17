@@ -62,10 +62,7 @@ class ConfigController extends Controller
           break;
       }
     }
-  foreach ($errors as $e) {
-    dump($e);
-    //throw($e);
-  }
+
   return back()->withErrors($errors);
 
   }
