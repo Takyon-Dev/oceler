@@ -63,7 +63,8 @@ class ConfigController extends Controller
       }
     }
   foreach ($errors as $e) {
-    throw($e);
+    dump($e);
+    //throw($e);
   }
   return back()->withErrors($errors);
 
