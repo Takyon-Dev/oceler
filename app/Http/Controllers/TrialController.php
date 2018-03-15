@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use oceler\Http\Requests;
 use oceler\Http\Controllers\Controller;
 use \oceler\Trial;
+use \oceler\Queue;
 use View;
 use Auth;
 use DB;
@@ -128,6 +129,16 @@ class TrialController extends Controller
      */
     public function enterQueue()
     {
+      $u_id = Auth::user()->id;
+      $last_trial_type = Auth::user()->lastTrialType();
+      $dt = \Carbon\Carbon::now();
+      // Add the player to the queue and set updated_at to
+      // current date/time
+      $player = \oceler\Queue::firstOrNew(['user_id' => $u_id]);
+      $player->trial_type = ($last_trial_type + 1);
+      $player->updated_at = $dt->toDateTimeString();
+      $player->save();
+
       return View::make('layouts.player.queue');
     }
 
@@ -452,6 +463,123 @@ class TrialController extends Controller
     {
 
       DB::update('update trial_user set instructions_read = 1 where user_id = ?', [$user_id]);
+
+    }
+
+
+    public function manageQueue() {
+      // Delete any inactive users from Queue
+      $this->deleteInactiveQueueUsers();
+
+      // Get all trials that are active but already have been filled
+      // by querying the trial_user table
+
+      $running_trials = DB::table('trial_user')
+                          ->get();
+
+      $filled_trials = [];
+      foreach ($running_trials as $t) {
+        $filled_trials[] = $t->trial_id;
+      }
+
+      // Get all active, not-already-filled trials
+      $trials = Trial::where('is_active', 1)
+                      ->whereNotIn('id', $filled_trials)
+                      ->orderBy('created_at', 'asc')
+                      ->get();
+
+
+
+      // If no trials exist, return
+      if(count($trials) == 0){
+        return;
+      }
+
+      // For each active trial, see if the # of players in the queue
+      // is equal to the required # of players for the trial
+      foreach($trials as $trial) {
+
+          $queued_players = Queue::where('trial_type', '=', $trial->trial_type)
+                                          ->count();
+
+          // If there aren't enough players for this trial type,
+          // move on to the next one
+          if($queued_players < $trial->num_players){
+            continue;
+          }
+
+          // Otherwise, take the required amount
+          $selected = Queue::where('trial_type', '=', $trial->trial_type)
+                                    ->orderBy('created_at', 'asc')
+                                    ->take($trial->num_players)
+                                    ->get();
+
+          // Shuffle the collection of selected players so that
+          // their network node positions will essentially
+          // be randomized
+          $selected = $selected->shuffle();
+
+          // Insert each selected player into the trial_user table
+          // along with the group they are part of
+
+          $group = 1;
+          $count = 0; // Counts the users added so far
+          foreach ($selected as $user) {
+              DB::table('trial_user')->insert([
+                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+                'user_id' => $user->user_id,
+                'trial_id' => $trial->id,
+                'group_id' => \DB::table('groups')
+                              ->where('trial_id', $trial->id)
+                              ->where('group', $group)
+                              ->value('id')
+              ]);
+              $count++;
+              if($count >= $trial->num_players / $trial->num_groups) $group++;
+              // ... And delete that user from the queue
+              Queue::where('user_id', '=', $user->user_id)->delete();
+          }
+      }
+    }
+
+    private function deleteInactiveQueueUsers()
+    {
+        $INACTIVE_QUEUE_TIME = 1500;
+        $dt = \Carbon\Carbon::now();
+        Queue::where('updated_at', '<', $dt->subSeconds($INACTIVE_QUEUE_TIME))->delete();
+    }
+
+    public function testQueueManager()
+    {
+      $users = \oceler\User::where('id', '<', 6)->get();
+      foreach($users as $user) {
+        $player = \oceler\Queue::firstOrNew(['user_id' => $user->id]);
+        $player->trial_type = (rand(1, 2));
+        $player->save();
+      }
+      $queued_players = Queue::get()->count();
+      dump("There are ".$queued_players." in the queue.");
+      $trial_users = DB::table('trial_user')->get();
+      dump("There are ". count($trial_users). " placed in trials.");
+
+      for($i = 0; $i < 3; $i++) {
+        $trial = new Trial;
+        $trial->name = 'QUEUE MANAGER TEST '.$i;
+        $trial->trial_type = rand(1, 2);
+        $trial->num_players = rand(2, 4);
+        $trial->is_active = 1;
+        $trial->num_groups = 1;
+        $trial->save();
+
+        $group = new \oceler\Group;
+        $group->trial_id = $trial->id;
+        $group->network_id = 2;
+        $group->group = 1;
+        $group->save();
+      }
+      //$this->manageQueue();
+
 
     }
 }

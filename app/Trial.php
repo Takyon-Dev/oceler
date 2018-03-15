@@ -239,7 +239,7 @@ class Trial extends Model
         $nameset = \oceler\Nameset::where('id', $round->nameset_id)->first();
         $config .= "Round ".$round->round." :\n";
         $config .= "Factoid set: ".$factoidset->name."\n";
-        $config .+ "Name set: ".$nameset->name."\n";
+        $config .= "Name set: ".$nameset->name."\n";
       }
 
       $config .= "Num Groups: " .$this->num_groups. "\n";

@@ -21,6 +21,33 @@ class PlayerController extends Controller
     }
 
     /**
+     * Checks if the player is still waiting in the trial queue.
+     * If so, updates the time, so the Queue Manager knows they are
+     * still active.
+     * If not, checks if they are in an active trial.
+     * @return [type] [description]
+     */
+    public function queueStatus()
+    {
+      $queuedPlayer = \oceler\Queue::where('user_id', Auth::user()->id)->first();
+
+      if($queuedPlayer) {
+        $queuedPlayer->updated_at = date("Y-m-d H:i:s");
+        $queuedPlayer->save();
+        return 1;
+      }
+
+      $player = \oceler\User::with('trials')->find(Auth::user()->id);
+
+      if(!$player->trials->isEmpty()) {
+        return 0;
+      }
+
+      else return -1;
+
+    }
+
+    /**
      * Loads the trial game screen for the player, including the solution
      * categories and network.
      */

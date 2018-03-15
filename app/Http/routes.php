@@ -74,7 +74,7 @@ Route::get('player/trial/queue', [
 
 Route::get('player/trial/queue/status', [
 	'middleware' => ['auth', 'roles'],
-	'uses' => 'TrialController@queue',
+	'uses' => 'PlayerController@queueStatus',
 	'roles' => ['player']
 ]);
 
@@ -311,6 +311,9 @@ Route::get('/admin/mturk-log', [
 
 // Testing routes...
 Route::get('/player/timer-test', 'PlayerController@timerTest');
+
+Route::get('/manage-queue', 'TrialController@manageQueue');
+Route::get('/test-manage-queue', 'TrialController@testQueueManager');
 
 Route::get('/player/is-trial-stopped', 'PlayerController@isTrialStoppedTest');
 
