@@ -492,6 +492,7 @@ class TrialController extends Controller
 
       // If no trials exist, return
       if(count($trials) == 0){
+        echo 'There are no active trials with slots open.';
         return;
       }
 
@@ -499,12 +500,15 @@ class TrialController extends Controller
       // is equal to the required # of players for the trial
       foreach($trials as $trial) {
 
+          echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$trial->num_players. ' players.<br><br>';
+
           $queued_players = Queue::where('trial_type', '=', $trial->trial_type)
                                           ->count();
 
           // If there aren't enough players for this trial type,
           // move on to the next one
           if($queued_players < $trial->num_players){
+            echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
             continue;
           }
 
@@ -513,6 +517,7 @@ class TrialController extends Controller
                                     ->orderBy('created_at', 'asc')
                                     ->take($trial->num_players)
                                     ->get();
+          echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
 
           // Shuffle the collection of selected players so that
           // their network node positions will essentially
@@ -545,7 +550,7 @@ class TrialController extends Controller
 
     private function deleteInactiveQueueUsers()
     {
-        $INACTIVE_QUEUE_TIME = 1500;
+        $INACTIVE_QUEUE_TIME = 6;
         $dt = \Carbon\Carbon::now();
         Queue::where('updated_at', '<', $dt->subSeconds($INACTIVE_QUEUE_TIME))->delete();
     }

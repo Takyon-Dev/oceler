@@ -31,7 +31,13 @@
       <div class="row">
         <div class="col-md-12">
           <h1 class="text-center">Players</h1>
-          <h2 class="text-primary">Players in trial queue</h2>
+          <h2 class="text-primary">
+            Players in trial queue
+            <a class="btn btn-primary btn-sm pull-right" role="button"
+               href="/manage-queue" target="_blank">
+               Manually process queue
+            </a>
+          </h2>
           <table id="queued_players" class="table table-striped trials">
             <tr>
               <th>Name</th>

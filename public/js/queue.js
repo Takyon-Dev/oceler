@@ -6,18 +6,13 @@ function queue()
     success: function(status)
     {
       if(status == -1){
+        leaveQueue();
         console.log("NO TRIAL");
       }
 
       if(status == 0){
         window.location.replace("/player/trial/instructions");
       }
-
-      else if(status >= 1){
-        $("#players_needed span").html(status);
-        $("#players_needed").show();
-      }
-
     }
   });
 
@@ -45,7 +40,7 @@ function waitForInstructions(trial_id)
       }, 1000);
     }
   });
-  
+
   setTimeout(leaveQueue, 120000);
 }
 
