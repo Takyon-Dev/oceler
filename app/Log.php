@@ -28,12 +28,18 @@ class Log extends Model
       fclose($fh);
     }
 
+    public static function errorLog($e)
+    {
+
+    }
+
     public static function listAll()
     {
 
       $logs = array();
       $files = scandir(storage_path()."/logs/trial-logs/", SCANDIR_SORT_DESCENDING);
-
+      natsort($files);
+      $files = array_reverse($files, true);
       $i = 0;
       foreach ($files as $f) {
         if($f != '.' && $f != '..'){
@@ -41,8 +47,8 @@ class Log extends Model
           $id = trim($f, "trial_.txt");
 
           $trial = \oceler\Trial::where('id', $id)
-                        ->withTrashed()
-                        ->first();
+                                ->withTrashed()
+                                ->first();
 
           $logs[$i]['log'] = $f;
           $logs[$i]['id'] = $id;

@@ -28,7 +28,6 @@ class MTurk extends Model
     $args .= ' -func test_connection';
 
     exec("/usr/bin/python " . $PATH_TO_PYSCRIPTS . "pyscripts/turkConnector3.py".$args, $output, $return_val);
-    dump($output);
   }
 
   public static function testAwsSdk()

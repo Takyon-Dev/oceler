@@ -13,6 +13,7 @@ use DB;
 use Response;
 use Session;
 use Input;
+use Log;
 
 
 class TrialController extends Controller
@@ -102,7 +103,7 @@ class TrialController extends Controller
       $msg = 'Trial '.$id;
       $msg .= ($trial->is_active) ? ' is now active' : ' is not active';
       \oceler\Log::trialLog($id, $msg);
-
+      Log::info($msg ." :: (type: ". $trial->trial_type ."; num_players: ". $trial->num_players .")");
       return \Redirect::to('/admin/trial');
     }
 
@@ -119,7 +120,7 @@ class TrialController extends Controller
       $msg = 'Trial '.$id;
       $msg .= ' was stopped by the administrator';
       \oceler\Log::trialLog($id, $msg);
-
+      Log::info($msg);
       return \Redirect::to('/admin/trial');
     }
 
@@ -138,7 +139,7 @@ class TrialController extends Controller
       $player->trial_type = ($last_trial_type + 1);
       $player->updated_at = $dt->toDateTimeString();
       $player->save();
-
+      Log::info("USER ID: ". $u_id ." entered the queue");
       return View::make('layouts.player.queue');
     }
 
@@ -461,7 +462,7 @@ class TrialController extends Controller
 
     public function markInstructionsAsRead($user_id)
     {
-
+      Log::info("USER ID ". $user_id ." marked instructions as read");
       DB::update('update trial_user set instructions_read = 1 where user_id = ?', [$user_id]);
 
     }
@@ -519,6 +520,7 @@ class TrialController extends Controller
                                     ->get();
           echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
 
+
           // Shuffle the collection of selected players so that
           // their network node positions will essentially
           // be randomized
@@ -543,7 +545,10 @@ class TrialController extends Controller
               $count++;
               if($count >= $trial->num_players / $trial->num_groups) $group++;
               // ... And delete that user from the queue
+              Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
+              \oceler\Log::trialLog($trial->id, "Moved USER ID ". $user->user_id ." into trial");
               Queue::where('user_id', '=', $user->user_id)->delete();
+              Log::info("Removed USER ID ". $user->user_id ." from queue");
           }
       }
     }
@@ -552,7 +557,11 @@ class TrialController extends Controller
     {
         $INACTIVE_QUEUE_TIME = 6;
         $dt = \Carbon\Carbon::now();
-        Queue::where('updated_at', '<', $dt->subSeconds($INACTIVE_QUEUE_TIME))->delete();
+        $toDelete = Queue::where('updated_at', '<', $dt->subSeconds($INACTIVE_QUEUE_TIME))->lists('user_id')->toArray();
+        if(count($toDelete) > 0) {
+          Log::info("Deleting from the Queue due to inactivity: ". implode(',', $toDelete));
+          Queue::whereIn('user_id', $toDelete)->delete();
+        }
     }
 
     public function testQueueManager()

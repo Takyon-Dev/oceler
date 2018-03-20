@@ -167,7 +167,9 @@ function playerTrialListener(trial_id)
 
 function buildUserDataRow(user)
 {
+
 	var row = $('<tr>');
+	var trial_id = $('<td>' + user.pivot.trial_id + '</td>');
 	var node = $('<td>' + user.node + '</td>');
 	var name = $('<td>' + user.player_name + '</td>');
 	var email = $('<td>' + user.email + '</td>');
@@ -176,7 +178,7 @@ function buildUserDataRow(user)
 	var created = $('<td>' + user.pivot.created_at  + '</td>');
 	var updated = $('<td>' + user.pivot.updated_at + '</td>');
 
-	$(row).append(node, name, email, ip, user_agent, created, updated);
+	$(row).append(trial_id, node, name, email, ip, user_agent, created, updated);
 
 	return row;
 }

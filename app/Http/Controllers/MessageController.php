@@ -49,7 +49,7 @@ class MessageController extends Controller
     if($factoid = \oceler\Factoid::find($request->factoid_id)){
       $log .= ' WITH FACTOID-- '.$factoid->factoid;
     }
-    
+
     \oceler\Log::trialLog($msg->trial_id, $log);
 
 	}
@@ -65,8 +65,6 @@ class MessageController extends Controller
                     ->where('node', \Input::get('node'))
                     ->where('wave', \Input::get('wave'))
                     ->get();
-
-    dump($factoids);
 
     $u_id = \oceler\User::where('player_name', 'System')->value('id');
     $trial_id = \Session::get('trial_id');

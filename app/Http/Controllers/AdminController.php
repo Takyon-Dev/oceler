@@ -165,15 +165,23 @@ class AdminController extends Controller
   public function viewMturkLog()
   {
     $log = env('PATH_TO_PYSCRIPTS', '').'pyscripts/turk-connector.log';
+    $handle = @fopen($log, "r");
+    if ($handle) {
+      while (($buffer = fgets($handle, 4096)) !== false) {
+        echo nl2br($buffer);
+      }
+      fclose($handle);
+    }
 
-    $fh = fopen($log, 'r');
-    $display = nl2br(fread($fh, 25000));
+
+    //$fh = fopen($log, 'r');
+    //$display = nl2br(fread($fh, 25000));
 
     /*
     return View::make('layouts.admin.mturk-log')
                 ->with('log', $display);
     */
-    return \Response::make($display, 200);
+    //return \Response::make($display, 200);
 
   }
 

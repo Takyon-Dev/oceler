@@ -58,6 +58,7 @@
 
           <table class="table table-striped trials">
             <tr>
+              <th>ID</th>
               <th>Trial</th>
               <th>Date</th>
               <th></th>
@@ -68,6 +69,7 @@
             </tr>
             @foreach($trials as $trial)
             <tr>
+              <td>{{ $trial->id }}</td>
               <td>{{ $trial->name }}</td>
               <td>{{ $trial->created_at }}</td>
               <td>

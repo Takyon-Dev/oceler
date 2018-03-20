@@ -126,6 +126,12 @@ Route::get('player/trial/end', [
 	'roles' => ['player']
 ]);
 
+Route::get('player/trial/stopped', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'PlayerController@trialStopped',
+	'roles' => ['player']
+]);
+
 Route::get('player/end-task/{reason}', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@endTask',
@@ -255,7 +261,7 @@ Route::get('/admin/trial/toggle/{id}', [
 	'roles' => ['administrator']
 ]);
 
-Route::get('/admin/log', [
+Route::get('/admin/trial-log', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@showLogs',
 	'roles' => ['administrator']
@@ -306,6 +312,12 @@ Route::get('/admin/data', [
 Route::get('/admin/mturk-log', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'AdminController@viewMturkLog',
+	'roles' => ['administrator']
+]);
+
+Route::get('/admin/log', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index',
 	'roles' => ['administrator']
 ]);
 

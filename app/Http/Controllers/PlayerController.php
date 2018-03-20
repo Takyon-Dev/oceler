@@ -12,6 +12,7 @@ use Response;
 use Session;
 use oceler\Solution;
 use oceler\SolutionCategory;
+use Log;
 
 class PlayerController extends Controller
 {
@@ -72,15 +73,19 @@ class PlayerController extends Controller
     	$u_id = Auth::id();
 
       $trial_user = Session::get('trial_user');
-
+      Log::info("USER ID ". $u_id ." is loading main trial page");
       /* If the user is not currently assigned to a trial,
       or if for some reason the trial has not yet been inititalized
       (curr_round has not been set)
       send them to their home screen */
-      if(!$trial_user || !Session::get('curr_round')) return \Redirect::to('/player/');
+      if(!$trial_user || !Session::get('curr_round')){
+        Log::info("USER ID ". $u_id ." something went wrong! Trial or round info was not found.");
+        return \Redirect::to('/player/');
+      }
 
       $curr_round = Session::get('curr_round');
 
+      Log::info("USER ID ". $u_id ." is loading trial, group, and network info");
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('rounds')
                             ->first();
@@ -121,6 +126,7 @@ class PlayerController extends Controller
         }
       }
 
+      Log::info("USER ID ". $u_id ." is connecting to network");
     	// Get each player that is in the same session as the user
     	$session_players = DB::table('trial_user')
                               ->where('trial_id', $trial->id)
@@ -188,6 +194,7 @@ class PlayerController extends Controller
       // for the message functions
       Session::put('players_from_ids', $players_from_ids);
 
+      Log::info("USER ID ". $u_id ." is loading solution categories");
     	/*
     	* Solution categories are stored in the DB. This makes it
     	*  possible to support different sessions
@@ -204,6 +211,7 @@ class PlayerController extends Controller
       // we'll call a helper function to get an array of months and minutes
       $datetime = Solution::dateTimeArray();
 
+      Log::info("USER ID ". $u_id ." is finished loading trial. Round ". $curr_round . " is now starting");
     	// Finally, we generate the page, passing the user's id,
     	// the players_from and players_to arrays and the
     	// solution categories array
@@ -236,7 +244,7 @@ class PlayerController extends Controller
 
       $trial->curr_round = $curr_round;
       $trial->save();
-
+      Log::info("USER ID ". Auth::user()->id ." is loading new round: ". $curr_round ." in trial ". $trial->id);
       // Update the start time for this round
       $dt = \Carbon\Carbon::now()->toDateTimeString();
       $trial->rounds[$curr_round - 1]->updated_at = $dt;
@@ -251,7 +259,8 @@ class PlayerController extends Controller
       $curr_round = Session::get('curr_round');
 
       $trial_user = Session::get('trial_user');
-
+      Log::info("USER ID ". Auth::user()->id ." has ended round: ". $curr_round ." in trial ". $trial_user->trial_id);
+      \oceler\Log::trialLog($trial_user->trial_id, "USER ID ". Auth::user()->id ." has ended round: ". $curr_round);
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
                   ->first();
@@ -317,11 +326,11 @@ class PlayerController extends Controller
     public function getContinueSurvey()
     {
       $trial_user = \Session::get('trial_user');
-
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
                   ->first();
 
+      Log::info('USER ID '. Auth::user()->id ." is being directed to survey");
       return View::make('layouts.player.continue-survey')
                   ->with('group', $group)
                   ->with('mturk_id', Auth::user()->mturk_id);
@@ -335,6 +344,7 @@ class PlayerController extends Controller
                             ->with('users')
                             ->first();
 
+      Log::info('USER ID '. Auth::user()->id ." is viewing the survey");
       return View::make('layouts.player.post-trial-survey')
                   ->with('trial_type', $trial->trial_type)
                   ->with('trial_id', $trial->id);
@@ -344,6 +354,7 @@ class PlayerController extends Controller
     public function postInitialSurvey(Request $request)
     {
 
+      Log::info('USER ID '. Auth::user()->id ." has completed the survey");
       DB::table('initial_survey')->insert([
           'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
           'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
@@ -366,6 +377,7 @@ class PlayerController extends Controller
     public function postTrialSurvey(Request $request)
     {
 
+      Log::info('USER ID '. Auth::user()->id ." has completed the survey");
       DB::table('post_trial_survey')->insert([
           'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
           'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
@@ -401,6 +413,8 @@ class PlayerController extends Controller
                   ->where('id', $trial_user->group_id)
                   ->first();
 
+      Log::info("USER ID ". Auth::id() ." has reached the end of trial ". $trial_user->trial_id);
+      \oceler\Log::trialLog($trial_user->trial_id, "USER ID ". Auth::id() ." has reached the end of trial");
       // Calculate the player's earnings
       $round_data = DB::table('round_earnings')
                           ->where('trial_id', '=', $trial->id)
@@ -428,10 +442,12 @@ class PlayerController extends Controller
                          "bonus_reason" => "Bonus payment based on your performance.",
                          "base_pay" => $trial->payment_base];
 
+      Log::info("USER ID ". Auth::id() ." payment calculated for trial ". $trial_user->trial_id);
      // If the user hasn't already been unassigned from the
      // trial by some other method, remove them here
       if($trial->users->contains(Auth::id())){
         // first bool indicates that they have completed the trial
+        Log::info("USER ID ". Auth::id() ." is being removed from trial ". $trial_user->trial_id ." passed: ". $passed_trial);
         $trial->removePlayerFromTrial(Auth::id(), true, $passed_trial);
       }
 
@@ -442,6 +458,7 @@ class PlayerController extends Controller
 
       if($mturk_hit){
 
+        Log::info("USER ID ". Auth::id() ." updating MTurk Hit table for ". $trial_user->trial_id ." assignment_id: ". $mturk_hit->assignment_id);
         $mturk_hit->trial_id = $trial->id;
         $mturk_hit->trial_type = $trial->trial_type;
         $mturk_hit->trial_completed = true;
@@ -460,7 +477,7 @@ class PlayerController extends Controller
         $mturk_id = false;
       }
 
-
+      Log::info("USER ID ". Auth::id() ." is viewing the end of trial page");
       return View::make('layouts.player.end-trial')
                   ->with('total_earnings', $total_earnings)
                   ->with('group', $group)
@@ -509,6 +526,13 @@ class PlayerController extends Controller
           $msg = 'The task is now over. Thank you for your participation.';
       }
 
+      $logReason = 'task ending';
+      if($reason == 'timeout'){
+        $logReason = 'queue or instructions timed out';
+      }
+
+      Log::info("USER ID ". Auth::user()->id ." ending task due to: ". $logReason);
+
       return View::make('layouts.player.end-task')
                   ->with('total_earnings', $total_earnings)
                   ->with('assignment_id', $assignment_id)
@@ -516,6 +540,12 @@ class PlayerController extends Controller
                   ->with('completed_trial', false)
                   ->with('submit_to', $submit_to)
                   ->with('msg', $msg);
+    }
+
+    public function trialStopped()
+    {
+      Log::info('USER ID'. Auth::user()->id .' was taken to the trial stopped page');
+      return View::make('layouts.player.trial-stopped');
     }
 
     /**
@@ -613,10 +643,9 @@ class PlayerController extends Controller
      */
     public function showInstructions()
     {
-
       $trial_id = DB::table('trial_user')->where('user_id', Auth::id())->pluck('trial_id');
       $trial = \oceler\Trial::where('id', $trial_id)->first();
-
+      Log::info("USER ID ". Auth::id() ." is viewing the instructions for trial ". $trial_id);
       return View::make('layouts.player.instructions')
                  ->with('trial', $trial);
     }
@@ -637,9 +666,11 @@ class PlayerController extends Controller
                   ->where('user_id', '=', Auth::user()->id)
                   ->orderBy('updated_at', 'desc')
                   ->first();
-
-      if(!$trial_user) return View::make('layouts.player.trial-stopped');
-
+      Log::info("USER ID ". Auth::user()->id ." intitializing trial ". $trial_user->trial_id);
+      if(!$trial_user) {
+        Log::info("USER ID ". Auth::user()->id ." failed to initialize! User not found in trial_user table!");
+        return redirect('/player/trial/stopped');
+      }
       Session::put('trial_user', $trial_user);
       Session::put('trial_id', $trial_user->trial_id);
 
@@ -691,6 +722,7 @@ class PlayerController extends Controller
 
           $user->player_name = $names[$key + 1];
           $user->save();
+          Log::info("USER ID ". Auth::user()->id ." was assigned to node id ". ($key + 1));
         }
       }
 
@@ -698,6 +730,10 @@ class PlayerController extends Controller
 
     }
 
+    /**
+     * If a player is redirected to an external survey, capture their return
+     * via this method.
+     */
     public function getMTurkSubmit($worker_id)
     {
 
@@ -742,6 +778,7 @@ class PlayerController extends Controller
 
     public function getMTurkLogin(Request $request)
     {
+
       if(!$request->assignmentId)
       {
         return;
@@ -772,6 +809,7 @@ class PlayerController extends Controller
         $user->role_id = 3;
         $user->save();
         $user_id = $user->id;
+        Log::info('Creating new user via MTurk. USER ID '. $user->id);
       }
 
       $user = Auth::loginUsingId($user_id);
@@ -792,7 +830,7 @@ class PlayerController extends Controller
       $hit_data->submit_to = $request->turkSubmitTo;
       $hit_data->unique_token = uniqid();
       $hit_data->save();
-
+      Log::info("Adding a new record to mturk_hits : USER ID ". $user->id ."; From (if known) ". request()->server('HTTP_REFERER'));
       Session::put('assignment_id', $request->assignmentId);
 
       return \Redirect::to('player/trial/queue');

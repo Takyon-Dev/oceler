@@ -17,10 +17,11 @@
                     <ul class="nav navbar-nav">
                         <li><a href="/admin/players">Players</a></li>
                         <li><a href="/admin/trial">Trials</a></li>
-                        <li><a href="/admin/log">Logs</a></li>
                         <li><a href="/admin/config-files">Config Files</a></li>
                         <li><a href="/admin/data">Data</a></li>
-                        <li><a href="/admin/mturk-log">MTurk Log</a></li>
+                        <li><a href="/admin/trial-log">Trial Logs</a></li>
+                        <li><a href="/admin/mturk-log" target="_blank">MTurk Log</a></li>
+                        <li><a href="/admin/log">Server Logs</a></li>
                         <li><a href="/logout">Sign out</a></li>
                     </ul>
                 </div>

@@ -12,11 +12,11 @@
 
       setInterval(function(){
         queueListener();
-      }, 5000);
+      }, 2000);
 
       setInterval(function(){
         playerTrialListener();
-      }, 5000);
+      }, 2000);
 
     });
 
@@ -48,7 +48,7 @@
               <th>Last Pinged</th>
             </tr>
             <tbody class="players">
-              <tr><td colspan="7" class="text-center">Loading player data...</td><tr>
+              <tr><td colspan="8" class="text-center">Loading player data...</td><tr>
             </tbody>
           </table>
           </div>
@@ -58,6 +58,7 @@
             <h2 class="text-primary">Players in active trials</h2>
             <table id="trials" class="table table-striped trials">
               <tr>
+                <th>Trial ID</th>
                 <th>Node</th>
                 <th>Name</th>
                 <th>Email</th>
