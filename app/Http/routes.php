@@ -338,6 +338,8 @@ Route::get('/initial-post-trial-survey', 'PlayerController@testInitialPostTrialS
 Route::get('/post-trial-survey', 'PlayerController@testPostTrialSurvey');
 Route::post('/player/submit-initial-survey', 'PlayerController@postInitialSurvey');
 
+Route::get('/test-process-hit', 'TrialController@testHitProcess');
+
 Route::get('/initial-post-trial-survey', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@testInitialPostTrialSurvey',

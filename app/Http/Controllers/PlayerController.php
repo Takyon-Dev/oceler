@@ -822,11 +822,13 @@ class PlayerController extends Controller
       $user->save();
 
       // Record the hit data
-      $hit_data = new \oceler\MturkHit();
+      $hit_data = \oceler\MturkHit::firstOrNew(['worker_id' => $worker_id,
+                                                'assignment_id' => $request->assignmentId,
+                                                'hit_id' => $request->hitId]);
       $hit_data->user_id = $user->id;
-      $hit_data->hit_id = $request->hitId;
-      $hit_data->assignment_id = $request->assignmentId;
-      $hit_data->worker_id = $worker_id;
+      //$hit_data->hit_id = $request->hitId;
+      //$hit_data->assignment_id = $request->assignmentId;
+      //$hit_data->worker_id = $worker_id;
       $hit_data->submit_to = $request->turkSubmitTo;
       $hit_data->unique_token = uniqid();
       $hit_data->save();

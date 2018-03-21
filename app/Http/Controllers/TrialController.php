@@ -596,4 +596,18 @@ class TrialController extends Controller
 
 
     }
+
+    public function testHitProcess()
+    {
+      $active_players = DB::table('trial_user')->lists('user_id');
+      $hits = \oceler\MturkHit::whereNotIn('user_id', $active_players)
+                               ->where('hit_processed', '=', 0)
+                               ->where('trial_id', '>', 0)
+                               ->orWhere('trial_id', '=', -1)
+                               //=->whereRaw('(trial_id > 0 OR trial_id = -1)')
+                               ->whereNotIn('user_id', $active_players)
+                               ->where('hit_processed', '=', 0)
+                               ->get();
+      dump($hits);
+    }
 }
