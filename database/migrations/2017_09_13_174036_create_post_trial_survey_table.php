@@ -16,9 +16,9 @@ class CreatePostTrialSurveyTable extends Migration
            $table->increments('id');
            $table->integer('user_id')->unsigned();
            $table->integer('trial_id')->unsigned();
-           $table->integer('enjoy');
-           $table->integer('confident');
-           $table->text('comments');
+           $table->integer('enjoy')->nullable();
+           $table->integer('confident')->nullable();
+           $table->text('comments')->nullable();
            $table->timestamps();
 
            $table->foreign('user_id')

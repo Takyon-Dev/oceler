@@ -32,7 +32,11 @@ function waitForInstructions(trial_id)
 
       response = $.parseJSON(status);
       if(response){
+        document.cookie = 'generic_timer=; Max-Age=-99999999;';
         window.location.replace("/player/trial/initialize");
+      }
+      else {
+        console.log(response);
       }
 
       setTimeout(function(){
@@ -41,7 +45,7 @@ function waitForInstructions(trial_id)
     }
   });
 
-  setTimeout(leaveQueue, 120000);
+  //setTimeout(leaveQueue, 120000);
 }
 
 function markAsRead(user_id)

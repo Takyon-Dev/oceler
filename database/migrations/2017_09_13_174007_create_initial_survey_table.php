@@ -16,10 +16,10 @@ class CreateInitialSurveyTable extends Migration
         $table->increments('id');
         $table->integer('user_id')->unsigned();
         $table->integer('trial_id')->unsigned();
-        $table->integer('understand');
-        $table->integer('confident');
-        $table->string('email');
-        $table->text('comments');
+        $table->integer('understand')->nullable();
+        $table->integer('confident')->nullable();
+        $table->string('email')->nullable();
+        $table->text('comments')->nullable();
         $table->timestamps();
 
         $table->foreign('user_id')

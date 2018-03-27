@@ -453,8 +453,14 @@ class TrialController extends Controller
 
       $num_read = 0;
 
+      $INACTIVE_PING_TIME = 6;
+      $dt = \Carbon\Carbon::now();
+
       foreach ($trial->users as $user) {
-        if($user->pivot->instructions_read == 1) $num_read++;
+        if($user->id == \Auth::user()->id) {
+          $trial->users()->updateExistingPivot($user->id, ['last_ping' => date("Y-m-d H:i:s")]);
+        }
+        if(($user->pivot->instructions_read == 1) && ($user->pivot->last_ping > $dt->subSeconds($INACTIVE_PING_TIME))) $num_read++;
       }
 
       return Response::json($num_read == count($trial->users));

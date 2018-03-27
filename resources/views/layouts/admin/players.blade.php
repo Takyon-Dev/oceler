@@ -68,7 +68,7 @@
                 <th>Last Pinged</th>
               </tr>
               <tbody class="players">
-                <tr><td colspan="7" class="text-center">Loading player data...</td><tr>
+                <tr><td colspan="8" class="text-center">Loading player data...</td><tr>
               </tbody>
             </table>
         </div>
