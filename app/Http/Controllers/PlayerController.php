@@ -625,7 +625,7 @@ class PlayerController extends Controller
       $player->trials[0]->pivot->save();
 
       // Make sure that all players are still active
-      $INACTIVE_PING_TIME = 12;
+      $INACTIVE_PING_TIME = 30;
       $dt = \Carbon\Carbon::now();
       $countPlayers = \DB::table('trial_user')
                   ->where('trial_id', $player->trials[0]->id)
