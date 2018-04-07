@@ -13,6 +13,9 @@ function ping()
 		success: function(response)
 		{
 			if(response == -1){
+				// Clear any instructions timers
+				deleteCookie('generic_timer');
+
 				window.location = '/player/trial/trial-stopped';
 			}
 
@@ -213,4 +216,8 @@ function distributionListener(node, distribution_interval, fset_id)
 		distributionListener(node, distribution_interval, fset_id);
 	}, delay)
 
+}
+
+function deleteCookie(name) {
+    document.cookie = name+'=; Max-Age=-99999999;';
 }

@@ -437,6 +437,17 @@ class TrialController extends Controller
 
     public function trialStopped()
     {
+      $trial_user = DB::table('trial_user')
+                  ->where('user_id', '=', Auth::user()->id)
+                  ->orderBy('updated_at', 'desc')
+                  ->get();
+
+      foreach ($trial_user as $key => $t_u) {
+        $trial = Trial::find($t_u->trial_id);
+        $trial->stopTrial();
+      }
+
+      Log::info('USER ID'. Auth::user()->id .' was taken to the trial stopped page');
       return View::make('layouts.player.trial-stopped');
     }
 
@@ -598,9 +609,6 @@ class TrialController extends Controller
         $group->group = 1;
         $group->save();
       }
-      //$this->manageQueue();
-
-
     }
 
     public function testHitProcess()
