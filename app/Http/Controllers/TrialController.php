@@ -161,10 +161,17 @@ class TrialController extends Controller
 
       $trial = Trial::with('users')->find($id);
       $curr_round = $trial->curr_round;
+
       $server_time = time();
-      $start_time = strtotime(
-                    $trial->rounds[$curr_round - 1]
-                    ->updated_at);
+      if($curr_round > 0) {
+        $start_time = strtotime(
+                      $trial->rounds[$curr_round - 1]
+                      ->updated_at);
+      }
+      else {
+        $start_time = 'Trial has not begun yet';
+      }
+
 
 
       return View::make('layouts.admin.trial-view')

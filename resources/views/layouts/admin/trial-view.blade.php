@@ -19,11 +19,15 @@
       TimerVars.curr_round = "{{ $trial->curr_round }}";
       TimerVars.total_rounds = "{{ count($trial->rounds) }}";
       var start_time = "{{ $start_time }}";
-      var timeout = "{{ $trial->rounds[$trial->curr_round -1]->round_timeout }}";
-      var time = 0;
-      addTimer(server_time, start_time, timeout);
-      adminTimerTick();
 
+      @if($trial->curr_round > 0)
+        var timeout = "{{ $trial->rounds[$trial->curr_round -1]->round_timeout }}";
+        var time = 0;
+        addTimer(server_time, start_time, timeout);
+        adminTimerTick();
+      @else
+        $("#timer").html(start_time);
+      @endif
 
       setInterval(function(){
         playerTrialListener({{ $trial->id }});
