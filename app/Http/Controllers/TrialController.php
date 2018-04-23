@@ -130,6 +130,14 @@ class TrialController extends Controller
      */
     public function enterQueue()
     {
+      // First, check that they aren't already in a trial
+      $trialPlayer = \oceler\User::with('trials')->find(Auth::user()->id);
+
+      // If they are, redirect to the trial page
+      if(!$trialPlayer->trials->isEmpty()) {
+        return redirect('player/trial');
+      }
+
       $u_id = Auth::user()->id;
       $last_trial_type = Auth::user()->lastTrialType();
       $dt = \Carbon\Carbon::now();
