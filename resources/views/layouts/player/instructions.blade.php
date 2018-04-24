@@ -67,7 +67,7 @@
           @endif
         </div>
         <div class="text-center">
-          <a class="btn btn-lg btn-primary" id="instr_button" href="#" role="button">Continue</a>
+          <a class="btn btn-lg btn-danger" id="instr_button" href="#" role="button">Start</a>
         </div>
       </div>
       <div id="waiting" class="text-center">
