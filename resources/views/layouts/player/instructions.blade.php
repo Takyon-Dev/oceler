@@ -20,7 +20,7 @@
 
   $(document).ready(function(){
 
-    initializeTimer(240, 300000, function() {
+    initializeTimer(240, function() {
       window.location.replace("/player/end-task/timeout");
     });
 
@@ -51,7 +51,7 @@
     <div class="col-md-12 text-center">
       <h2 class="text-primary">
         <span id="timer-prompt">Please press start before time elapses</span>
-        <div class="ml-md-4 text-danger" id="gen-timer"></div>
+        <div class="ml-md-4 text-danger" id="timer"></div>
       </h2>
     </div>
   </div>

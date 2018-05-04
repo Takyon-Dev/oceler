@@ -5,10 +5,6 @@ function queue()
     url: "/player/trial/queue/status",
     success: function(status)
     {
-      if(status == -1){
-        leaveQueue();
-        console.log("NO TRIAL");
-      }
 
       if(status == 0){
         window.location.replace("/player/trial/instructions");

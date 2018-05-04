@@ -44,8 +44,6 @@ class PlayerController extends Controller
         return 0;
       }
 
-      else return -1;
-
     }
 
     /**
@@ -72,18 +70,20 @@ class PlayerController extends Controller
     	// user's network node
     	$u_id = Auth::id();
 
-      $trial_user = Session::get('trial_user');
+      $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
+
       Log::info("USER ID ". $u_id ." is loading main trial page");
       /* If the user is not currently assigned to a trial,
       or if for some reason the trial has not yet been inititalized
       (curr_round has not been set)
       send them to their home screen */
-      if(!$trial_user || !Session::get('curr_round')){
-        Log::info("USER ID ". $u_id ." something went wrong! Trial or round info was not found.");
+      if(!$trial_user){
+        Log::info("USER ID ". $u_id ." something went wrong! User not found in trial_user table!");
         return \Redirect::to('/player/');
       }
 
       $curr_round = Session::get('curr_round');
+      if(!$curr_round) $curr_round = 1;
 
       Log::info("USER ID ". $u_id ." is loading trial, group, and network info");
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
@@ -93,7 +93,7 @@ class PlayerController extends Controller
       // Used for the javascript trial timer
       $server_time = time();
       $start_time = strtotime(
-                    $trial->rounds[(Session::get('curr_round') - 1)]
+                    $trial->rounds[($curr_round - 1)]
                     ->updated_at);
 
       $group = DB::table('groups')
@@ -258,7 +258,7 @@ class PlayerController extends Controller
       $user = Auth::user();
       $curr_round = Session::get('curr_round');
 
-      $trial_user = Session::get('trial_user');
+      $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
       Log::info("USER ID ". Auth::user()->id ." has ended round: ". $curr_round ." in trial ". $trial_user->trial_id);
       \oceler\Log::trialLog($trial_user->trial_id, "USER ID ". Auth::user()->id ." has ended round: ". $curr_round);
       $group = DB::table('groups')
@@ -325,7 +325,7 @@ class PlayerController extends Controller
 
     public function getContinueSurvey()
     {
-      $trial_user = \Session::get('trial_user');
+      $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
                   ->first();
@@ -338,7 +338,7 @@ class PlayerController extends Controller
 
     public function showPostTrialSurvey()
     {
-      $trial_user = Session::get('trial_user');
+      $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('users')
@@ -403,7 +403,7 @@ class PlayerController extends Controller
      */
     public function endTrial()
     {
-      $trial_user = Session::get('trial_user');
+      $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('users')
@@ -633,7 +633,8 @@ class PlayerController extends Controller
                   ->count();
 
       if($countPlayers != $player->trials[0]->num_players){
-        Log::info("USER ID ". Auth::user()->id ." is leaving trial ". $player->trials[0]->id. " because there are no longer enough active players");
+        Log::info("USER ID ". Auth::user()->id ." is leaving trial ". $player->trials[0]->id. " because there are no longer enough active players. All players will be removed and trial will be closed.");
+        $player->trials[0]->stopTrial();
         return -1;
       }
 
@@ -675,10 +676,8 @@ class PlayerController extends Controller
       Session::put('curr_round', $curr_round);
 
       // Get the trial ID and the trial
-      $trial_user = DB::table('trial_user')
-                  ->where('user_id', '=', Auth::user()->id)
-                  ->orderBy('updated_at', 'desc')
-                  ->first();
+      $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
+
       Log::info("USER ID ". Auth::user()->id ." intitializing trial ". $trial_user->trial_id);
       if(!$trial_user) {
         Log::info("USER ID ". Auth::user()->id ." failed to initialize! User not found in trial_user table!");

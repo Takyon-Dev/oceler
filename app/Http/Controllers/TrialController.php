@@ -535,8 +535,11 @@ class TrialController extends Controller
 
           echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$trial->num_players. ' players.<br><br>';
 
+          $LAST_PING_TIME = 2; // How recent a ping must be for player to be chosen
+          $dt = \Carbon\Carbon::now();
           $queued_players = Queue::where('trial_type', '=', $trial->trial_type)
-                                          ->count();
+                                 ->where('updated_at', '>=', $dt->subSeconds($LAST_PING_TIME))
+                                 ->count();
 
           // If there aren't enough players for this trial type,
           // move on to the next one
@@ -547,9 +550,10 @@ class TrialController extends Controller
 
           // Otherwise, take the required amount
           $selected = Queue::where('trial_type', '=', $trial->trial_type)
-                                    ->orderBy('created_at', 'asc')
-                                    ->take($trial->num_players)
-                                    ->get();
+                           ->where('updated_at', '>=', $dt->subSeconds($LAST_PING_TIME))
+                           ->orderBy('created_at', 'asc')
+                           ->take($trial->num_players)
+                           ->get();
           echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
 
 
