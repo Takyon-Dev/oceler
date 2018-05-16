@@ -217,6 +217,7 @@ class PlayerController extends Controller
     	// solution categories array
     	return View::make('layouts.player.main')
                    ->with('user', Auth::user())
+                   ->with('curr_round', $curr_round)
                    ->with('trial', $trial)
                    ->with('players_from', $players_from)
                    ->with('players_to', $players_to)
