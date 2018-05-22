@@ -625,20 +625,6 @@ class PlayerController extends Controller
                                                 ->toDateTimeString();
       $player->trials[0]->pivot->save();
 
-      // Make sure that all players are still active
-      $INACTIVE_PING_TIME = 60;
-      $dt = \Carbon\Carbon::now();
-      $countPlayers = \DB::table('trial_user')
-                  ->where('trial_id', $player->trials[0]->id)
-                  ->where('last_ping', '>', $dt->subSeconds($INACTIVE_PING_TIME))
-                  ->count();
-
-      if($countPlayers != $player->trials[0]->num_players){
-        Log::info("USER ID ". Auth::user()->id ." is leaving trial ". $player->trials[0]->id. " because there are no longer enough active players. All players will be removed and trial will be closed.");
-        $player->trials[0]->stopTrial();
-        return -1;
-      }
-
       // Get latest solutions and messages
       $solutions = Solution::getLatestSolutions(Session::get('trial_id'),
                                                 Session::get('curr_round'),
