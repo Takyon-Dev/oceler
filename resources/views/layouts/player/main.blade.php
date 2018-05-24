@@ -14,7 +14,7 @@
     var num_players_to = Object.keys(players_to).length;
     var players_from = <?php echo json_encode($players_from); ?>;
     var distribution_interval = "{{ $trial->distribution_interval }}";
-    var factoidset_id = "{{ $trial->rounds[$curr_round - 1)]->factoidset_id}}"
+    var factoidset_id = "{{ $trial->rounds[$curr_round - 1]->factoidset_id}}"
     var system_msg_name = "{{ $system_msg_name }}" || "System";
 
     // used for search
