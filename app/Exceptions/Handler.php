@@ -47,11 +47,12 @@ class Handler extends ExceptionHandler
         }
 
         // If we are on the dev server (local)
-        if(app()->isLocal()) {
+        if(app()->isLocal() || \Auth::user()->role_id == 2) {
           return parent::render($request, $e);
         }
 
         // Otherwise, don't render the exception, instead take them to generic error message
+        if(\Auth::user()->role_id == )
         return redirect('/player/trial/trial-stopped');
     }
 }
