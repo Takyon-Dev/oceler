@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Auth;
 
 class Handler extends ExceptionHandler
 {
@@ -46,13 +47,13 @@ class Handler extends ExceptionHandler
             $e = new NotFoundHttpException($e->getMessage(), $e);
         }
 
-        // If we are on the dev server (local)
-        if(app()->isLocal() || \Auth::user()->role_id == 2) {
+        // If we are on the dev server (local) or an admin
+        if(app()->isLocal() || Auth::user()->role_id == 2) {
           return parent::render($request, $e);
         }
 
         // Otherwise, don't render the exception, instead take them to generic error message
-        if(\Auth::user()->role_id == )
+
         return redirect('/player/trial/trial-stopped');
     }
 }
