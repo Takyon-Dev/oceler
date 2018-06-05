@@ -50,7 +50,7 @@ class User extends Model implements AuthenticatableContract,
     public function trials()
     {
     # With timetsamps() will ensure the pivot table has its created_at/updated_at fields automatically maintained
-    return $this->belongsToMany('oceler\Trial')->withPivot('group_id', 'last_ping')->withTimestamps();
+    return $this->belongsToMany('oceler\Trial')->withPivot('group_id', 'last_ping', 'instructions_read')->withTimestamps();
     }
 
     public function lastTrialType()

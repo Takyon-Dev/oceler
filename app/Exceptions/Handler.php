@@ -46,6 +46,12 @@ class Handler extends ExceptionHandler
             $e = new NotFoundHttpException($e->getMessage(), $e);
         }
 
-        return parent::render($request, $e);
+        // If we are on the dev server (local)
+        if(app()->isLocal()) {
+          return parent::render($request, $e);
+        }
+
+        // Otherwise, don't render the exception, instead take them to generic error message
+        return redirect('/player/trial/trial-stopped');
     }
 }

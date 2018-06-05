@@ -39,11 +39,9 @@ class PlayerController extends Controller
       }
 
       $player = \oceler\User::with('trials')->find(Auth::user()->id);
-
-      if(!$player->trials->isEmpty()) {
+      if(count($player->trials) > 0) {
         return 0;
       }
-
     }
 
     /**
@@ -79,7 +77,7 @@ class PlayerController extends Controller
       send them to their home screen */
       if(!$trial_user){
         Log::info("USER ID ". $u_id ." something went wrong! User not found in trial_user table!");
-        return \Redirect::to('/player/');
+        return \Redirect::to('/player/trial/queue');
       }
 
       $curr_round = Session::get('curr_round');
@@ -108,6 +106,12 @@ class PlayerController extends Controller
                       ->where('user_id', $u_id)
                       ->where('group_id', $group->id)
                       ->value('node_id');
+
+      // If they haven't been assigned a node for some reason, send them to initialize the trial
+      if(!$u_node_id) {
+        Log::info("USER ID ". $u_id ." did not initialize trial yet!");
+        return redirect('/player/trial/initialize');
+      }
 
       $u_node = DB::table('network_nodes')
                     ->where('id', '=', $u_node_id)
@@ -518,6 +522,12 @@ class PlayerController extends Controller
         $submit_to = false;
       }
 
+      // If they have been assigned to a trial, remove them
+      $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
+      if($trial_user) {
+        \oceler\Trial::find($trial_user->trial_id)->removePlayerFromTrial(Auth::id(), false, false);
+      }
+
       switch($reason) {
         case 'timeout':
           $msg = 'There are no trials available at this time.';
@@ -645,6 +655,9 @@ class PlayerController extends Controller
     public function showInstructions()
     {
       $trial_id = DB::table('trial_user')->where('user_id', Auth::id())->pluck('trial_id');
+
+      if(!$trial_id) return redirect('/player/trial/queue');
+
       $trial = \oceler\Trial::where('id', $trial_id)->first();
       Log::info("USER ID ". Auth::id() ." is viewing the instructions for trial ". $trial_id);
       return View::make('layouts.player.instructions')
@@ -825,9 +838,6 @@ class PlayerController extends Controller
                                                 'assignment_id' => $request->assignmentId,
                                                 'hit_id' => $request->hitId]);
       $hit_data->user_id = $user->id;
-      //$hit_data->hit_id = $request->hitId;
-      //$hit_data->assignment_id = $request->assignmentId;
-      //$hit_data->worker_id = $worker_id;
       $hit_data->submit_to = $request->turkSubmitTo;
       $hit_data->unique_token = uniqid();
       $hit_data->save();

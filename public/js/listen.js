@@ -7,6 +7,7 @@ var PING_INTERVAL = 2000; // Time between pings, in ms
  */
 function ping()
 {
+	$.ajaxSetup({ cache: false });
 	$.ajax({
 		type: "GET",
 		url: "/player/ping/solution/"+ last_solution +"/message/" + last_message_time,

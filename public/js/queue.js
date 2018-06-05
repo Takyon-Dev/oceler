@@ -1,5 +1,6 @@
 function queue()
 {
+  $.ajaxSetup({ cache: false });
   $.ajax({
     type: "GET",
     url: "/player/trial/queue/status",
@@ -19,7 +20,7 @@ function queue()
 
 function waitForInstructions(trial_id)
 {
-
+  $.ajaxSetup({ cache: false });
   $.ajax({
     type: "GET",
     url: "/player/trial/instructions/status/" + trial_id,

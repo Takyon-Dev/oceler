@@ -133,9 +133,9 @@ class TrialController extends Controller
       // First, check that they aren't already in a trial
       $trialPlayer = \oceler\User::with('trials')->find(Auth::user()->id);
 
-      // If they are, redirect to the trial page
-      if(!$trialPlayer->trials->isEmpty()) {
-        return redirect('player/trial');
+      // If they are, redirect to the trial instructions page
+      if(count($trialPlayer->trials) > 0) {
+        return redirect('/player/trial/instructions');
       }
 
       $u_id = Auth::user()->id;
@@ -479,7 +479,7 @@ class TrialController extends Controller
 
       $num_read = 0;
 
-      $INACTIVE_PING_TIME = 6;
+      $INACTIVE_PING_TIME = 20;
       $dt = \Carbon\Carbon::now();
 
       foreach ($trial->users as $user) {
