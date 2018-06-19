@@ -26,9 +26,6 @@
 
     waitForInstructions(trial_id);
 
-    // Adds csrf token to AJAX headers
-    $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
-
     $("#instr_button").click(function(){
 
       $("#waiting").show();

@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Auth;
+use Log;
 
 class Handler extends ExceptionHandler
 {
@@ -47,13 +48,24 @@ class Handler extends ExceptionHandler
             $e = new NotFoundHttpException($e->getMessage(), $e);
         }
 
+        if(Auth::user()){
+          Log::info("USER ID ". Auth::user()->id ." has generated an Exception");
+        }
+        else {
+          Log::info("A non-logged-in user has generated an Exception");
+        }
+
+        Log::info("Exception ". get_class($e) .' '.$e->getMessage() ." URI: ".$_SERVER['REQUEST_URI']);
+
+        //return parent::render($request, $e);
+        //Log::info("USER ID ". $u_id ." is loading main trial page");
         // If we are on the dev server (local) or an admin
-        if(app()->isLocal() || Auth::user()->role_id == 2) {
+
+        if(app()->isLocal() || (Auth::user() && Auth::user()->role_id == 2)) {
           return parent::render($request, $e);
         }
 
         // Otherwise, don't render the exception, instead take them to generic error message
-
         return redirect('/player/trial/trial-stopped');
     }
 }

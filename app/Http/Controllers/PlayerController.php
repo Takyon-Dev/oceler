@@ -699,6 +699,11 @@ class PlayerController extends Controller
       $trial->rounds[0]->updated_at = $dt;
       $trial->rounds[0]->save();
 
+      // If the start time hasn't been recorded yet, do so
+      if(is_null($trial->rounds[0]->start_time)) {
+        $trial->rounds[0]->start_time = $dt;
+      } 
+
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
                   ->first();
