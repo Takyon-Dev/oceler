@@ -489,7 +489,7 @@ class TrialController extends Controller
         if(($user->pivot->instructions_read == 1) && ($user->pivot->last_ping > $dt->subSeconds($INACTIVE_PING_TIME))) $num_read++;
       }
 
-      return Response::json($num_read == count($trial->users));
+      return Response::json($num_read == $trial->num_players);
     }
 
     public function markInstructionsAsRead($user_id)
