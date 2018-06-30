@@ -253,6 +253,10 @@ class PlayerController extends Controller
       // Update the start time for this round
       $dt = \Carbon\Carbon::now()->toDateTimeString();
       $trial->rounds[$curr_round - 1]->updated_at = $dt;
+      // If the start time hasn't been recorded yet, do so
+      if(is_null($trial->rounds[$curr_round - 1]->start_time)) {
+        $trial->rounds[$curr_round - 1]->start_time = $dt;
+      }
       $trial->rounds[$curr_round - 1]->save();
 
       return redirect('/player/trial');
@@ -702,7 +706,9 @@ class PlayerController extends Controller
       // If the start time hasn't been recorded yet, do so
       if(is_null($trial->rounds[0]->start_time)) {
         $trial->rounds[0]->start_time = $dt;
-      } 
+        $trial->rounds[0]->save();
+      }
+
 
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
