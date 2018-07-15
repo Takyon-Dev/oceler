@@ -22,7 +22,7 @@ class Trial extends Model
 
     public function users() {
       return $this->belongsToMany('oceler\User')
-                  ->withPivot('group_id', 'instructions_read', 'last_ping')
+                  ->withPivot('group_id', 'instructions_read', 'last_ping', 'selected_for_trial')
                   ->withTimestamps();
     }
 
@@ -48,6 +48,7 @@ class Trial extends Model
       $this->distribution_interval = $request->distribution_interval;
       $this->num_waves = $request->num_waves;
       $this->num_players = $request->num_players;
+      $this->num_to_recruit = $request->num_to_recruit;
       $this->unique_factoids = $request->unique_factoids || 0;
       $this->pay_correct = $request->pay_correct || 0;
       $this->pay_time_factor = $request->pay_time_factor || 0;

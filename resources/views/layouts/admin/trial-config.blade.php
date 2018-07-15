@@ -68,6 +68,10 @@
 
                     {!! Form::input('number', 'num_players', null, ['class'=>'num-input', 'id'=>'num_players', 'min'=>'1']) !!}<br>
 
+                    {!! Form::label('num_to_recruit', 'Number of players to recruit') !!}
+
+                    {!! Form::input('number', 'num_to_recruit', null, ['class'=>'num-input', 'id'=>'num_to_recruit', 'min'=>'1']) !!}<br>
+
                     {!! Form::label('num_groups', 'Number of groups') !!}
 
                     {!! Form::input('number', 'num_groups', null, ['class'=>'num-input', 'id'=>'num_groups', 'min'=>'1']) !!}<br>

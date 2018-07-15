@@ -507,12 +507,19 @@ class TrialController extends Controller
       // Get all trials that are active but already have been filled
       // by querying the trial_user table
 
+      /*
       $running_trials = DB::table('trial_user')
                           ->get();
+      */
+     $running_trials = Trial::with('users')->where('is_active', true)->get();
+     dump($running_trials);
+     return;
 
       $filled_trials = [];
       foreach ($running_trials as $t) {
         $filled_trials[] = $t->trial_id;
+        // Process the instructions status of each running trial, if needed
+        $this->selectForTrial($t->trial_id);
       }
 
       // Get all active, not-already-filled trials
@@ -532,8 +539,9 @@ class TrialController extends Controller
       // For each active trial, see if the # of players in the queue
       // is equal to the required # of players for the trial
       foreach($trials as $trial) {
-
-          echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$trial->num_players. ' players.<br><br>';
+          // If no number to recruit is entered, use num_players
+          $num_to_recruit = ($trial->num_to_recruit != '') ? $trial->num_to_recruit : $trial->num_players;
+          echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$num_to_recruit. ' players.<br><br>';
 
           $LAST_PING_TIME = 2; // How recent a ping must be for player to be chosen
           $dt = \Carbon\Carbon::now();
@@ -543,7 +551,7 @@ class TrialController extends Controller
 
           // If there aren't enough players for this trial type,
           // move on to the next one
-          if($queued_players < $trial->num_players){
+          if($queued_players < $num_to_recruit){
             echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
             continue;
           }
@@ -552,7 +560,7 @@ class TrialController extends Controller
           $selected = Queue::where('trial_type', '=', $trial->trial_type)
                            ->where('updated_at', '>=', $dt->subSeconds($LAST_PING_TIME))
                            ->orderBy('created_at', 'asc')
-                           ->take($trial->num_players)
+                           ->take($num_to_recruit)
                            ->get();
           echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
 
@@ -579,7 +587,7 @@ class TrialController extends Controller
                               ->value('id')
               ]);
               $count++;
-              if($count >= $trial->num_players / $trial->num_groups) $group++;
+              if($count >= $num_to_recruit / $trial->num_groups) $group++;
               // ... And delete that user from the queue
               Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
               \oceler\Log::trialLog($trial->id, "Moved USER ID ". $user->user_id ." into trial");
@@ -587,6 +595,10 @@ class TrialController extends Controller
               Log::info("Removed USER ID ". $user->user_id ." from queue");
           }
       }
+    }
+
+    private function selectForTrial($trial_id) {
+      dump($trial_id);
     }
 
     private function deleteInactiveQueueUsers()

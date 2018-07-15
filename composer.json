@@ -12,10 +12,10 @@
         "guzzlehttp/guzzle": "~5",
         "aws/aws-sdk-php": "^3.31",
         "aws/aws-sdk-php-laravel": "^3.1",
-        "rap2hpoutre/laravel-log-viewer": "^0.14.1"
+        "rap2hpoutre/laravel-log-viewer": "^0.14.1",
+        "fzaninotto/faker": "^1.8"
     },
     "require-dev": {
-        "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
         "phpunit/phpunit": "~4.0",
         "phpspec/phpspec": "~2.1"
