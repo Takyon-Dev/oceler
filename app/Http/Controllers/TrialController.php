@@ -484,12 +484,32 @@ class TrialController extends Controller
 
       foreach ($trial->users as $user) {
         if($user->id == \Auth::user()->id) {
+          $hasReadInstructions = ($user->pivot->instructions_read == true) ? true : false;
+          if($user->pivot->selected_for_removal == 1) {
+            //$trial->removePlayerFromTrial($user->id, false, false);
+            return Response::json(['status' => 'remove']);
+          }
           $trial->users()->updateExistingPivot($user->id, ['last_ping' => date("Y-m-d H:i:s")]);
         }
-        if(($user->pivot->instructions_read == 1) && ($user->pivot->last_ping > $dt->subSeconds($INACTIVE_PING_TIME))) $num_read++;
+        if(($user->pivot->instructions_read == true) &&
+           ($user->pivot->selected_for_removal == false) &&
+           ($user->pivot->last_ping > $dt->subSeconds($INACTIVE_PING_TIME))) {
+            $num_read++;
+          }
+
       }
 
-      return Response::json($num_read == $trial->num_players);
+      if($num_read >= $trial->num_players) {
+        if($hasReadInstructions) {
+          return Response::json(['status' => 'ready']);
+        }
+        else {
+          return Response::json(['status' => 'remove']);
+        }
+      }
+      else {
+        return Response::json(['status' => 'waiting', 'num_completed' => $num_read, 'num_needed' => $trial->num_players]);
+      }
     }
 
     public function markInstructionsAsRead($user_id)
@@ -499,6 +519,12 @@ class TrialController extends Controller
 
     }
 
+    public function notSelectedForTrial($trial_id) {
+      $trial = Trial::with('users')->find($trial_id);
+      $trial->removePlayerFromTrial(\Auth::user()->id, false, false);
+      return redirect('/player/end-task/overrecruited');
+    }
+
 
     public function manageQueue() {
       // Delete any inactive users from Queue
@@ -506,20 +532,19 @@ class TrialController extends Controller
 
       // Get all trials that are active but already have been filled
       // by querying the trial_user table
-
-      /*
-      $running_trials = DB::table('trial_user')
-                          ->get();
-      */
-     $running_trials = Trial::with('users')->where('is_active', true)->get();
-     dump($running_trials);
-     return;
+     $active_trials = Trial::has('users', '>', 0)
+                           ->where('is_active', true)
+                           ->with('users')
+                           ->get();
 
       $filled_trials = [];
-      foreach ($running_trials as $t) {
+      foreach ($active_trials as $t) {
         $filled_trials[] = $t->trial_id;
+
         // Process the instructions status of each running trial, if needed
-        $this->selectForTrial($t->trial_id);
+        if($t->users()->sum('selected_for_removal') == 0 && count($t->users) > $t->num_players) {
+            $this->selectPlayersForTrial($t);
+        }
       }
 
       // Get all active, not-already-filled trials
@@ -532,7 +557,7 @@ class TrialController extends Controller
 
       // If no trials exist, return
       if(count($trials) == 0){
-        echo 'There are no active trials with slots open.';
+        //echo 'There are no active trials with slots open.';
         return;
       }
 
@@ -541,7 +566,7 @@ class TrialController extends Controller
       foreach($trials as $trial) {
           // If no number to recruit is entered, use num_players
           $num_to_recruit = ($trial->num_to_recruit != '') ? $trial->num_to_recruit : $trial->num_players;
-          echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$num_to_recruit. ' players.<br><br>';
+          //echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$num_to_recruit. ' players.<br><br>';
 
           $LAST_PING_TIME = 2; // How recent a ping must be for player to be chosen
           $dt = \Carbon\Carbon::now();
@@ -552,7 +577,7 @@ class TrialController extends Controller
           // If there aren't enough players for this trial type,
           // move on to the next one
           if($queued_players < $num_to_recruit){
-            echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
+            //echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
             continue;
           }
 
@@ -562,7 +587,7 @@ class TrialController extends Controller
                            ->orderBy('created_at', 'asc')
                            ->take($num_to_recruit)
                            ->get();
-          echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
+          //echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
 
 
           // Shuffle the collection of selected players so that
@@ -589,16 +614,29 @@ class TrialController extends Controller
               $count++;
               if($count >= $num_to_recruit / $trial->num_groups) $group++;
               // ... And delete that user from the queue
-              Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
-              \oceler\Log::trialLog($trial->id, "Moved USER ID ". $user->user_id ." into trial");
+              //Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
+              //\oceler\Log::trialLog($trial->id, "Moved USER ID ". $user->user_id ." into trial");
               Queue::where('user_id', '=', $user->user_id)->delete();
-              Log::info("Removed USER ID ". $user->user_id ." from queue");
+              //Log::info("Removed USER ID ". $user->user_id ." from queue");
           }
       }
     }
 
-    private function selectForTrial($trial_id) {
-      dump($trial_id);
+    /*
+      Selects players (equal to trial->num_players) form an overrecruited trial.
+     */
+    private function selectPlayersForTrial($trial) {
+      // Get all players who have read the instructions
+      $activePlayers = $trial->users()->wherePivot('instructions_read', true)->get();
+
+      $toRemove = $trial->num_to_recruit - $trial->num_players;
+      if($toRemove > 0) {
+        $selectedPlayers = $activePlayers->random($toRemove);
+
+        foreach($selectedPlayers as $player) {
+          \DB::table('trial_user')->where('user_id', $player->id)->update(['selected_for_removal' => true]);
+        }
+      }
     }
 
     private function deleteInactiveQueueUsers()

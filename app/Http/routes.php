@@ -102,6 +102,12 @@ Route::get('player/trial/instructions/status/read/{id}', [
 	'roles' => ['player']
 ]);
 
+Route::get('player/trial/not-selected/{id}', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@notSelectedForTrial',
+	'roles' => ['player']
+]);
+
 Route::get('player/trial/end-round', [
 	'middleware' => ['auth', 'roles'],
 	'uses' => 'PlayerController@endTrialRound',

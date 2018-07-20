@@ -502,7 +502,7 @@ class PlayerController extends Controller
     {
 
       $total_earnings = ["bonus" => env('NO_AVAILABLE_TRIAL_COMPENSATION', ''),
-                         "bonus_reason" => "Compensation for your time spent waiting for otjher players to join.",
+                         "bonus_reason" => "Compensation for your time spent waiting for other players to join.",
                          "base_pay" => 0];
 
       if(\Session::get('assignment_id')){
@@ -535,6 +535,10 @@ class PlayerController extends Controller
       switch($reason) {
         case 'timeout':
           $msg = 'There are no trials available at this time.';
+          break;
+
+        case 'overrecruited':
+          $msg = 'You were not selected to participate in the trial.';
           break;
 
         default:

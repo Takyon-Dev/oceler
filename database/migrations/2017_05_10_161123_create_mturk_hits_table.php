@@ -33,6 +33,8 @@ class CreateMturkHitsTable extends Migration
      */
     public function down()
     {
+      Schema::table('mturk_hits', function(Blueprint $table){
         Schema::drop('mturk_hits');
+      });
     }
 }

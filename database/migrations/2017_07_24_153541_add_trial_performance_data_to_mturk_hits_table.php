@@ -31,12 +31,8 @@ class AddTrialPerformanceDataToMturkHitsTable extends Migration
      */
     public function down()
     {
-      $table->dropColumn('trial_type');
-      $table->dropColumn('trial_completed');
-      $table->dropColumn('trial_passed');
-      $table->dropColumn('bonus');
-      $table->dropColumn('hit_processed');
-      $table->dropColumn('bonus_processed');
-      $table->dropColumn('qualification_processed');
+      Schema::table('mturk_hits', function(Blueprint $table){
+
+      });
     }
 }

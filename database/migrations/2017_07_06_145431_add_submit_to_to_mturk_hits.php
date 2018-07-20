@@ -26,7 +26,7 @@ class AddSubmitToToMturkHits extends Migration
      */
     public function down()
     {
-      Schema::table('trials', function(Blueprint $table){
+      Schema::table('mturk_hits', function(Blueprint $table){
 
           $table->dropColumn('submit_to');
 

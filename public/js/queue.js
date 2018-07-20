@@ -24,15 +24,19 @@ function waitForInstructions(trial_id)
   $.ajax({
     type: "GET",
     url: "/player/trial/instructions/status/" + trial_id,
-    success: function(status)
+    success: function(response)
     {
 
-      response = $.parseJSON(status);
-      if(response){
+      //response = $.parseJSON(status);
+      if(response.status == 'ready'){
         document.cookie = 'generic_timer=; Max-Age=-99999999;';
         window.location.replace("/player/trial/initialize");
       }
-      else {
+
+      else if(response.status == 'remove') {
+        window.location.replace("/player/trial/not-selected/" + trial_id);
+      }
+      else if (response.status == 'waiting') {
         console.log(response);
       }
 
