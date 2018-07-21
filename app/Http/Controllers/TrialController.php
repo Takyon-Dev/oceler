@@ -557,7 +557,7 @@ class TrialController extends Controller
 
       // If no trials exist, return
       if(count($trials) == 0){
-        //echo 'There are no active trials with slots open.';
+        echo 'There are no active trials with slots open.';
         return;
       }
 
@@ -566,7 +566,7 @@ class TrialController extends Controller
       foreach($trials as $trial) {
           // If no number to recruit is entered, use num_players
           $num_to_recruit = ($trial->num_to_recruit != '') ? $trial->num_to_recruit : $trial->num_players;
-          //echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$num_to_recruit. ' players.<br><br>';
+          echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$num_to_recruit. ' players.<br><br>';
 
           $LAST_PING_TIME = 2; // How recent a ping must be for player to be chosen
           $dt = \Carbon\Carbon::now();
@@ -577,7 +577,7 @@ class TrialController extends Controller
           // If there aren't enough players for this trial type,
           // move on to the next one
           if($queued_players < $num_to_recruit){
-            //echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
+            echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
             continue;
           }
 
@@ -587,7 +587,7 @@ class TrialController extends Controller
                            ->orderBy('created_at', 'asc')
                            ->take($num_to_recruit)
                            ->get();
-          //echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
+          echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
 
 
           // Shuffle the collection of selected players so that
