@@ -614,10 +614,10 @@ class TrialController extends Controller
               $count++;
               if($count >= $num_to_recruit / $trial->num_groups) $group++;
               // ... And delete that user from the queue
-              //Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
-              //\oceler\Log::trialLog($trial->id, "Moved USER ID ". $user->user_id ." into trial");
+              Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
+              \oceler\Log::trialLog($trial->id, "Moved USER ID ". $user->user_id ." into trial");
               Queue::where('user_id', '=', $user->user_id)->delete();
-              //Log::info("Removed USER ID ". $user->user_id ." from queue");
+              Log::info("Removed USER ID ". $user->user_id ." from queue");
           }
       }
     }
