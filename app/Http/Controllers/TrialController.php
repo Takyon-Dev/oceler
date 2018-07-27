@@ -539,13 +539,14 @@ class TrialController extends Controller
 
       $filled_trials = [];
       foreach ($active_trials as $t) {
-        $filled_trials[] = $t->trial_id;
+        $filled_trials[] = $t->id;
 
         // Process the instructions status of each running trial, if needed
         if($t->users()->sum('selected_for_removal') == 0 && count($t->users) > $t->num_players) {
             $this->selectPlayersForTrial($t);
         }
       }
+
 
       // Get all active, not-already-filled trials
       $trials = Trial::where('is_active', 1)
