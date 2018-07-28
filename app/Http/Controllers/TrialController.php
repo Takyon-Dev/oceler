@@ -629,9 +629,8 @@ class TrialController extends Controller
     private function selectPlayersForTrial($trial) {
       // Get all players who have read the instructions
       $activePlayers = $trial->users()->wherePivot('instructions_read', true)->get();
-
       $toRemove = $trial->num_to_recruit - $trial->num_players;
-      if($toRemove > 0) {
+      if($toRemove > 0 && count($activePlayers) > $trial->num_players) {
         $selectedPlayers = $activePlayers->random($toRemove);
 
         foreach($selectedPlayers as $player) {
