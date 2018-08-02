@@ -722,6 +722,7 @@ class PlayerController extends Controller
       $session_players = DB::table('trial_user')
                               ->where('trial_id', '=', $trial->id)
                               ->where('group_id', $trial_user->group_id)
+                              ->where('selected_for_removal', false)
                               ->get();
 
       // If the player in the trial array is equal to this player
