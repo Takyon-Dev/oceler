@@ -204,6 +204,12 @@ class Trial extends Model
 
       \DB::table('trial_user')->where('id', $this_user->id)->delete();
 
+      // Remove any extra players
+      \DB::table('trial_user')
+         ->where('selected_for_removal', true)
+         ->orWhere('instructions_read', false)
+         ->delete();
+
       if(\DB::table('trial_user')
             ->where('trial_id', $this->id)
             ->count() == 0){

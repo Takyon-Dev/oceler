@@ -71,9 +71,7 @@ class PlayerController extends Controller
       $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
 
       Log::info("USER ID ". $u_id ." is loading main trial page");
-      /* If the user is not currently assigned to a trial,
-      or if for some reason the trial has not yet been inititalized
-      (curr_round has not been set)
+      /* If the user is not currently assigned to a trial
       send them to their home screen */
       if(!$trial_user){
         Log::info("USER ID ". $u_id ." something went wrong! User not found in trial_user table!");
@@ -133,9 +131,11 @@ class PlayerController extends Controller
       Log::info("USER ID ". $u_id ." is connecting to network");
     	// Get each player that is in the same session as the user
     	$session_players = DB::table('trial_user')
-                              ->where('trial_id', $trial->id)
-                              ->where('group_id', $group->id)
-                              ->get();
+                            ->where('trial_id', $trial->id)
+                            ->where('group_id', $group->id)
+                            ->where('instructions_read', true)
+                            ->where('selected_for_removal', false)
+                            ->get();
 
     	// Create two arrays -- one to hold the players the user can see,
     	// and another to hold the players that can see the user
@@ -723,7 +723,10 @@ class PlayerController extends Controller
                               ->where('trial_id', '=', $trial->id)
                               ->where('group_id', $trial_user->group_id)
                               ->where('selected_for_removal', false)
+                              ->where('instructions_read', true)
                               ->get();
+
+
 
       // If the player in the trial array is equal to this player
       // insert this user into user_node

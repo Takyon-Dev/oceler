@@ -482,22 +482,24 @@ class TrialController extends Controller
       $INACTIVE_PING_TIME = 20;
       $dt = \Carbon\Carbon::now();
 
+      $hasReadInstructions = false;
+
       foreach ($trial->users as $user) {
         if($user->id == \Auth::user()->id) {
           $hasReadInstructions = ($user->pivot->instructions_read == true) ? true : false;
           if($user->pivot->selected_for_removal == 1) {
-            //$trial->removePlayerFromTrial($user->id, false, false);
             return Response::json(['status' => 'remove']);
           }
           $trial->users()->updateExistingPivot($user->id, ['last_ping' => date("Y-m-d H:i:s")]);
         }
         if(($user->pivot->instructions_read == true) &&
-           ($user->pivot->selected_for_removal == false) &&
+           (!$user->pivot->selected_for_removal) &&
            ($user->pivot->last_ping > $dt->subSeconds($INACTIVE_PING_TIME))) {
             $num_read++;
           }
 
       }
+
 
       if($num_read >= $trial->num_players) {
         if($hasReadInstructions) {
@@ -629,11 +631,12 @@ class TrialController extends Controller
     private function selectPlayersForTrial($trial) {
       // Get all players who have read the instructions
       $activePlayers = $trial->users()->wherePivot('instructions_read', true)->get();
-      $toRemove = $trial->num_to_recruit - $trial->num_players;
-      if($toRemove > 0 && count($activePlayers) > $trial->num_players) {
+      $toRemove = count($activePlayers) - $trial->num_players;
+      if($toRemove > 0) {
         $selectedPlayers = $activePlayers->random($toRemove);
-
+        Log::info($toRemove." more players than needed for trial ".$trial->id);
         foreach($selectedPlayers as $player) {
+          Log::info("Selected for removal: ".$player->id);
           \DB::table('trial_user')->where('user_id', $player->id)->update(['selected_for_removal' => true]);
         }
       }

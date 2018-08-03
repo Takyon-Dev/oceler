@@ -40,6 +40,11 @@ function waitForInstructions(trial_id)
         console.log(response);
       }
 
+      else {
+        console.log('other');
+        console.log(response);
+      }
+
       setTimeout(function(){
         waitForInstructions(trial_id);
       }, 1000);
