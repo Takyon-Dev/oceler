@@ -40,16 +40,6 @@
           </li>
         </ul>
         <div class="form-group">
-          <label for="email">
-            To be notified when we post similar HITs, please provide an email address:
-          </label>
-          <ul>
-            <li>future HITs will involve real-time problem solving with other Turkers</li>
-            <li>Your email address will only be used to announce HITs and will not be shared with others</li>
-          </ul>
-          <input type="email" class="form-control" name="email" placeholder="Email">
-        </div>
-        <div class="form-group">
           <label for="comments">
              If you have any other comments for our team, please let us know here:
           </label>
