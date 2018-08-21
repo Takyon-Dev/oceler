@@ -529,6 +529,8 @@ class TrialController extends Controller
 
 
     public function manageQueue() {
+
+      Log::info("Queue Manager running...");
       // Delete any inactive users from Queue
       $this->deleteInactiveQueueUsers();
 
