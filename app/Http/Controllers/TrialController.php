@@ -592,7 +592,7 @@ class TrialController extends Controller
                            ->orderBy('created_at', 'asc')
                            ->take($num_to_recruit)
                            ->get();
-          echo 'Moving ' .$selected->count(). ' players into trial: ' .$trial->name .'<br><br>';
+          Log::info('Moving ' .$selected->count(). ' players into trial: ' .$trial->name);
 
 
           // Shuffle the collection of selected players so that
@@ -606,6 +606,7 @@ class TrialController extends Controller
           $group = 1;
           $count = 0; // Counts the users added so far
           foreach ($selected as $user) {
+              Log::info('Inserting into trial_user user: '.$user->user_id.' trial: '.$trial->id);
               DB::table('trial_user')->insert([
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
