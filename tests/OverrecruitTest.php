@@ -234,7 +234,7 @@ class OverrecruitTest extends TestCase
 
         $NUM_CYCLES = 300; // a cycle is 1 second
         $NUM_ACTIVE_TRIALS = [20];
-        $NUM_USERS = 60;
+        $NUM_USERS = 40;
         $TRIAL_TEMPLATES = [
           [
             'trial_type' => 1,
@@ -312,11 +312,11 @@ class OverrecruitTest extends TestCase
           $simUsers[] = new SimulatedUser($u['user'], $u['config']);
         }
 
-        /*
+
         foreach($simUsers as $s) {
           Log::info('SIMUSER: ' . var_export($s, true));
         }
-        */
+
         while($curr_cycle < $NUM_CYCLES) {
           if($curr_cycle % 5 == 0) $this->visit('/manage-queue');
           $this->userSimulationTick($simUsers, $curr_cycle);
@@ -416,6 +416,10 @@ class OverrecruitTest extends TestCase
             continue;
           }
           if(!$u->trial_initialized) {
+            if($u->config['can_ping']) {
+              \DB::update('update trial_user set last_ping = ? where user_id = ?', [\Carbon\Carbon::now()->toDateTimeString(), $u->id]);
+            }
+
             $status = $u->instructionStatus($u->trial->id);
             if($status == 'ready') {
               $u->trial_initialized = true;
@@ -428,7 +432,7 @@ class OverrecruitTest extends TestCase
               $u->completedSimulation = true;
               continue ;
             }
-            else {
+            else if($u->config['reads_instructions']) {
               Log::info("SIM:: USER ID ". $u->id ." instruction status ".$status);
             }
           }
