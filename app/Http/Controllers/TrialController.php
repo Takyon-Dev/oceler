@@ -554,6 +554,7 @@ class TrialController extends Controller
 
       // Get all active, not-already-filled trials
       $trials = Trial::where('is_active', 1)
+                      ->with('users')
                       ->whereNotIn('id', $filled_trials)
                       ->orderBy('created_at', 'asc')
                       ->get();
@@ -585,6 +586,8 @@ class TrialController extends Controller
             echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
             continue;
           }
+          $inTrialPreSelection = count($trial->users);
+          Log::info('Selecting players for  '.$trial->id.' this trial currently has '.$inTrialPreSelection.' players in the trial_user table');
 
           // Otherwise, take the required amount
           $selected = Queue::where('trial_type', '=', $trial->trial_type)
@@ -592,6 +595,7 @@ class TrialController extends Controller
                            ->orderBy('created_at', 'asc')
                            ->take($num_to_recruit)
                            ->get();
+
           Log::info('Moving ' .$selected->count(). ' players into trial: ' .$trial->name);
 
 
@@ -618,6 +622,8 @@ class TrialController extends Controller
                               ->value('id')
               ]);
               $count++;
+
+              Log::info("Moved ". $user->user_id ." into trial ". $trial->id);
               if($count >= $num_to_recruit / $trial->num_groups) $group++;
               // ... And delete that user from the queue
               Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
@@ -625,6 +631,8 @@ class TrialController extends Controller
               Queue::where('user_id', '=', $user->user_id)->delete();
               Log::info("Removed USER ID ". $user->user_id ." from queue");
           }
+          $inTrialPostSelection = DB::table('trial_user')->where('trial_id', $trial->id)->count();
+          Log::info("Moved ". $count ." players into trial ". $trial->id.'. Total now in trial: '.$inTrialPostSelection);
       }
     }
 
