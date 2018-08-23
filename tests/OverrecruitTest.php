@@ -233,8 +233,8 @@ class OverrecruitTest extends TestCase
         $curr_cycle = 0;
 
         $NUM_CYCLES = 300; // a cycle is 1 second
-        $NUM_ACTIVE_TRIALS = [20];
-        $NUM_USERS = 40;
+        $NUM_ACTIVE_TRIALS = [200];
+        $NUM_USERS = 400;
         $TRIAL_TEMPLATES = [
           [
             'trial_type' => 1,
