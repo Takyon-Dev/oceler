@@ -49,7 +49,7 @@ class Log extends Model
           $trial = \oceler\Trial::where('id', $id)
                                 ->withTrashed()
                                 ->first();
-
+          if(!$trial) continue;
           $logs[$i]['log'] = $f;
           $logs[$i]['id'] = $id;
           $logs[$i]['name'] = $trial->name;
