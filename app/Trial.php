@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use SoftDeletingTrait;
 use DB;
+use Log;
 
 class Trial extends Model
 {
@@ -185,31 +186,37 @@ class Trial extends Model
 
     public function removePlayerFromTrial($user_id, $completed_trial, $passed_trial)
     {
+      Log::info('Removing '.$user_id.' from trial '.$this->id);
       $this_user = \DB::table('trial_user')
                       ->where('user_id', $user_id)
                       ->first();
 
-      \DB::table('trial_user_archive')->insert([
+      if($this_user) {
 
-        'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-        'trial_id' => $this->id,
-        'user_id' => $user_id,
-        'trial_type' => $this->trial_type,
-        'group_id' => $this_user->group_id,
-        'last_ping' => $this_user->last_ping,
-        'completed_trial' => $completed_trial,
-        'trial_passed' => $passed_trial
-      ]);
+        \DB::table('trial_user_archive')->insert([
 
-      \DB::table('trial_user')->where('id', $this_user->id)->delete();
+          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
+          'trial_id' => $this->id,
+          'user_id' => $user_id,
+          'trial_type' => $this->trial_type,
+          'group_id' => $this_user->group_id,
+          'last_ping' => $this_user->last_ping,
+          'completed_trial' => $completed_trial,
+          'trial_passed' => $passed_trial
+        ]);
+
+        \DB::table('trial_user')->where('id', $this_user->id)->delete();
+
+      }
 
       // Remove any extra players
+      /*
       \DB::table('trial_user')
          ->where('selected_for_removal', true)
          ->orWhere('instructions_read', false)
          ->delete();
-
+      */
       if(\DB::table('trial_user')
             ->where('trial_id', $this->id)
             ->count() == 0){

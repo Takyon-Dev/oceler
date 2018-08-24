@@ -585,7 +585,8 @@ class TrialController extends Controller
             echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
             continue;
           }
-          $inTrialPreSelection = count($trial->users);
+
+          $inTrialPreSelection = DB::table('trial_user')->where('trial_id', $trial->id)->count();
           Log::info('Selecting players for  '.$trial->id.' this trial currently has '.$inTrialPreSelection.' players in the trial_user table');
 
           // Otherwise, take the required amount
