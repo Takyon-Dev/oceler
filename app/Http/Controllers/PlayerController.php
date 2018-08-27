@@ -528,6 +528,7 @@ class PlayerController extends Controller
 
       // If they have been assigned to a trial, remove them
       $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
+
       if($trial_user) {
         \oceler\Trial::find($trial_user->trial_id)->removePlayerFromTrial(Auth::id(), false, false);
       }

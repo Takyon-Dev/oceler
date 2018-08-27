@@ -432,9 +432,6 @@ class OverrecruitTest extends TestCase
               $u->completedSimulation = true;
               continue ;
             }
-            else if($u->config['reads_instructions']) {
-              Log::info("SIM:: USER ID ". $u->id ." instruction status ".$status);
-            }
           }
         }
       }

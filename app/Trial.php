@@ -191,7 +191,7 @@ class Trial extends Model
                       ->where('user_id', $user_id)
                       ->first();
 
-      if($this_user) {
+      if($this_user && $this_user->group_id) {
 
         \DB::table('trial_user_archive')->insert([
 
@@ -208,6 +208,10 @@ class Trial extends Model
 
         \DB::table('trial_user')->where('id', $this_user->id)->delete();
 
+      }
+
+      else {
+        Log::info('User '.$user_id.' is being removed, but was not found in the trial_user table.');
       }
 
       // Remove any extra players

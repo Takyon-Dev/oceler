@@ -522,8 +522,6 @@ class TrialController extends Controller
     }
 
     public function notSelectedForTrial($trial_id) {
-      $trial = Trial::with('users')->find($trial_id);
-      $trial->removePlayerFromTrial(\Auth::user()->id, false, false);
       return redirect('/player/end-task/overrecruited');
     }
 
@@ -557,8 +555,6 @@ class TrialController extends Controller
                       ->whereNotIn('id', $filled_trials)
                       ->orderBy('created_at', 'asc')
                       ->get();
-
-
 
       // If no trials exist, return
       if(count($trials) == 0){
