@@ -544,6 +544,7 @@ class TrialController extends Controller
 
         // Process the instructions status of each running trial, if needed
         if($t->users()->sum('selected_for_removal') == 0 && count($t->users) > $t->num_players) {
+            Log::info('User count for trial '.$t->id.' is '.count($t->users).' Num needed: '.$t->num_players);
             $this->selectPlayersForTrial($t);
         }
       }
