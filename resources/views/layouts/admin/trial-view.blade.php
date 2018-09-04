@@ -29,9 +29,7 @@
         $("#timer").html(start_time);
       @endif
 
-      setInterval(function(){
-        playerTrialListener({{ $trial->id }});
-      }, 5000);
+      playerTrialListener({{ $trial->id }})
 
     });
 

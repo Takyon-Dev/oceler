@@ -1,6 +1,6 @@
 var last_solution = 0;
 var last_message_time = 0;
-var PING_INTERVAL = 2000; // Time between pings, in ms
+var PING_INTERVAL = 4000; // Time between pings, in ms
 
 /*
 	Pings the server at a set interval for messages and solutions
@@ -26,11 +26,12 @@ function ping()
 			if(response.messages.length > 0){
 				messageHandler(response.messages);
 			}
+		},
+		complete: function() {
+			// Schedule the next request when the current one completes
+			setTimeout(ping, PING_INTERVAL);
 		}
 	});
-
-	setTimeout(ping, PING_INTERVAL);
-
 }
 
 function solutionHandler(solutions)
@@ -121,10 +122,12 @@ function queueListener()
 
         $(row).append(name, email, ip, user_agent, created, updated);
         $("#queued_players>tbody.players").append(row);
-
       });
-
-    }
+    },
+		complete: function() {
+			// Schedule the next request when the current one completes
+			setTimeout(queueListener, 5000);
+		}
   });
 }
 
@@ -165,8 +168,14 @@ function playerTrialListener(trial_id)
 	      });
 
 			}
-    }
-  });
+    },
+		complete: function() {
+      // Schedule the next request when the current one completes
+      setTimeout(function() {
+				playerTrialListener(trial_id);
+    	}, 5000);
+  	}
+	});
 }
 
 function buildUserDataRow(user)
@@ -203,7 +212,7 @@ function addSolutionsRow(solutions)
 
 function distributionListener(node, distribution_interval, fset_id)
 {
-
+	
 	// Increment wave (global) by one
 	wave = wave + 1;
 	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds
@@ -213,7 +222,8 @@ function distributionListener(node, distribution_interval, fset_id)
 		data: {"node" : node, "wave" : wave, "factoidset_id" : fset_id}
 	});
 
-	setTimeout(function(){
+	setTimeout(function(delay){
+		console.log('delay: ' + delay);
 		distributionListener(node, distribution_interval, fset_id);
 	}, delay)
 

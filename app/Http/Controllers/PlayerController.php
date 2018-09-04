@@ -658,7 +658,7 @@ class PlayerController extends Controller
     }
 
     /**
-     * Displays the insgtructions specific to the trial
+     * Displays the instructions specific to the trial
      * that the player has been assigned to.
      */
     public function showInstructions()

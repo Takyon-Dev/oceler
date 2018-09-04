@@ -9,14 +9,9 @@
   <script>
 
     $(document).ready(function(){
-
-      setInterval(function(){
-        queueListener();
-      }, 2000);
-
-      setInterval(function(){
-        playerTrialListener();
-      }, 2000);
+      
+      queueListener();
+      playerTrialListener();
 
     });
 

@@ -10,12 +10,15 @@ function queue()
       if(status == 0){
         window.location.replace("/player/trial/instructions");
       }
+    },
+    complete: function() {
+      // Schedule the next request when the current one completes
+      setTimeout(queue, 2000);
     }
   });
 
   // If they are still waiting after 5 mins, leave
   setTimeout(leaveQueue, 300000);
-  setTimeout(queue, 2000);
 }
 
 function waitForInstructions(trial_id)
@@ -44,10 +47,12 @@ function waitForInstructions(trial_id)
         console.log('other');
         console.log(response);
       }
-
-      setTimeout(function(){
+    },
+    complete: function() {
+      // Schedule the next request when the current one completes
+      setTimeout(function() {
         waitForInstructions(trial_id);
-      }, 1000);
+      }, 2000);
     }
   });
 

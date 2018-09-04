@@ -570,7 +570,7 @@ class TrialController extends Controller
           $num_to_recruit = ($trial->num_to_recruit != '') ? $trial->num_to_recruit : $trial->num_players;
           echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$num_to_recruit. ' players.<br><br>';
 
-          $LAST_PING_TIME = 2; // How recent a ping must be for player to be chosen
+          $LAST_PING_TIME = 6; // How recent a ping must be for player to be chosen
           $dt = \Carbon\Carbon::now();
           $queued_players = Queue::where('trial_type', '=', $trial->trial_type)
                                  ->where('updated_at', '>=', $dt->subSeconds($LAST_PING_TIME))
