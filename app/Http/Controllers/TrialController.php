@@ -125,6 +125,25 @@ class TrialController extends Controller
     }
 
     /**
+     * Stops all in-progress trials by removing
+     * players from the trial_user table.
+     */
+    public function stopAllTrials()
+    {
+
+      $trials = Trial::where('is_active', 1)->get();
+      foreach ($trials as $trial) {
+        $trial->stopTrial();
+        $msg = 'Trial '.$trial->id;
+        $msg .= ' was stopped by the administrator';
+        \oceler\Log::trialLog($trial->id, $msg);
+        Log::info($msg);
+      }
+
+      return \Redirect::back();
+    }
+
+    /**
      * Displays the Trial Queue layout to the player
      * @return [type] [description]
      */

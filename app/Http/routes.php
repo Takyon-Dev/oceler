@@ -239,6 +239,12 @@ Route::get('/admin/trial/config/{id}', [
 	'roles' => ['administrator']
 ]);
 
+Route::post('/admin/stop-all-trials', [
+	'middleware' => ['auth', 'roles'],
+	'uses' => 'TrialController@stopAllTrials',
+	'roles' => ['administrator']
+]);
+
 Route::post('/admin/trial/stop/{id}', [
   'as' => 'trial.stop',
 	'middleware' => ['auth', 'roles'],

@@ -54,6 +54,10 @@
                 <input type="file" style="display: none;"
                       name="config_file"  onchange="this.form.submit()">
             </label>
+            <button type="button" class="btn btn-danger pull-right"
+                    data-toggle="modal" data-target="#warning">
+              Stop all trials
+            </button>
           {!! Form::close() !!}
 
           <table class="table table-striped trials">
@@ -129,6 +133,29 @@
             </tr>
             @endforeach
 
+        </div>
+      </div>
+    </div>
+
+    <!-- Stop Trials Modal -->
+    <div class="modal fade" id="warning" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-danger" id="exampleModalLabel">Stop All Trials</h5>
+          </div>
+          <div class="modal-body">
+            <strong>Warning:</strong> This will immediately stop and deactivate
+            <strong><em>all</em></strong> active trials.<br>
+            Any players in a trial will be removed.
+          </div>
+          <div class="modal-footer">
+            <form action="/admin/stop-all-trials" method="post">
+              {{ csrf_field() }}
+              <button type="button" class="btn btn-secondary mr-lg-2" data-dismiss="modal">Cancel</button>
+              <button class="btn btn-danger float-right" type="submit">Stop Trials</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

@@ -33,15 +33,15 @@ class Kernel extends ConsoleKernel
                  ->hourly();
 
       */
-     
+
         $schedule->command('MTurkProcessAssignments')
-                 ->everyMinute();
+                 ->everyFiveMinutes();
 
         $schedule->command('MTurkProcessBonus')
-                 ->everyFiveMinutes();
+                 ->everyThirtyMinutes();
 
         $schedule->command('MTurkProcessQualification')
-                 ->everyFiveMinutes();
+                 ->everyThirtyMinutes();
 
 
     }
