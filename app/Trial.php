@@ -56,7 +56,7 @@ class Trial extends Model
       $this->payment_base = $request->payment_base;
       $this->num_rounds = $request->num_rounds;
       $this->num_groups = $request->num_groups;
-      $this->is_active = false;
+      $this->is_active = true;
 
       try{
         $this->save(); // Saves the trial to the trial table
