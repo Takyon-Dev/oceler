@@ -604,6 +604,11 @@ class TrialController extends Controller
 
           $inTrialPreSelection = DB::table('trial_user')->where('trial_id', $trial->id)->count();
           Log::info('Selecting players for  '.$trial->id.' this trial currently has '.$inTrialPreSelection.' players in the trial_user table');
+          // If there are already players for this trial (maybe it hasn't been picked up by filled_trials yet) skip it
+          if($inTrialPreSelection >= $num_to_recruit) {
+            Log::info('Only '.$num_to_recruit.' players needed for  '.$trial->id.'. SKIPPING.');
+            continue;
+          }
 
           // Otherwise, take the required amount
           $selected = Queue::where('trial_type', '=', $trial->trial_type)
@@ -612,7 +617,7 @@ class TrialController extends Controller
                            ->take($num_to_recruit)
                            ->get();
 
-          Log::info('Moving ' .$selected->count(). ' players into trial: ' .$trial->name);
+          Log::info('Moving ' .$selected->count(). ' players into trial: ' .$trial->id);
 
 
           // Shuffle the collection of selected players so that
