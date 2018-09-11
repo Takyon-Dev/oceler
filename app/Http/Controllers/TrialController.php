@@ -667,6 +667,9 @@ class TrialController extends Controller
       if($toRemove > 0) {
         $selectedPlayers = $activePlayers->random($toRemove);
         Log::info($toRemove." more players than needed for trial ".$trial->id);
+        if($toRemove == 1) {
+          $selectedPlayers = collect([$selectedPlayers]);
+        }
         foreach($selectedPlayers as $player) {
           Log::info("Selected for removal: ".$player->id);
           \DB::table('trial_user')->where('user_id', $player->id)->update(['selected_for_removal' => true]);
@@ -730,5 +733,26 @@ class TrialController extends Controller
                                ->where('updated_at', '>', $dt->subHours($PROCESS_IF_WITHIN))
                                ->get();
       dump($hits);
+    }
+
+    public function testWhatevs(Request $request) {
+      $trial = Trial::find(6257);
+      $activePlayers = $trial->users()->wherePivot('instructions_read', true)->get();
+      //$toRemove = count($activePlayers) - $trial->num_players;
+      $toRemove = 2;
+      if($toRemove > 0) {
+        $selectedPlayers = $activePlayers->random($toRemove);
+        dump($selectedPlayers);
+        echo $toRemove." more players than needed for trial ".$trial->id;
+        if($toRemove == 1) {
+          echo 'okay?';
+          $selectedPlayers = collect([$selectedPlayers]);
+        }
+        foreach($selectedPlayers as $player) {
+          dump($player);
+          echo "Selected for removal: ".$player->id;
+          \DB::table('trial_user')->where('user_id', $player->id)->update(['selected_for_removal' => true]);
+        }
+      }
     }
 }
