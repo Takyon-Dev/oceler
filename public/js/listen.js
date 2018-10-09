@@ -7,7 +7,6 @@ var PING_INTERVAL = 4000; // Time between pings, in ms
  */
 function ping()
 {
-	$.ajaxSetup({ cache: false });
 	$.ajax({
 		type: "GET",
 		url: "/player/ping/solution/"+ last_solution +"/message/" + last_message_time,
@@ -212,7 +211,7 @@ function addSolutionsRow(solutions)
 
 function distributionListener(node, distribution_interval, fset_id)
 {
-	
+
 	// Increment wave (global) by one
 	wave = wave + 1;
 	var delay = distribution_interval * 60000; // Converted from minutes to milliseconds

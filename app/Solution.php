@@ -74,7 +74,7 @@ class Solution extends Model
           $solution_answers[$i]['time_correct'] = 0;
         }
 
-        /* For each of the user's solutions compare them with the solution for 
+        /* For each of the user's solutions compare them with the solution for
         that particular category. If they match, update the is_correct flag
         and add the time correct (diff between the solutions timestamps).
         */
@@ -89,9 +89,8 @@ class Solution extends Model
               // plus length of round to calculate the end of the round
               if($time_correct == 0){
                 $round_end_time = strtotime('+'.$trial->rounds[$curr_round - 1]->round_timeout.' minutes',
-                                            strtotime($trial->rounds[$curr_round - 1]->updated_at));
+                                            strtotime($trial->rounds[$curr_round - 1]->start_time));
                 $time_correct = abs($round_end_time - (strtotime($solution->created_at)));
-
               }
               $solution_answers[$solution->category_id]['time_correct'] += $time_correct;
           }

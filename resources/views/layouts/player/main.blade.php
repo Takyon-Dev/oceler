@@ -21,11 +21,13 @@
     var user_node = "{{ $user_node }}";
     var wave = 0;
 
+    // Adds csrf token to AJAX headers
+    $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
+
+    // Disable cache on AJAX calls
+    $.ajaxSetup({ cache: false });
 
     $(document).ready(function(){
-
-      // Adds csrf token to AJAX headers
-      $.ajaxSetup({ headers: { 'csrftoken' : '{{ csrf_token() }}' } });
 
       // Prevents ENTER key from submitting a form
       $(window).keydown(function(event){
