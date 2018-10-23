@@ -26,7 +26,9 @@ class TrialController extends Controller
      */
     public function index()
     {
+      $cutoff_date = \Carbon\Carbon::now()->subDays(env('TRIALS_WITHIN_DAYS', ''))->toDateString();
       $trials = Trial::orderBy('id', 'desc')
+                      ->where('created_at', '>', $cutoff_date)
                       ->with('users')
                       ->with('archive')
                       ->get();
