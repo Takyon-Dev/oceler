@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
                  ->everyThirtyMinutes();
 
         $schedule->command('MTurkProcessQualification')
-                 ->everyThirtyMinutes();
+                 ->everyFiveMinutes();
 
 
     }
