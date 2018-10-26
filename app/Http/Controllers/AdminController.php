@@ -98,7 +98,10 @@ class AdminController extends Controller
   public function getData()
   {
     $stats = [];
-    $trials = \oceler\Trial::with('rounds')->orderBy('id', 'DESC')->get();
+    $cutoff_date = \Carbon\Carbon::now()->subDays(env('TRIALS_WITHIN_DAYS', ''))->toDateString();
+    $trials = \oceler\Trial::with('rounds')
+                           ->where('created_at', '>', $cutoff_date)
+                           ->orderBy('id', 'DESC')->get();
 
     foreach ($trials as $trial) {
 
