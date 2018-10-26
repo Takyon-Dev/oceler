@@ -17,9 +17,13 @@ class AdminController extends Controller
   {
     $queued_players = \oceler\Queue::with('users')
                         ->get();
+
+    $cutoff_date = \Carbon\Carbon::now()->subDays(env('TRIALS_WITHIN_DAYS', ''))->toDateString();
+
     $trials = \oceler\Trial::with('users')
-                        ->with('solutions')
-                        ->get();
+                            ->where('created_at', '>', $cutoff_date)
+                            ->with('solutions')
+                            ->get();
 
     return View::make('layouts.admin.players')
                   ->with('queued_players', $queued_players)
