@@ -738,6 +738,6 @@ class TrialController extends Controller
     }
 
     public function testWhatevs(Request $request) {
-      
+
     }
 }

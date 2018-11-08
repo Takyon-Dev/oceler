@@ -83,7 +83,9 @@ class Solution extends Model
           if(in_array(strtolower($solution->solution), $solution_answers[$solution->category_id]['answer'])){
 
               $solution_answers[$solution->category_id]['is_correct'] = true;
-              $time_correct = abs(strtotime($solution->updated_at) - strtotime($solution->created_at));
+              $time_correct = strtotime($solution->updated_at) - strtotime($solution->created_at);
+
+              if($time_correct < 0) $time_correct = 0;
 
               // If there is no difference in time, use the start of round time
               // plus length of round to calculate the end of the round

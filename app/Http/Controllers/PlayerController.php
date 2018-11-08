@@ -90,7 +90,7 @@ class PlayerController extends Controller
       $server_time = time();
       $start_time = strtotime(
                     $trial->rounds[($curr_round - 1)]
-                    ->updated_at);
+                    ->start_time);
 
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
