@@ -1,17 +1,18 @@
 @extends('layouts.master')
 
 @section('js')
-	<script type="text/javascript" src="{{ asset('js/timer.js') }}"></script>
+	<script type="text/javascript" src="{{ asset('js/deltaTimer.js') }}"></script>
 @stop
 
 @section('content')
 	<script>
 
 		$(document).ready(function() {
-			var round_timeout = "{{ $round_timeout }}";
-			console.log(round_timeout);
-			addTimer(round_timeout, '/player/timer-test');
-			timerTick();
+			var serverTime = "{{ $server_time }}";
+			var startTime = "{{ $start_time }}";
+			var roundTimeout = "{{ $round_timeout }}";
+			console.log(roundTimeout);
+			initializeTimer(serverTime, startTime, roundTimeout);
 		});
 	</script>
 	<div id="timer_container" class="col-md-12">

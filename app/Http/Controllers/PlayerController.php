@@ -876,12 +876,13 @@ class PlayerController extends Controller
     {
 
       $server_time = \Carbon\Carbon::now(); // Used for the javascript trial timer
-      $round_timeout = 1;
+      dump($server_time);
+      $roundStartTime = strtotime('2018-11-28 17:45:22.093061');
+      $round_timeout = 3;
 
-      print_r($_SERVER);
-      return;
       return View::make('layouts.tests.timer-test')
                   ->with('server_time', $server_time)
+                  ->with('start_time', $roundStartTime)
                   ->with('round_timeout', $round_timeout);
     }
 
