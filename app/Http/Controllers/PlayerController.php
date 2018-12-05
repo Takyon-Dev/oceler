@@ -87,10 +87,12 @@ class PlayerController extends Controller
                             ->first();
 
       // Used for the javascript trial timer
-      $server_time = time();
-      $start_time = strtotime(
+      $serverTime = time();
+      $startTime = strtotime(
                     $trial->rounds[($curr_round - 1)]
                     ->start_time);
+      $roundTimeout = $trial->rounds[($curr_round - 1)]->round_timeout;
+      $secondsRemaining = ($startTime + $roundTimeout) - $serverTime;
 
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)
@@ -233,8 +235,7 @@ class PlayerController extends Controller
                    ->with('names', $names)
                    ->with('nodes', $nodes)
                    ->with('user_node', $u_node)
-                   ->with('server_time', $server_time)
-                   ->with('start_time', $start_time);
+                   ->with('secondsRemaining', $secondsRemaining);
     }
 
 
@@ -876,14 +877,20 @@ class PlayerController extends Controller
     {
 
       $server_time = \Carbon\Carbon::now(); // Used for the javascript trial timer
+      $roundStartTime = strtotime('2018-12-05 18:53:01.877142');
+      //$roundStartTime = time();
+      $serverTime = time();
+      $roundTimeout = 3 * 60;
+
       dump($server_time);
-      $roundStartTime = strtotime('2018-11-28 17:45:22.093061');
-      $round_timeout = 3;
+      dump($serverTime);
+      dump($roundStartTime);
+
+      $secondsRemaining = ($roundStartTime + $roundTimeout) - $serverTime;
+      dump($secondsRemaining);
 
       return View::make('layouts.tests.timer-test')
-                  ->with('server_time', $server_time)
-                  ->with('start_time', $roundStartTime)
-                  ->with('round_timeout', $round_timeout);
+                  ->with('secondsRemaining', $secondsRemaining);
     }
 
     public function isTrialStoppedTest()

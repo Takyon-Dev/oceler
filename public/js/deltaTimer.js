@@ -1,21 +1,28 @@
-function initializeTimer(serverTime, startTime, duration){
-	console.log('serverTime = ' + serverTime);
-	console.log('startTime = ' + startTime);
-	var perfData = window.performance.timing;
-	var pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+function initializeTimer(secondsRemaining){
 
-	var roundTime = 3 * 60000;
-	var endTime = Date.now() + roundTime;
-	var startTime = Date.now() - pageLoadTime;
-	console.log('now = ' + new Date(startTime).toUTCString());
-	console.log('endTime = ' + new Date(endTime).toUTCString());
+	var startTime = Date.now();
+	var endTime = Date.now() + (secondsRemaining * 1000);
+	console.log(secondsRemaining);
+	console.log(endTime - startTime);
+	if(endTime - startTime <= 0) {
+		return;
+	};
 
-	setInterval(function() {
+	var timerDisplay = document.getElementById('timer');
+
+	timer = setInterval(function() {
 	  var delta = Date.now() - startTime; // milliseconds elapsed since start
-		console.log('delta = ' + delta);
 	  var timeRemaining = endTime - startTime - delta;
-	  console.log('t = ' + timeRemaining);
-	  console.log(displayTime(timeRemaining));
+
+		if(timeRemaining <= 0) {
+			clearInterval(timer);
+			timerDisplay.innerHTML = '00:00';
+			window.location.href = '/player/trial/end-round';
+		}
+
+		display = displayTime(timeRemaining);
+		timerDisplay.innerHTML = display;
+
 	}, 1000); // update about every second
 }
 
