@@ -92,7 +92,7 @@ class PlayerController extends Controller
                     $trial->rounds[($curr_round - 1)]
                     ->start_time);
       $roundTimeout = $trial->rounds[($curr_round - 1)]->round_timeout;
-      $secondsRemaining = ($startTime + $roundTimeout) - $serverTime;
+      $secondsRemaining = ($startTime + ($roundTimeout * 60)) - $serverTime;
 
       $group = DB::table('groups')
                   ->where('id', $trial_user->group_id)

@@ -2,8 +2,7 @@ function initializeTimer(secondsRemaining){
 
 	var startTime = Date.now();
 	var endTime = Date.now() + (secondsRemaining * 1000);
-	console.log(secondsRemaining);
-	console.log(endTime - startTime);
+
 	if(endTime - startTime <= 0) {
 		return;
 	};
