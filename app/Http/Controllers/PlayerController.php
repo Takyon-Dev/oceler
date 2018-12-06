@@ -350,6 +350,13 @@ class PlayerController extends Controller
     {
       $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
 
+      if(!$trial_user){
+        $trial_user = DB::table('trial_user_archive')
+                        ->where('user_id', Auth::id())
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+      }
+
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('users')
                             ->first();
@@ -414,6 +421,13 @@ class PlayerController extends Controller
     public function endTrial()
     {
       $trial_user = DB::table('trial_user')->where('user_id', Auth::id())->first();
+
+      if(!$trial_user){
+        $trial_user = DB::table('trial_user_archive')
+                        ->where('user_id', Auth::id())
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+      }
 
       $trial = \oceler\Trial::where('id', $trial_user->trial_id)
                             ->with('users')
