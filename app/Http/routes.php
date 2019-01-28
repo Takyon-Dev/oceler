@@ -350,6 +350,8 @@ Route::get('/initial-post-trial-survey', 'PlayerController@testInitialPostTrialS
 Route::get('/post-trial-survey', 'PlayerController@testPostTrialSurvey');
 Route::post('/player/submit-initial-survey', 'PlayerController@postInitialSurvey');
 
+Route::get('/player/test-earnings-calc/{userId}/{trialId}/{round}', 'PlayerController@testEarningsCalc');
+
 Route::get('/test-process-hit', 'TrialController@testHitProcess');
 Route::get('/test-whatevs', 'TrialController@testWhatevs');
 

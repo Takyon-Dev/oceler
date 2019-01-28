@@ -987,4 +987,49 @@ class PlayerController extends Controller
                   ->with('trial_id', $trial->id);
     }
 
+    public function testEarningsCalc($user_id, $trial_id, $curr_round, )
+    {
+      $user = User::find($user_id);
+
+      $group = DB::table('groups')
+                  ->where('id', $trial_user->group_id)
+                  ->first();
+
+      $trial = \oceler\Trial::where('id', '=', $trial_id)
+                            ->with('rounds')
+                            ->with('users')
+                            ->with('solutions')
+                            ->first();
+
+      $check_solutions = \oceler\Solution::checkSolutions($user, $trial, $curr_round);
+      dump($check_solutions);
+      $num_correct = 0;
+      $time_correct = 0;
+      foreach ($check_solutions as $key => $check) {
+        if($check['is_correct']) $num_correct++;
+        $time_correct += $check['time_correct'];
+      }
+
+      $amt_earned = 0;
+
+      if($trial->pay_correct){
+        if($trial->pay_time_factor){
+          $amt_earned = $time_correct / 60 * $trial->payment_per_solution;
+          }
+
+        else {
+          $amt_earned = $num_correct * $trial->payment_per_solution;
+        }
+      }
+
+      $MAX_PAYMENT = env('MAX_PAYMENT', '15.00');
+      if($amt_earned > $MAX_PAYMENT) {
+        $amt_earned = $MAX_PAYMENT;
+      }
+
+      dump($num_correct);
+      dump($amt_earned);
+
+    }
+
 }
