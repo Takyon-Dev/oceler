@@ -987,13 +987,9 @@ class PlayerController extends Controller
                   ->with('trial_id', $trial->id);
     }
 
-    public function testEarningsCalc($user_id, $trial_id, $curr_round, )
+    public function testEarningsCalc($user_id, $trial_id, $curr_round)
     {
-      $user = User::find($user_id);
-
-      $group = DB::table('groups')
-                  ->where('id', $trial_user->group_id)
-                  ->first();
+      $user = \oceler\User::find($user_id);
 
       $trial = \oceler\Trial::where('id', '=', $trial_id)
                             ->with('rounds')

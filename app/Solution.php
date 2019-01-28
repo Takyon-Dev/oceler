@@ -72,6 +72,7 @@ class Solution extends Model
           $solution_answers[$i]['answer'][] = strtolower($answer->solution); // array - one solution can have multiple correct answers
           $solution_answers[$i]['is_correct'] = false;
           $solution_answers[$i]['time_correct'] = 0;
+          $solution_answers[$i]['times'] = [];
         }
 
         /* For each of the user's solutions compare them with the solution for
@@ -94,6 +95,7 @@ class Solution extends Model
                                             strtotime($trial->rounds[$curr_round - 1]->start_time));
                 $time_correct = abs($round_end_time - (strtotime($solution->created_at)));
               }
+              $solution_answers[$solution->category_id]['times'][] = $time_correct;
               $solution_answers[$solution->category_id]['time_correct'] += $time_correct;
           }
         }
