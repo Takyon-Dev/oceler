@@ -107,9 +107,15 @@ Route::middleware(['auth', 'roles:Player'])->group(function () {
 
 Route::get('/home', function () {
     $user = Auth::user();
-    return $user->hasRole('Admin')
-        ? Redirect::route('admin_home')
-        : Redirect::route('player_home');
+    if (!$user) {
+        return redirect()->route('login');
+    }
+    
+    if ($user->hasRole('Admin')) {
+        return redirect()->route('admin_home');
+    }
+    
+    return redirect('/player');
 })->middleware('auth');
 
 // Testing routes...
