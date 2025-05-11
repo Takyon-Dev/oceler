@@ -47,39 +47,6 @@ Route::middleware('guest')->group(function () {
 
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/home', function () {
-    $user = Auth::user();
-    return $user->hasRole('Admin')
-        ? Redirect::route('admin_home')
-        : Redirect::route('player_home');
-})->middleware('auth');
-
-// Player routes
-Route::middleware(['auth', 'roles:Player'])->group(function () {
-    Route::get('player/', [PlayerController::class, 'home'])->name('player_home');
-    Route::get('player/ping/solution/{last_sol}/message/{last_msg}', [PlayerController::class, 'ping']);
-    Route::get('player/trial', [PlayerController::class, 'playerTrial']);
-    Route::get('player/trial/initialize', [PlayerController::class, 'initializeTrial']);
-    Route::get('player/trial/queue', [TrialController::class, 'enterQueue']);
-    Route::get('player/trial/queue/status', [PlayerController::class, 'queueStatus']);
-    Route::get('player/trial/instructions', [PlayerController::class, 'showInstructions']);
-    Route::get('player/trial/stopped', [PlayerController::class, 'trialStopped'])->name('player.trial.stopped');
-    Route::get('player/trial/instructions/status/{id}', [TrialController::class, 'instructionsStatus']);
-    Route::get('player/trial/instructions/status/read/{id}', [TrialController::class, 'markInstructionsAsRead']);
-    Route::get('player/trial/not-selected/{id}', [TrialController::class, 'notSelectedForTrial']);
-    Route::get('player/trial/end-round', [PlayerController::class, 'endTrialRound']);
-    Route::get('player/post-trial-survey', [PlayerController::class, 'showPostTrialSurvey']);
-    Route::get('player/trial/new-round', [PlayerController::class, 'startTrialRound']);
-    Route::get('player/trial/end', [PlayerController::class, 'endTrial']);
-    Route::get('player/end-task/{reason}', [PlayerController::class, 'endTask']);
-    Route::post('/solution', [PlayerController::class, 'postSolution']);
-    Route::post('/message', [MessageController::class, 'postMessage']);
-    Route::get('/listen/system-message/', [MessageController::class, 'getListenSystemMessage']);
-    Route::post('/reply', [ReplyController::class, 'postReply']);
-    Route::post('/search', [SearchController::class, 'postSearch'])->name('search.post');
-    Route::get('/search/reload', [SearchController::class, 'getSearchReload'])->name('search.reload');
-});
-
 // Admin routes
 Route::middleware(['auth', 'roles:Admin'])->group(function () {
     Route::get('/admin/players', [AdminController::class, 'showPlayers'])->name('admin_home');
@@ -107,6 +74,39 @@ Route::middleware(['auth', 'roles:Admin'])->group(function () {
     Route::get('/admin/mturk-log', [AdminController::class, 'viewMturkLog']);
     Route::get('/admin/log', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 });
+
+// Player routes
+Route::middleware(['auth', 'roles:Player'])->group(function () {
+    Route::get('player/', [PlayerController::class, 'home'])->name('player_home');
+    Route::get('player/ping/solution/{last_sol}/message/{last_msg}', [PlayerController::class, 'ping']);
+    Route::get('player/trial', [PlayerController::class, 'playerTrial']);
+    Route::get('player/trial/initialize', [PlayerController::class, 'initializeTrial']);
+    Route::get('player/trial/queue', [TrialController::class, 'enterQueue']);
+    Route::get('player/trial/queue/status', [PlayerController::class, 'queueStatus']);
+    Route::get('player/trial/instructions', [PlayerController::class, 'showInstructions']);
+    Route::get('player/trial/stopped', [PlayerController::class, 'trialStopped'])->name('player.trial.stopped');
+    Route::get('player/trial/instructions/status/{id}', [TrialController::class, 'instructionsStatus']);
+    Route::get('player/trial/instructions/status/read/{id}', [TrialController::class, 'markInstructionsAsRead']);
+    Route::get('player/trial/not-selected/{id}', [TrialController::class, 'notSelectedForTrial']);
+    Route::get('player/trial/end-round', [PlayerController::class, 'endTrialRound']);
+    Route::get('player/post-trial-survey', [PlayerController::class, 'showPostTrialSurvey']);
+    Route::get('player/trial/new-round', [PlayerController::class, 'startTrialRound']);
+    Route::get('player/trial/end', [PlayerController::class, 'endTrial']);
+    Route::get('player/end-task/{reason}', [PlayerController::class, 'endTask']);
+    Route::post('/solution', [PlayerController::class, 'postSolution']);
+    Route::post('/message', [MessageController::class, 'postMessage']);
+    Route::get('/listen/system-message/', [MessageController::class, 'getListenSystemMessage']);
+    Route::post('/reply', [ReplyController::class, 'postReply']);
+    Route::post('/search', [SearchController::class, 'postSearch'])->name('search.post');
+    Route::get('/search/reload', [SearchController::class, 'getSearchReload'])->name('search.reload');
+});
+
+Route::get('/home', function () {
+    $user = Auth::user();
+    return $user->hasRole('Admin')
+        ? Redirect::route('admin_home')
+        : Redirect::route('player_home');
+})->middleware('auth');
 
 // Testing routes...
 Route::get('/player/timer-test', [PlayerController::class, 'timerTest']);
