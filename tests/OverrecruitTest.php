@@ -348,7 +348,7 @@ class OverrecruitTest extends TestCase
             if($u->completedSimulation) continue;
             // If this user is not in the queue yet, and the queue delay has passed
             if(!$u->in_trial && !$u->queueInstance && $curr_cycle > $u->config['queue_delay']) {
-                $u->queueInstance = new Queue;
+                $u->queueInstance = new App\Models\Queue;
                 $u->queueInstance->user_id = $u->id;
                 $u->queueInstance->trial_type = 1;
                 $u->queueInstance->created_at = now();

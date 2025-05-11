@@ -11,21 +11,17 @@ class RolesTableSeeder extends Seeder
      */
     public function run()
     {
-
-      oceler\Role::create([
-          'id'            => 1,
-          'name'          => 'Root',
-          'description'   => 'This account has full access and control to the entire app.'
+      App\Models\Role::create([
+          'name' => 'Root',
+          'description' => 'Use this account with caution. It has access to everything.',
       ]);
-      oceler\Role::create([
-          'id'            => 2,
-          'name'          => 'Administrator',
-          'description'   => 'Full access to the administrator dashboard.'
+      App\Models\Role::create([
+          'name' => 'Admin',
+          'description' => 'This is the admin user that has access to the admin section.',
       ]);
-      oceler\Role::create([
-          'id'            => 3,
-          'name'          => 'Player',
-          'description'   => 'Standard user - only allows access to player section.'
+      App\Models\Role::create([
+          'name' => 'Player',
+          'description' => 'This is the default user role.',
       ]);
     }
 }
