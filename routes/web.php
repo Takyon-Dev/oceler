@@ -75,9 +75,13 @@ Route::middleware(['auth', 'roles:Admin'])->group(function () {
     Route::get('/admin/log', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 });
 
+// Player home route
+Route::get('player/', [PlayerController::class, 'home'])
+    ->name('player_home')
+    ->middleware(['auth', 'roles:Player']);
+
 // Player routes
 Route::middleware(['auth', 'roles:Player'])->group(function () {
-    Route::get('player/', [PlayerController::class, 'home'])->name('player_home');
     Route::get('player/ping/solution/{last_sol}/message/{last_msg}', [PlayerController::class, 'ping']);
     Route::get('player/trial', [PlayerController::class, 'playerTrial']);
     Route::get('player/trial/initialize', [PlayerController::class, 'initializeTrial']);
