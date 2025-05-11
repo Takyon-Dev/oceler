@@ -3,12 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Event;
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
-use Illuminate\Foundation\Support\Providers\ServiceProvider as BaseServiceProvider;
 
-class EventServiceProvider extends BaseServiceProvider
+class EventServiceProvider extends ServiceProvider
 {
     /**
      * The event to listener mappings for the application.
@@ -31,7 +30,11 @@ class EventServiceProvider extends BaseServiceProvider
     public function boot(): void
     {
         try {
-            parent::boot();
+            foreach ($this->listen as $event => $listeners) {
+                foreach ($listeners as $listener) {
+                    Event::listen($event, $listener);
+                }
+            }
         } catch (\Exception $e) {
             // Ignore database errors during bootstrap
         }
