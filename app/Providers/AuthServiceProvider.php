@@ -5,8 +5,9 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use Illuminate\Foundation\Support\Providers\ServiceProvider as BaseServiceProvider;
 
-class AuthServiceProvider extends ServiceProvider
+class AuthServiceProvider extends BaseServiceProvider
 {
     /**
      * The model to policy mappings for the application.

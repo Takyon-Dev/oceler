@@ -7,8 +7,9 @@ use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvi
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Support\Providers\ServiceProvider as BaseServiceProvider;
 
-class RouteServiceProvider extends ServiceProvider
+class RouteServiceProvider extends BaseServiceProvider
 {
     /**
      * The path to the "home" route for your application.
