@@ -1,44 +1,83 @@
 <?php
 
-namespace oceler\Http\Controllers;
+namespace App\Http\Controllers;
 
+use App\Models\Reply;
+use App\Models\Message;
 use Illuminate\Http\Request;
-use oceler\Http\Requests;
-use oceler\Http\Controllers\Controller;
-use Auth;
-use DB;
-use Response;
-use oceler\Message;
-use oceler\Reply;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ReplyController extends Controller
 {
+    /**
+     * Store a newly created reply.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $messageId
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request, int $messageId): RedirectResponse
+    {
+        $validated = $request->validate([
+            'body' => 'required|string'
+        ]);
 
-  public function  postReply(Request $request)
-	{
+        $message = Message::findOrFail($messageId);
 
+        $reply = Reply::create([
+            'message_id' => $messageId,
+            'user_id' => Auth::id(),
+            'body' => $validated['body']
+        ]);
 
-    $this->validate($request, ['message' => 'required']);
+        Log::info('Reply created for message ' . $messageId . ' by user ' . Auth::id());
 
-		$user = Auth::user();
+        return redirect()->route('messages.show', $messageId)
+            ->with('success', 'Reply sent successfully');
+    }
 
+    /**
+     * Update the specified reply.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'body' => 'required|string'
+        ]);
 
-		$reply = new Reply;
-		$reply->message = $request->message;
-    $reply->message_id = $request->message_id;
-		$reply->user_id = $user->id;
+        $reply = Reply::where('user_id', Auth::id())
+            ->findOrFail($id);
 
-		$reply->save();
+        $reply->update(['body' => $validated['body']]);
 
-    $parent_msg = Message::find($reply->message_id);
-    $parent_msg->updated_at = date('Y-m-d G:i:s');
-    $parent_msg->save();
+        Log::info('Reply ' . $id . ' updated by user ' . Auth::id());
 
-    $log = "REPLY-- FROM: ". $user->id . "(". $user->player_name .") ";
-    $log .= 'ORIG MSG ID: '.$reply->message_id.' ';
-    $log .= $reply->message;
-    \oceler\Log::trialLog(\Session::get('trial_id'), $log);
+        return response()->json(['success' => true]);
+    }
 
-	}
+    /**
+     * Remove the specified reply.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $reply = Reply::where('user_id', Auth::id())
+            ->findOrFail($id);
 
+        $reply->delete();
+
+        Log::info('Reply ' . $id . ' deleted by user ' . Auth::id());
+
+        return response()->json(['success' => true]);
+    }
 }

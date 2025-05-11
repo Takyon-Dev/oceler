@@ -1,196 +1,238 @@
 <?php
 
-namespace oceler\Http\Controllers;
+namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Trial;
+use App\Models\Queue;
 use Illuminate\Http\Request;
-use oceler\Http\Requests;
-use oceler\Http\Controllers\Controller;
-use View;
-use Auth;
-use DB;
-use Response;
-use Session;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-  public function showPlayers()
-  {
-    $queued_players = \oceler\Queue::with('users')
-                        ->get();
+    /**
+     * Display the admin dashboard.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index(): View
+    {
+        $users = User::with('trials')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-    $cutoff_date = \Carbon\Carbon::now()->subDays(env('TRIALS_WITHIN_DAYS', ''))->toDateString();
+        $trials = Trial::with('users')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-    $trials = \oceler\Trial::with('users')
-                            ->where('created_at', '>', $cutoff_date)
-                            ->with('solutions')
-                            ->get();
-
-    return View::make('layouts.admin.players')
-                  ->with('queued_players', $queued_players)
-                  ->with('trials', $trials);
-  }
-
-  public function getListenQueue()
-	{
-    $queued_players = \oceler\Queue::with('users')
-                        ->get();
-
-		return Response::json($queued_players);
-
-	}
-
-
-  public function showTrialConfig()
-  {
-    return View::make('layouts.admin.trial-config');
-  }
-
-
-  public function showConfigFiles()
-  {
-    $factoidsets = \oceler\Factoidset::all();
-    $networks = \oceler\Network::all();
-    $namesets = \oceler\Nameset::all();
-
-    return View::make('layouts.admin.config-files')
-                ->with('factoidsets', $factoidsets)
-                ->with('networks', $networks)
-                ->with('namesets', $namesets);
-  }
-
-  public function showLogs()
-  {
-
-
-    $logs = \oceler\Log::listAll();
-
-    return View::make('layouts.admin.logs')
-                ->with('logs', $logs);
-
-  }
-
-  public function readLog($id)
-  {
-    $log = new \oceler\Log($id);
-
-    $fh = fopen($log['path'], 'r');
-    $display = nl2br(fread($fh, 25000));
-
-    return Response::make($display, 200);
-
-  }
-
-  public function downloadLog($id)
-  {
-
-    $log = new \oceler\Log($id);
-
-
-    $headers = ['Content-type'=>'text/plain',
-                'Content-Disposition'=>sprintf('attachment; filename="%s"', $log['name']),
-                'Content-Length'=>sizeof($log['path'])];
-
-
-    return Response::download($log['path'], $log['name'], $headers);
-  }
-
-  /* Retrieves player performance data, grouped by trial */
-  public function getData()
-  {
-    $stats = [];
-    $cutoff_date = \Carbon\Carbon::now()->subDays(env('TRIALS_WITHIN_DAYS', ''))->toDateString();
-    $trials = \oceler\Trial::with('rounds')
-                           ->where('created_at', '>', $cutoff_date)
-                           ->orderBy('id', 'DESC')->get();
-
-    foreach ($trials as $trial) {
-
-      if(count($trial->rounds) <= 0) continue;
-
-      $total_time = 0;
-
-      foreach ($trial->rounds as $round) {
-        $total_time += $round->round_timeout;
-      }
-
-      $factoidsets = DB::table('factoidsets')
-                       ->whereIn('id', ($trial->rounds->pluck('factoidset_id')))
-                       ->lists('name');
-
-      $stats[$trial->id]['trial'] =
-        array('name' => $trial->name,
-        'num_players' => $trial->num_players,
-        'base_pay'   => $trial->payment_base,
-        'factoidset' => $factoidsets,
-        'start_time' => $trial->rounds[0]->updated_at,
-        'total_time' => $total_time);
-      $trial_users = DB::table('trial_user_archive')
-                 ->where('trial_id', '=', $trial->id)
-                 ->get();
-
-      foreach ($trial_users as $trial_user) {
-
-
-        $user = DB::table('users')
-                       ->where('id', '=', $trial_user->user_id)
-                       ->first();
-
-        $performance = DB::select("SELECT SUM(earnings) AS bonus,
-                                  SUM(num_correct) AS correct,
-                                  SUM(tot_categories) AS categories
-                                  FROM round_earnings
-                                  WHERE trial_id = ?
-                                  AND user_id = ?", [$trial->id, $user->id]);
-
-
-        $player_time = \Carbon\Carbon::parse($trial_user->last_ping)
-                                    ->diffInMinutes(\Carbon\Carbon::parse(
-                                    $trial->rounds[0]->updated_at));
-
-
-
-        $stats[$trial->id]['users'][$user->id] =
-          array('worker_id' => $user->mturk_id,
-                'last_ping' => $trial_user->last_ping,
-                'user_agent' => $user->user_agent,
-                'ip_address' => $user->ip_address,
-                'player_time' => $player_time,
-                'completed_trial' => $trial_user->completed_trial,
-                'passed_trial' => $trial_user->trial_passed,
-                'num_correct' => $performance[0]->correct,
-                'tot_categories' => $performance[0]->categories,
-                'bonus' => $performance[0]->bonus
-                );
-      }
+        return view('admin.dashboard', compact('users', 'trials'));
     }
 
-    return View::make('layouts.admin.data')
-                ->with('stats', $stats);
+    /**
+     * Display the user management page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function users(): View
+    {
+        $users = User::with('trials')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
-  }
-
-  public function viewMturkLog()
-  {
-    $log = env('PATH_TO_PYSCRIPTS', '').'pyscripts/turk-connector.log';
-    $handle = @fopen($log, "r");
-    if ($handle) {
-      while (($buffer = fgets($handle, 4096)) !== false) {
-        echo nl2br($buffer);
-      }
-      fclose($handle);
+        return view('admin.users', compact('users'));
     }
 
+    /**
+     * Display the trials management page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function trials(): View
+    {
+        $trials = Trial::with('users')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
-    //$fh = fopen($log, 'r');
-    //$display = nl2br(fread($fh, 25000));
+        return view('admin.trials', compact('trials'));
+    }
 
-    /*
-    return View::make('layouts.admin.mturk-log')
-                ->with('log', $display);
-    */
-    //return \Response::make($display, 200);
+    /**
+     * Display the queue management page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function queue(): View
+    {
+        $queue = Queue::with('user')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
 
-  }
+        return view('admin.queue', compact('queue'));
+    }
 
+    /**
+     * Update a user's role.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateUserRole(Request $request, int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+        $user->role_id = $request->role_id;
+        $user->save();
 
+        Log::info('User ' . $id . ' role updated to ' . $request->role_id . ' by admin ' . Auth::id());
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Delete a user.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteUser(int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        Log::info('User ' . $id . ' deleted by admin ' . Auth::id());
+
+        return redirect()->route('admin.users')
+            ->with('success', 'User deleted successfully');
+    }
+
+    /**
+     * Get user statistics.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserStats(): JsonResponse
+    {
+        $stats = [
+            'total_users' => User::count(),
+            'active_users' => User::where('last_active', '>', Carbon::now()->subDay())->count(),
+            'new_users_today' => User::where('created_at', '>', Carbon::today())->count(),
+            'users_in_trials' => DB::table('trial_user')->distinct('user_id')->count(),
+            'users_in_queue' => Queue::count()
+        ];
+
+        return response()->json($stats);
+    }
+
+    /**
+     * Get trial statistics.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTrialStats(): JsonResponse
+    {
+        $stats = [
+            'total_trials' => Trial::count(),
+            'active_trials' => Trial::where('is_active', true)->count(),
+            'completed_trials' => Trial::where('is_active', false)->count(),
+            'trials_today' => Trial::where('created_at', '>', Carbon::today())->count(),
+            'average_players_per_trial' => DB::table('trial_user')
+                ->select(DB::raw('AVG(COUNT(*)) as avg_players'))
+                ->groupBy('trial_id')
+                ->value('avg_players')
+        ];
+
+        return response()->json($stats);
+    }
+
+    /**
+     * Get queue statistics.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getQueueStats(): JsonResponse
+    {
+        $stats = [
+            'total_in_queue' => Queue::count(),
+            'active_in_queue' => Queue::where('updated_at', '>', Carbon::now()->subMinutes(5))->count(),
+            'queue_by_type' => Queue::select('trial_type', DB::raw('COUNT(*) as count'))
+                ->groupBy('trial_type')
+                ->get()
+                ->pluck('count', 'trial_type')
+        ];
+
+        return response()->json($stats);
+    }
+
+    /**
+     * Clear the queue.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function clearQueue(): RedirectResponse
+    {
+        Queue::truncate();
+
+        Log::info('Queue cleared by admin ' . Auth::id());
+
+        return redirect()->route('admin.queue')
+            ->with('success', 'Queue cleared successfully');
+    }
+
+    /**
+     * Remove a user from the queue.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function removeFromQueue(int $id): RedirectResponse
+    {
+        Queue::where('user_id', $id)->delete();
+
+        Log::info('User ' . $id . ' removed from queue by admin ' . Auth::id());
+
+        return redirect()->route('admin.queue')
+            ->with('success', 'User removed from queue');
+    }
+
+    /**
+     * Display the admin settings page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function settings(): View
+    {
+        return view('admin.settings');
+    }
+
+    /**
+     * Update admin settings.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateSettings(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'trial_timeout' => 'required|integer|min:1',
+            'queue_timeout' => 'required|integer|min:1',
+            'max_trials_per_user' => 'required|integer|min:1',
+            'min_players_per_trial' => 'required|integer|min:1',
+            'max_players_per_trial' => 'required|integer|min:1'
+        ]);
+
+        foreach ($validated as $key => $value) {
+            config(['app.' . $key => $value]);
+        }
+
+        Log::info('Admin settings updated by ' . Auth::id());
+
+        return redirect()->route('admin.settings')
+            ->with('success', 'Settings updated successfully');
+    }
 }

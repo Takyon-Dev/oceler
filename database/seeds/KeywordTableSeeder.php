@@ -29,7 +29,7 @@ class KeywordTableSeeder extends Seeder
                           'visibility','target');
 
         foreach ($keywords as $key => $word) {
-          $k = \oceler\Keyword::firstOrNew(['keyword' => $word]);
+          $k = \App\Models\Keyword::firstOrNew(['keyword' => $word]);
           $k->keyword = $word;
           $k->save();
         }

@@ -1,33 +1,46 @@
 <?php
 
-namespace oceler\Providers;
+namespace App\Providers;
 
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 
 class EventServiceProvider extends ServiceProvider
 {
     /**
-     * The event listener mappings for the application.
+     * The event to listener mappings for the application.
      *
-     * @var array
+     * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        'oceler\Events\SomeEvent' => [
-            'oceler\Listeners\EventListener',
+        Registered::class => [
+            SendEmailVerificationNotification::class,
         ],
+        // Add your custom events here
+        // 'App\Events\SomeEvent' => [
+        //     'App\Listeners\EventListener',
+        // ],
     ];
 
     /**
-     * Register any other events for your application.
-     *
-     * @param  \Illuminate\Contracts\Events\Dispatcher  $events
-     * @return void
+     * Register any events for your application.
      */
-    public function boot(DispatcherContract $events)
+    public function boot(): void
     {
-        parent::boot($events);
+        try {
+            parent::boot();
+        } catch (\Exception $e) {
+            // Ignore database errors during bootstrap
+        }
+    }
 
-        //
+    /**
+     * Determine if events and listeners should be automatically discovered.
+     */
+    public function shouldDiscoverEvents(): bool
+    {
+        return false;
     }
 }

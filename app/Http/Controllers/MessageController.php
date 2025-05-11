@@ -1,141 +1,163 @@
 <?php
 
-namespace oceler\Http\Controllers;
+namespace App\Http\Controllers;
 
+use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
-use oceler\Http\Requests;
-use oceler\Http\Controllers\Controller;
-use Auth;
-use DB;
-use Response;
-use oceler\Message;
-use oceler\Reply;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class MessageController extends Controller
 {
+    /**
+     * Display a listing of messages.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index(): View
+    {
+        $messages = Message::with('sender', 'receiver')
+            ->where('receiver_id', Auth::id())
+            ->orWhere('sender_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
-
-  /**
-  * Stores a new message to the messages table in the DB
-  * and writes the message, sender, and recipients to
-  * the log.
-  */
-	public function  postMessage(Request $request)
-	{
-
-		$user = Auth::user();
-
-		$msg = new Message;
-    $msg->trial_id = \Session::get('trial_id');
-    $msg->round = \Session::get('curr_round');
-		$msg->factoid_id = $request->factoid_id ?: null;
-    $msg->share_id = $request->share_id ?: null;
-		$msg->message = $request->message;
-		$msg->user_id = $user->id;
-
-		$msg->save();
-
-
-    $log = "MESSAGE-- ID: " .$msg->id. "MSG: " .$msg->message. " FROM: ". $user->id . "(". $user->player_name .") ";
-
-    // Add each recipient player to message_user
-		foreach ($request->share_to as $player) {
-			$msg->users()->attach($player);
-      $player = \oceler\User::find($player);
-      $log .= 'TO: ' .$player->id . "(". $player->player_name .") ";
-
-		}
-
-    if($factoid = \oceler\Factoid::find($request->factoid_id)){
-      $log .= ' WITH FACTOID-- '.$factoid->factoid;
+        return view('messages.index', compact('messages'));
     }
 
-    \oceler\Log::trialLog($msg->trial_id, $log);
+    /**
+     * Show the form for creating a new message.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create(): View
+    {
+        $users = User::where('id', '!=', Auth::id())
+            ->orderBy('name')
+            ->get();
 
-	}
-
-
-  public function getListenSystemMessage(Request $request)
-	{
-    // Get all factoids set for distribution to the player's
-    // assigned network node during this wave
-    $factoids = \DB::table('factoid_distributions')
-                    ->join('factoids', 'factoid_distributions.factoid_id', '=', 'factoids.id')
-                    ->where('factoid_distributions.factoidset_id', \Input::get('factoidset_id'))
-                    ->where('node', \Input::get('node'))
-                    ->where('wave', \Input::get('wave'))
-                    ->get();
-
-    $u_id = \oceler\User::where('player_name', 'System')->value('id');
-    $trial_id = \Session::get('trial_id');
-    $round = \Session::get('curr_round');
-
-    foreach ($factoids as $factoid) {
-
-      // Create a new message containing the factoid
-      // and set it's sender to be the 'System' account.
-      // Using firstOrCreate to avoid duplicate messages
-      // from occuring if the page is reloaded
-      $sys_msg = Message::firstOrCreate([
-        'user_id' => $u_id,
-        'trial_id' => $trial_id,
-        'round' => $round,
-        'factoid_id' => $factoid->factoid_id,
-      ]);
-
-      // Add the user to as a recipient
-      $sys_msg->users()->attach(Auth::user()->id);
-
-      // And log it
-      $log = 'DISTRIBUTED FACTOID TO: ' .Auth::user()->id . "(". Auth::user()->player_name .") ";
-      $log .= ' FACTOID-- '.$factoid->factoid;
-      \oceler\Log::trialLog(\Session::get('trial_id'), $log);
+        return view('messages.create', compact('users'));
     }
 
-  }
+    /**
+     * Store a newly created message.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'receiver_id' => 'required|exists:users,id',
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string'
+        ]);
 
-  // TESTS
+        $message = Message::create([
+            'sender_id' => Auth::id(),
+            'receiver_id' => $validated['receiver_id'],
+            'subject' => $validated['subject'],
+            'body' => $validated['body'],
+            'read' => false
+        ]);
 
-  public function messageListenTest()
-  {
-    $user = Auth::user();
+        Log::info('Message sent from ' . Auth::id() . ' to ' . $validated['receiver_id']);
 
-    $last_message_time = 0;
+        return redirect()->route('messages.index')
+            ->with('success', 'Message sent successfully');
+    }
 
-    $messages = array();
+    /**
+     * Display the specified message.
+     *
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
+    public function show(int $id): View
+    {
+        $message = Message::with('sender', 'receiver')
+            ->where(function($query) {
+                $query->where('sender_id', Auth::id())
+                    ->orWhere('receiver_id', Auth::id());
+            })
+            ->findOrFail($id);
 
-    // Get all new messages updated (or inserted)
-    // ** THIS QUERY SHOULD BE MADE MORE EFFICIENT
-    // SO THAT THERE IS NO NEED FOR THE FOREACH BELOW -
-    // e.g. get new messages where sender or a recipient is the user
-
-    $new_messages = Message::with('users')
-                    ->with('sender')
-                    ->with('replies')
-                    ->with('factoid')
-                    ->with('sharedFrom')
-                    ->where('updated_at', '>', $last_message_time)
-                    ->where('trial_id', \Session::get('trial_id'))
-                    ->where('round', \Session::get('curr_round'))
-                    ->get();
-
-    foreach($new_messages as $key=>$msg){
-      if($msg->SharedFrom != null && $msg->SharedFrom->SharedFrom != null) dump( $msg->SharedFrom->SharedFrom );
-      if($msg->user_id == $user->id){
-        $messages[] = $msg;
-      }
-      else {
-        foreach($msg->users as $recipient){
-          if($recipient->id == $user->id){
-            $messages[] = $msg;
-          }
+        if ($message->receiver_id === Auth::id() && !$message->read) {
+            $message->update(['read' => true]);
         }
-      }
 
+        return view('messages.show', compact('message'));
     }
 
+    /**
+     * Mark a message as read.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function markAsRead(int $id): JsonResponse
+    {
+        $message = Message::where('receiver_id', Auth::id())
+            ->findOrFail($id);
 
-    dd($messages);
+        $message->update(['read' => true]);
 
-  }
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Delete the specified message.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(int $id): RedirectResponse
+    {
+        $message = Message::where(function($query) {
+            $query->where('sender_id', Auth::id())
+                ->orWhere('receiver_id', Auth::id());
+        })->findOrFail($id);
+
+        $message->delete();
+
+        Log::info('Message ' . $id . ' deleted by user ' . Auth::id());
+
+        return redirect()->route('messages.index')
+            ->with('success', 'Message deleted successfully');
+    }
+
+    /**
+     * Get unread message count.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function unreadCount(): JsonResponse
+    {
+        $count = Message::where('receiver_id', Auth::id())
+            ->where('read', false)
+            ->count();
+
+        return response()->json(['count' => $count]);
+    }
+
+    /**
+     * Get recent messages.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function recent(): JsonResponse
+    {
+        $messages = Message::with('sender')
+            ->where('receiver_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return response()->json($messages);
+    }
 }

@@ -1,49 +1,46 @@
 <?php
 
-namespace oceler\Console\Commands;
+namespace App\Console\Commands;
+
 use Illuminate\Console\Command;
+use App\MTurk\MTurk;
 
 class MTurkTestConnection extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'MTurkTestConnection';
+    protected $signature = 'mturk:test';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Tests the connection to the MTurk API';
-
-    private $hits;
-
+    protected $description = 'Test MTurk connection';
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
         parent::__construct();
-        $this->hits = \DB::table('mturk_hits')
-                          ->first();
     }
 
     /**
-     * Execute the command.
-     *
-     * @return void
+     * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
-        $mturk = new \oceler\MTurk\MTurk();
-        $mturk->hit = $this->hits;
-        $mturk->testConnection();
+        $mturk = new MTurk();
+        $result = $mturk->testConnection();
+        
+        if ($result) {
+            $this->info('Connection successful!');
+        } else {
+            $this->error('Connection failed!');
+        }
     }
 }

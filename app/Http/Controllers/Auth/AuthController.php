@@ -1,12 +1,14 @@
 <?php
 
-namespace oceler\Http\Controllers\Auth;
+namespace App\Http\Controllers\Auth;
 
-use oceler\User;
-use Validator;
-use oceler\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use App\Models\User;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -21,9 +23,7 @@ class AuthController extends Controller
     |
     */
 
-    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
-
-    private $redirectTo = '/home/';
+    protected $redirectTo = '/home/';
     protected $loginPath = '/login';
     protected $redirectAfterLogout = '/';
 
@@ -34,50 +34,70 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
+        $this->middleware('guest')->except('logout');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
+    public function showLoginForm()
     {
-        return Validator::make($data, [
-            'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'mturk_id' => 'required',
-            'password' => 'required|confirmed|min:6',
+        return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+            $user->ip_address = $request->ip();
+            $user->user_agent = $request->userAgent();
+            $user->save();
+
+            return redirect()->intended($this->redirectTo);
+        }
+
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return User
-     */
-    protected function create(array $data)
+    public function showRegistrationForm()
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'mturk_id' => $data['mturk_id'],
-            'password' => bcrypt($data['password']),
-            'role_id' => 3, //Regular (non-admin) user
-            'ip_address' => $_SERVER['REMOTE_ADDR'],
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-        ]);
+        return view('auth.register');
     }
 
-    protected function authenticated()
+    public function register(Request $request)
     {
-      $user = User::find(\Auth::id());
-      $user->ip_address = $_SERVER['REMOTE_ADDR'];
-      $user->user_agent = $_SERVER['HTTP_USER_AGENT'];
-      $user->save();
-      return redirect()->intended('/home/');
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'mturk_id' => ['required', 'string'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'mturk_id' => $validated['mturk_id'],
+            'password' => Hash::make($validated['password']),
+            'role_id' => 3,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        Auth::login($user);
+
+        return redirect($this->redirectTo);
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect($this->redirectAfterLogout);
     }
 }

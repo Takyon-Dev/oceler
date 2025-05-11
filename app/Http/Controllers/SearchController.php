@@ -1,183 +1,264 @@
 <?php
 
-namespace oceler\Http\Controllers;
+namespace App\Http\Controllers;
 
+use App\Services\SearchService;
+use App\Models\Round;
+use App\Models\Trial;
+use App\Models\Message;
 use Illuminate\Http\Request;
-use oceler\Http\Requests;
-use oceler\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class SearchController extends Controller
 {
-  public function postSearch(Request $request)
-  {
+    /**
+     * Create a new controller instance.
+     *
+     * @param \App\Services\SearchService $searchService
+     * @return void
+     */
+    public function __construct(
+        private readonly SearchService $searchService
+    ) {
+        $this->middleware('auth');
+    }
 
-    $user = \Auth::user();
-
-    $trial_id = \DB::table('trial_user')
-                ->where('user_id', '=', $user->id)
-                ->orderBy('updated_at', 'desc')
-                ->value('trial_id');
-
-    $trial = \oceler\Trial::find($trial_id);
-
-    $curr_round = \Session::get('curr_round');
-
-    $round = \DB::table('rounds')
-                    ->where('trial_id', $trial_id)
-                    ->where('round', $curr_round)
-                    ->first();
-
-    $factoidset = \DB::table('factoidsets')
-                ->where('id', $round->factoidset_id)
-                ->first();
-
-    // Split the search input by space chars
-    $search_terms = explode(' ', $request->search_term);
-
-    $i = 0;
-    $keyword = array();
-
-    do{
-
-      // Remove any non-alphanumeric chars from the search term
-      $search_term = preg_replace("/[^A-Za-z0-9 ]/", '', $search_terms[$i]);
-
-      $query = "
-      SELECT keywords.id, keywords.keyword,
-      factoid_keyword.factoid_id,
-      factoids.id, factoids.factoidset_id,
-      factoids.factoid
-      FROM keywords
-      JOIN factoid_keyword ON
-        factoid_keyword.keyword_id = keywords.id
-      JOIN factoids ON
-        factoid_keyword.factoid_id = factoids.id
-      WHERE keywords.keyword LIKE :search_term
-      AND factoids.factoidset_id = :factoidset_id_1
-      AND factoids.id IN
-          (SELECT factoid_distributions.factoid_id
-           FROM factoid_distributions
-           WHERE factoid_distributions.factoidset_id = :factoidset_id_2
-           AND factoid_distributions.node = :searchable_node
-           AND factoid_distributions.wave <= :wave)";
-
-      $parameters = array('search_term' => $search_term,
-                              'factoidset_id_1' => $factoidset->id,
-                              'factoidset_id_2' => $factoidset->id,
-                              'searchable_node' => $factoidset->searchable_node,
-                              'wave' => $request->wave);
-
-      if($trial->unique_factoids){
-
-        // Also add factoids.id NOT IN previous searches
-
-        $query .= "
-        AND factoids.id NOT IN
-            (SELECT factoid_id
-             FROM searches
-             WHERE trial_id = :trial_id
-             AND round_id = :round_id
-             AND user_id = :user_id
-             AND factoid_id IS NOT NULL)";
-
-             $parameters = array('search_term' => $search_term,
-                                     'factoidset_id_1' => $factoidset->id,
-                                     'factoidset_id_2' => $factoidset->id,
-                                     'trial_id' => $trial_id,
-                                     'round_id' => $round->id,
-                                     'user_id' => $user->id,
-                                     'searchable_node' => $factoidset->searchable_node,
-                                     'wave' => $request->wave);
-      }
-
-      $factoids = \DB::select(\DB::raw($query), $parameters);
-      $i++;
-
-    } while(count($factoids) == 0 && $i < count($search_terms));
-
-    $result = array();
-
-    if(count($factoids) == 0)
+    /**
+     * Display the search interface.
+     *
+     * @param \App\Models\Trial $trial
+     * @param \App\Models\Round $round
+     * @return \Illuminate\View\View
+     */
+    public function index(Trial $trial, Round $round): View
     {
-      $result['success'] = false;
-      $result['search_term'] = $request->search_term;
-      $result['result'] = 'No results were found for your search \'' . $request->search_term . '\'';
-      $result['factoid_id'] = null;
+        $user = Auth::user();
+        $searchHistory = $this->searchService->getSearchHistory($user, $round);
+        $searchStats = $this->searchService->getUserSearchStats($user, $round);
+        $foundFactoids = $this->searchService->getFoundFactoids($round);
+
+        return view('search.index', compact('trial', 'round', 'searchHistory', 'searchStats', 'foundFactoids'));
     }
 
-    else {
+    /**
+     * Perform a search.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Trial $trial
+     * @param \App\Models\Round $round
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request, Trial $trial, Round $round): JsonResponse
+    {
+        $request->validate([
+            'search_term' => 'required|string|max:255'
+        ]);
 
-      // Select one random factoid from the array of query results
-      $factoid = $factoids[array_rand($factoids)];
+        $user = Auth::user();
+        $result = $this->searchService->searchFactoid($user, $round, $request->search_term);
 
-      $result['success'] = true;
-      $result['search_term'] = $request->search_term;
-      $result['result'] = $factoid->factoid;
-      $result['factoid_id'] = $factoid->factoid_id;
+        if (!$result['success']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message']
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'search' => $result['search'],
+            'factoid' => $result['factoid']
+        ]);
     }
 
-    $search = new \oceler\Search();
-    $search->user_id = $user->id;
-    $search->trial_id = $trial_id;
-    $search->round_id = $round->id;
-    $search->search_term = $request->search_term;
-    $search->factoid_id = $result['factoid_id'];
-    $search->save();
+    /**
+     * Get search suggestions.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Trial $trial
+     * @param \App\Models\Round $round
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function suggestions(Request $request, Trial $trial, Round $round): JsonResponse
+    {
+        $request->validate([
+            'prefix' => 'required|string|max:255'
+        ]);
 
-    $log = "SEARCH BY: ".$user->id." (".$user->player_name.") ";
-    $log .= "SEARCH TERM: ".$search->search_term." RESULT: ".$result['result'];
-    \oceler\Log::trialLog($trial_id, $log);
+        $suggestions = $this->searchService->getSearchSuggestions($round, $request->prefix);
 
-    return \Response::json($result);
-
-  }
-
-  function getSearchReload()
-  {
-    $user = \Auth::user();
-
-    $trial_id = \DB::table('trial_user')
-                ->where('user_id', '=', $user->id)
-                ->orderBy('updated_at', 'desc')
-                ->value('trial_id');
-
-    $trial = \oceler\Trial::find($trial_id);
-
-    $curr_round = \Session::get('curr_round');
-
-    $round_id = \DB::table('rounds')
-                    ->where('trial_id', $trial_id)
-                    ->where('round', $curr_round)
-                    ->value('id');
-
-    $searches = \DB::table('searches')
-                 ->where('user_id', '=', $user->id)
-                 ->where('trial_id', '=', $trial_id)
-                 ->where('round_id', '=', $round_id)
-                 ->orderBy('id', 'asc')
-                 ->get();
-
-    $results = array();
-
-    foreach ($searches as $search) {
-      $result = array();
-      $result['search_term'] = $search->search_term;
-      if($search->factoid_id)
-      {
-        $result['success'] = true;
-        $result['result'] = \DB::table('factoids')
-                               ->where('id', $search->factoid_id)
-                               ->pluck('factoid');
-        $result['factoid_id'] = $search->factoid_id;
-      }
-      else {
-        $result['success'] = false;
-        $result['result'] = 'No results were found for your search \'' . $search->search_term . '\'';
-      }
-      $results[] = $result;
+        return response()->json([
+            'success' => true,
+            'suggestions' => $suggestions
+        ]);
     }
-    return $results;
-  }
 
+    /**
+     * Get search statistics.
+     *
+     * @param \App\Models\Trial $trial
+     * @param \App\Models\Round $round
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function stats(Trial $trial, Round $round): JsonResponse
+    {
+        $stats = $this->searchService->getSearchStats($round);
+        $successfulSearches = $this->searchService->getSuccessfulSearches($round);
+
+        return response()->json([
+            'success' => true,
+            'stats' => $stats,
+            'successful_searches' => $successfulSearches
+        ]);
+    }
+
+    /**
+     * Get user's search history.
+     *
+     * @param \App\Models\Trial $trial
+     * @param \App\Models\Round $round
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function history(Trial $trial, Round $round): JsonResponse
+    {
+        $user = Auth::user();
+        $searchHistory = $this->searchService->getSearchHistory($user, $round);
+
+        return response()->json([
+            'success' => true,
+            'history' => $searchHistory
+        ]);
+    }
+
+    /**
+     * Check if a factoid has been found.
+     *
+     * @param \App\Models\Trial $trial
+     * @param \App\Models\Round $round
+     * @param int $factoid_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkFactoid(Trial $trial, Round $round, int $factoid_id): JsonResponse
+    {
+        $isFound = $this->searchService->isFactoidFound($round, $factoid_id);
+
+        return response()->json([
+            'success' => true,
+            'found' => $isFound
+        ]);
+    }
+
+    /**
+     * Search for users.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function users(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'query' => 'required|string|min:2'
+        ]);
+
+        $users = User::where('name', 'like', '%' . $validated['query'] . '%')
+            ->orWhere('email', 'like', '%' . $validated['query'] . '%')
+            ->select('id', 'name', 'email')
+            ->take(10)
+            ->get();
+
+        return response()->json($users);
+    }
+
+    /**
+     * Search for trials.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function trials(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'query' => 'required|string|min:2'
+        ]);
+
+        $trials = Trial::where('name', 'like', '%' . $validated['query'] . '%')
+            ->orWhere('description', 'like', '%' . $validated['query'] . '%')
+            ->with('users')
+            ->take(10)
+            ->get();
+
+        return response()->json($trials);
+    }
+
+    /**
+     * Search for messages.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function messages(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'query' => 'required|string|min:2'
+        ]);
+
+        $messages = Message::where(function($query) {
+            $query->where('sender_id', Auth::id())
+                ->orWhere('receiver_id', Auth::id());
+        })
+        ->where(function($query) use ($validated) {
+            $query->where('subject', 'like', '%' . $validated['query'] . '%')
+                ->orWhere('body', 'like', '%' . $validated['query'] . '%');
+        })
+        ->with('sender', 'receiver')
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+
+        return response()->json($messages);
+    }
+
+    /**
+     * Perform a global search.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function global(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'query' => 'required|string|min:2'
+        ]);
+
+        $results = [
+            'users' => User::where('name', 'like', '%' . $validated['query'] . '%')
+                ->orWhere('email', 'like', '%' . $validated['query'] . '%')
+                ->select('id', 'name', 'email')
+                ->take(5)
+                ->get(),
+            'trials' => Trial::where('name', 'like', '%' . $validated['query'] . '%')
+                ->orWhere('description', 'like', '%' . $validated['query'] . '%')
+                ->with('users')
+                ->take(5)
+                ->get(),
+            'messages' => Message::where(function($query) {
+                $query->where('sender_id', Auth::id())
+                    ->orWhere('receiver_id', Auth::id());
+            })
+            ->where(function($query) use ($validated) {
+                $query->where('subject', 'like', '%' . $validated['query'] . '%')
+                    ->orWhere('body', 'like', '%' . $validated['query'] . '%');
+            })
+            ->with('sender', 'receiver')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get()
+        ];
+
+        return response()->json($results);
+    }
 }

@@ -15,7 +15,7 @@
    Makes all generated links https - required
    to embed in MTurk */
 if(App::environment() !== 'local'){
-  URL::forceSchema("https");
+  URL::forceScheme('https');
 }
 
 

@@ -13,16 +13,15 @@ class CreateTrialsTable extends Migration
     public function up()
     {
         Schema::create('trials', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->integer('distribution_interval');
             $table->integer('num_waves');
             $table->integer('num_players');
-            $table->boolean('mult_factoid');
-            $table->boolean('pay_correct');
+            $table->boolean('mult_factoid')->default(false);
+            $table->boolean('pay_correct')->default(false);
             $table->integer('num_rounds');
-            $table->boolean('is_active');
+            $table->boolean('is_active')->default(false);
             $table->timestamps();
-
             $table->softDeletes();
         });
     }
@@ -34,6 +33,6 @@ class CreateTrialsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('trials');
+        Schema::dropIfExists('trials');
     }
 }

@@ -1,42 +1,42 @@
 <?php
 
-namespace oceler\Http\Middleware;
+namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
-class CheckRole{
-
+class CheckRole
+{
 	/**
 	 * Handle an incoming request.
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Closure  $next
+	 * @param  string  $role
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next)
+	public function handle(Request $request, Closure $next, string $role): Response
 	{
-		// Get the required roles from the route
-		$roles = $this->getRequiredRoleForRoute($request->route());
+		if (!Auth::check()) {
+			return response()->json([
+				'error' => [
+					'code' => 'UNAUTHORIZED',
+					'description' => 'You must be logged in to access this resource.'
+				]
+			], Response::HTTP_UNAUTHORIZED);
+		}
 
-		// Check if a role is required for the route, and
-		// if so, ensure that the user has that role.
-		if($request->user()->hasRole($roles) || !$roles)
-		{
+		if (Auth::user()->hasRole($role)) {
 			return $next($request);
 		}
-		return response([
+
+		return response()->json([
 			'error' => [
 				'code' => 'INSUFFICIENT_ROLE',
 				'description' => 'You are not authorized to access this resource.'
 			]
-		], 401);
-
+		], Response::HTTP_FORBIDDEN);
 	}
-
-	private function getRequiredRoleForRoute($route)
-	{
-		$actions = $route->getAction();
-		return isset($actions['roles']) ? $actions['roles'] : null;
-	}
-
 }

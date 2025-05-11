@@ -1,66 +1,67 @@
 <?php
 
-namespace oceler\Console\Commands;
+namespace App\Console\Commands;
+
 use Illuminate\Console\Command;
-use DB;
+use App\Models\MturkHit;
+use App\MTurk\MTurk;
+use Illuminate\Support\Facades\DB;
 
 class MTurkProcessAssignments extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'MTurkProcessAssignments';
+    protected $signature = 'mturk:process-assignments';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Processes HIT assignments using the MTurk API';
-
-    private $hits;
-
+    protected $description = 'Process MTurk assignments';
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
-
         parent::__construct();
-
-        $active_players = DB::table('trial_user')->lists('user_id');
-        $PROCESS_IF_WITHIN = 2; // Hours
-        $dt = \Carbon\Carbon::now();
-
-        $this->hits = \oceler\MturkHit::whereNotIn('user_id', $active_players)
-                                 ->where('hit_processed', '=', 0)
-                                 ->where('trial_id', '>', 0)
-                                 ->where('updated_at', '>', $dt->subHours($PROCESS_IF_WITHIN))
-                                 ->orWhere('trial_id', '=', -1)
-                                 ->whereNotIn('user_id', $active_players)
-                                 ->where('hit_processed', '=', 0)
-                                 ->where('updated_at', '>', $dt->subHours($PROCESS_IF_WITHIN))
-                                 ->get();
     }
 
     /**
-     * Execute the command.
-     *
-     * @return void
+     * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
-        $mturks = [];
-        foreach ($this->hits as $key => $hit) {
-          $mturks[$key] = new \oceler\MTurk\MTurk();
-          $mturks[$key]->hit = $hit;
-          $mturks[$key]->process_assignment();
+        $active_players = DB::table('trial_user')
+            ->where('selected_for_removal', 0)
+            ->pluck('user_id')
+            ->toArray();
+
+        $hits = MturkHit::whereNotIn('user_id', $active_players)
+            ->where('status', 'Submitted')
+            ->get();
+
+        if ($hits->isEmpty()) {
+            $this->info('No assignments to process.');
+            return;
+        }
+
+        $mturk = new MTurk();
+        foreach ($hits as $hit) {
+            try {
+                $result = $mturk->processAssignment($hit);
+                if ($result) {
+                    $this->info("Processed assignment {$hit->assignment_id}");
+                } else {
+                    $this->error("Failed to process assignment {$hit->assignment_id}");
+                }
+            } catch (\Exception $e) {
+                $this->error("Error processing assignment {$hit->assignment_id}: {$e->getMessage()}");
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace oceler\MTurk;
+namespace App\MTurk;
 use DB;
 
 class MTurk

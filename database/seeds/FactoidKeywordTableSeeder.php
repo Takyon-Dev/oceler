@@ -35,11 +35,11 @@ class FactoidKeywordTableSeeder extends Seeder
         foreach($factoids as $factoid => $keyword) {
 
             // First get the factoid
-            $fact = \oceler\Factoid::find($factoid);
+            $fact = \App\Models\Factoid::find($factoid);
 
             // And for each keyword, connect it with the factoid
             foreach($keyword as $word) {
-                $key = \oceler\Keyword::where('keyword','=', $word)->first();
+                $key = \App\Models\Keyword::where('keyword','=', $word)->first();
                 $fact->keywords()->save($key);
             }
 

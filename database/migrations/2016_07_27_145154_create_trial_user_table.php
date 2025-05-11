@@ -12,21 +12,13 @@ class CreateTrialUserTable extends Migration
      */
     public function up()
     {
+        // Create the table without foreign keys first
         Schema::create('trial_user', function (Blueprint $table) {
-
-            $table->increments('id');
+            $table->id();
             $table->timestamps();
-
-            $table->integer('trial_id')->unsigned();
-            $table->integer('user_id')->unsigned();
-
-            $table->foreign('trial_id')
-                  ->references('id')->on('trials')
-                  ->onDelete('cascade');
-
-            $table->foreign('user_id')
-                  ->references('id')->on('users')
-                  ->onDelete('cascade');
+            $table->foreignId('trial_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unique(['trial_id', 'user_id']);
         });
     }
 
@@ -37,6 +29,6 @@ class CreateTrialUserTable extends Migration
      */
     public function down()
     {
-        Schema::drop('trial_user');
+        Schema::dropIfExists('trial_user');
     }
 }

@@ -1,743 +1,470 @@
 <?php
 
-namespace oceler\Http\Controllers;
+namespace App\Http\Controllers;
 
+use App\Models\Trial;
+use App\Models\Queue;
+use App\Models\Factoidset;
+use App\Models\Network;
+use App\Models\Nameset;
+use App\Models\User;
+use App\Models\Solution;
+use App\Models\MturkHit;
+use App\Services\TrialService;
 use Illuminate\Http\Request;
-use oceler\Http\Requests;
-use oceler\Http\Controllers\Controller;
-use \oceler\Trial;
-use \oceler\Queue;
-use View;
-use Auth;
-use DB;
-use Response;
-use Session;
-use Input;
-use Log;
-
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class TrialController extends Controller
 {
     /**
-     * Gets all trials (in order from
-     * latest to earliest) and displays them.
+     * @var TrialService
+     */
+    private TrialService $trialService;
+
+    /**
+     * Create a new controller instance.
      *
-     * @return \Illuminate\Http\Response
+     * @param TrialService $trialService
      */
-    public function index()
+    public function __construct(TrialService $trialService)
     {
-      $cutoff_date = \Carbon\Carbon::now()->subDays(env('TRIALS_WITHIN_DAYS', ''))->toDateString();
-      $trials = Trial::orderBy('id', 'desc')
-                      ->where('created_at', '>', $cutoff_date)
-                      ->with('users')
-                      ->with('archive')
-                      ->get();
-
-      return View::make('layouts.admin.trials')
-                  ->with('trials', $trials);
+        $this->trialService = $trialService;
+        $this->middleware('auth');
     }
 
     /**
-     * Displays the New Trial form, in which the
-     * trial configuration is set.
+     * Display a listing of trials.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
-    public function create()
+    public function index(): View
     {
-      $factoidsets = \oceler\Factoidset::lists('name', 'id');
-      $networks = \oceler\Network::lists('name', 'id');
-      $namesets = \oceler\Nameset::lists('name', 'id');
-
-      return View::make('layouts.admin.trial-config')
-                  ->with('factoidsets', $factoidsets)
-                  ->with('networks', $networks)
-                  ->with('namesets', $namesets);
+        $trials = $this->trialService->getRecentTrials();
+        return view('admin.trials', compact('trials'));
     }
 
     /**
-     * Processes the New Trial form, saving all config
-     * data to the appropriate tables.
+     * Show the form for creating a new trial.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
-    public function store(Request $request)
+    public function create(): View
     {
+        $factoidsets = Factoidset::pluck('name', 'id');
+        $networks = Network::pluck('name', 'id');
+        $namesets = Nameset::pluck('name', 'id');
 
-      $trial = new Trial();
-      $trial->storeTrialConfig($request);
-      $trial->logConfig();
-
-      return \Redirect::to('/admin/trial');
+        return view('admin.trial-config', compact('factoidsets', 'networks', 'namesets'));
     }
 
-
     /**
-     * Removes the specified trial from the database.
-     * We are actually using soft-deletes with trials,
-     * so the trial remains in the db, but will not
-     * be included in any queries.
+     * Store a newly created trial in storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($id)
+    public function store(Request $request): RedirectResponse
     {
-        $trial = Trial::find($id);
-        $trial->stopTrial();
-        $trial->delete();
-        return \Redirect::to('/admin/trial');
-    }
-
-    /**
-     * Toggles a trial between active / inactive.
-     * Only active trials can be filled, making it possible
-     * for multiple trials to be set up in advance.
-     */
-    public function toggle($id)
-    {
-      $trial = Trial::find($id);
-      $trial->is_active = !$trial->is_active;
-      $trial->save();
-
-      // Writes active status to the trial's log file
-      $msg = 'Trial '.$id;
-      $msg .= ($trial->is_active) ? ' is now active' : ' is not active';
-      \oceler\Log::trialLog($id, $msg);
-      Log::info($msg ." :: (type: ". $trial->trial_type ."; num_players: ". $trial->num_players .")");
-      return \Redirect::to('/admin/trial');
-    }
-
-    /**
-     * Stops an in-progress trial by removing
-     * players from the trial_user table.
-     */
-    public function stopTrial($id)
-    {
-      $trial = Trial::find($id);
-      $trial->stopTrial();
-
-      // Writes active status to the trial's log file
-      $msg = 'Trial '.$id;
-      $msg .= ' was stopped by the administrator';
-      \oceler\Log::trialLog($id, $msg);
-      Log::info($msg);
-      return \Redirect::to('/admin/trial');
-    }
-
-    /**
-     * Stops all in-progress trials by removing
-     * players from the trial_user table.
-     */
-    public function stopAllTrials()
-    {
-
-      $trials = Trial::where('is_active', 1)->get();
-      foreach ($trials as $trial) {
-        $trial->stopTrial();
-        $msg = 'Trial '.$trial->id;
-        $msg .= ' was stopped by the administrator';
-        \oceler\Log::trialLog($trial->id, $msg);
-        Log::info($msg);
-      }
-
-      return \Redirect::back();
-    }
-
-    /**
-     * Displays the Trial Queue layout to the player
-     * @return [type] [description]
-     */
-    public function enterQueue()
-    {
-      // First, check that they aren't already in a trial
-      $trialPlayer = \oceler\User::with('trials')->find(Auth::user()->id);
-
-      // If they are, redirect to the trial instructions page
-      if(count($trialPlayer->trials) > 0) {
-        return redirect('/player/trial/instructions');
-      }
-
-      $u_id = Auth::user()->id;
-      $last_trial_type = Auth::user()->lastTrialType();
-      $dt = \Carbon\Carbon::now();
-      // Add the player to the queue and set updated_at to
-      // current date/time
-      $player = \oceler\Queue::firstOrNew(['user_id' => $u_id]);
-      $player->trial_type = ($last_trial_type + 1);
-      $player->updated_at = $dt->toDateTimeString();
-      $player->save();
-      Log::info("USER ID: ". $u_id ." entered the queue");
-      return View::make('layouts.player.queue');
-    }
-
-    /**
-     * Displays the admin page view of a trial, including all the players
-     * that have been assigned to it.
-     *
-     */
-    public function getTrial($id)
-    {
-
-      $trial = Trial::with('users')->find($id);
-      $curr_round = $trial->curr_round;
-
-      $server_time = time();
-      if($curr_round > 0) {
-        $start_time = strtotime(
-                      $trial->rounds[$curr_round - 1]
-                      ->updated_at);
-      }
-      else {
-        $start_time = 'Trial has not begun yet';
-      }
-
-
-
-      return View::make('layouts.admin.trial-view')
-                  ->with('trial', $trial)
-                  ->with('curr_server_time', $server_time)
-                  ->with('start_time', $start_time);
-    }
-
-    /**
-     * Displays the edit config page of a trial. Checks if
-     * trial is in progress.
-     *
-     */
-    public function editTrial($id)
-    {
-
-      $trial = Trial::where('id', $id)
-                    ->with('rounds')
-                    ->with('groups')
-                    ->first();
-
-      $factoidsets = \oceler\Factoidset::lists('name', 'id');
-      $networks = \oceler\Network::lists('name', 'id');
-      $namesets = \oceler\Nameset::lists('name', 'id');
-
-
-      $in_progress = DB::table('trial_user')
-                         ->where('trial_id', $id)
-                         ->first();
-
-      return View::make('layouts.admin.trial-config')
-                  ->with('trial', $trial)
-                  ->with('factoidsets', $factoidsets)
-                  ->with('networks', $networks)
-                  ->with('namesets', $namesets)
-                  ->with('in_progress', $in_progress);
-
-    }
-
-    /**
-     * Processes the New Trial form, saving all config
-     * data to the appropriate tables.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function updateTrial($id, Request $request)
-    {
-      $trial = Trial::find($id);
-      $trial->distribution_interval = $request->distribution_interval;
-      $trial->num_players = $request->num_players;
-      $trial->mult_factoid = $request->mult_factoid || 0;
-      $trial->pay_correct = $request->pay_correct || 0;
-      $trial->pay_time_factor = $request->pay_time_factor || 0;
-      $trial->payment_per_solution = $request->payment_per_solution;
-      $trial->payment_base = $request->payment_base;
-      $trial->num_rounds = $request->num_rounds;
-      $trial->num_groups = $request->num_groups;
-
-      $trial->save(); // Saves the trial to the trial table
-
-
-      /*
-       * For each trial round (set in the config), the trial timeout,
-       * factoidsets, countrysets, and namesets (selected in the config)
-       * are stored in the rounds table.
-       */
-      for($i = 0; $i < $trial->num_rounds; $i++){
-
-        DB::table('rounds')->insert([
-            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'trial_id' => $trial->id,
-            'round' => ($i + 1),
-            'round_timeout' => $request->round_timeout[$i],
-            'factoidset_id' => $request->factoidset_id[$i],
-            'nameset_id' => $request->nameset_id[$i],
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'trial_type' => 'required|integer',
+                'passing_score' => 'required|numeric',
+                'instructions' => 'required|string',
+                'distribution_interval' => 'required|integer',
+                'num_waves' => 'required|integer',
+                'num_players' => 'required|integer',
+                'num_to_recruit' => 'required|integer',
+                'unique_factoids' => 'boolean',
+                'pay_correct' => 'numeric',
+                'pay_time_factor' => 'numeric',
+                'payment_per_solution' => 'required|numeric',
+                'payment_base' => 'required|numeric',
+                'num_rounds' => 'required|integer',
+                'num_groups' => 'required|integer',
+                'instructions_image' => 'nullable|image|max:2048',
+                'factoidset_id.*' => 'required|exists:factoidsets,id',
+                'nameset_id.*' => 'required|exists:namesets,id',
+                'network_id.*' => 'required|exists:networks,id',
+                'survey_url.*' => 'nullable|url',
+                'round_timeout.*' => 'required|integer'
             ]);
-      }
 
-      /*
-       *	For each group (set in the config) store the group's
-       *	network and end-of-experiment survey URL
-       */
-      for($i = 0; $i < $trial->num_groups; $i++){
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
 
-        DB::table('groups')->insert([
-          'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-          'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-          'group' => $i + 1,
-          'trial_id' => $trial->id,
-          'network_id' => $request->network[$i],
-          'survey_url' => $request->survey_url[$i],
-        ]);
+            $trial = $this->trialService->createTrial($request->all());
+            Log::info('Trial created', ['trial_id' => $trial->id]);
 
-      }
+            return redirect()->route('admin.trials')
+                ->with('success', 'Trial created successfully');
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            Log::error('Trial creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
-      return \Redirect::to('/admin/trial');
-    }
-
-    public function getListenAllTrialPlayers()
-    {
-      $trials = Trial::with('users')
-                      ->where('is_active', 1)
-                      ->get();
-
-        for($i = 0; $i < count($trials); $i++){
-
-          for($k = 0; $k < count($trials[$i]['users']); $k++){
-
-            $solutions = \oceler\Solution::getCurrentSolutions(
-                                                $trials[$i]['users'][$k]['id'],
-                                                $trials[$i]['id'],
-                                                $trials[$i]['curr_round']
-                                            );
-            $trials[$i]['users'][$k]['solutions'] = $solutions;
-
-            // Get the user's node
-            $group = DB::table('groups')
-                        ->where('id', $trials[$i]['users'][$k]['pivot']['group_id'])
-                        ->first();
-
-            $network = DB::table('networks')
-                            ->where('id', $group->network_id)
-                            ->value('id');
-
-            $u_node_id = DB::table('user_nodes')
-                            ->where('user_id', $trials[$i]['users'][$k]['id'])
-                            ->where('group_id', $group->id)
-                            ->value('node_id');
-
-            $u_node = DB::table('network_nodes')
-                          ->where('id', '=', $u_node_id)
-                          ->value('node');
-            $trials[$i]['users'][$k]['node'] = $u_node;
-          }
-
-      }
-
-      return Response::json($trials);
-    }
-
-    public function getListenTrialPlayers($id)
-    {
-      $trial = Trial::with('users')
-                      ->find($id);
-
-
-      for($k = 0; $k < count($trial['users']); $k++){
-
-        $solutions = \oceler\Solution::getCurrentSolutions(
-                                            $trial['users'][$k]['id'],
-                                            $trial['id'],
-                                            $trial['curr_round']
-                                        );
-        $trial['users'][$k]['solutions'] = $solutions;
-
-        // Get the user's node
-        $group = DB::table('groups')
-                    ->where('id', $trial['users'][$k]['pivot']['group_id'])
-                    ->first();
-
-        $network = DB::table('networks')
-                        ->where('id', $group->network_id)
-                        ->value('id');
-
-        $u_node_id = DB::table('user_nodes')
-                        ->where('user_id', $trial['users'][$k]['id'])
-                        ->where('group_id', $group->id)
-                        ->value('node_id');
-
-        $u_node = DB::table('network_nodes')
-                      ->where('id', '=', $u_node_id)
-                      ->value('node');
-        $trial['users'][$k]['node'] = $u_node;
-      }
-
-      return Response::json($trial);
+            return back()->with('error', 'Failed to create trial');
+        }
     }
 
     /**
-     * Manages the queue of players waiting to join an avaialable trial.
-     * @return 0 when the required number of players for that trial is met.
-     *         Otherwise, if there is an available trial it returns the
-     *         remaining number of players needed before the trial can start.
-     *         If no trial is available, returns -1.
+     * Remove the specified trial from storage.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function queue()
+    public function destroy(int $id): RedirectResponse
     {
+        try {
+            $this->trialService->deleteTrial($id);
+            Log::info('Trial deleted', ['trial_id' => $id]);
 
-      $u_id = Auth::user()->id;
-      $last_trial_type = Auth::user()->lastTrialType();
-      $dt = \Carbon\Carbon::now();
+            return redirect()->route('admin.trials')
+                ->with('success', 'Trial deleted successfully');
+        } catch (\Exception $e) {
+            Log::error('Trial deletion failed', [
+                'trial_id' => $id,
+                'error' => $e->getMessage()
+            ]);
 
-      // If this user has been added to trial_user already, just return with 0
-      if(DB::table('trial_user')->where('user_id', '=', $u_id)->get()) return 0;
-
-      // Add the player to the queue and set updated_at to
-      // current date/time
-      $player = \oceler\Queue::firstOrNew(['user_id' => $u_id]);
-      $player->trial_type = ($last_trial_type + 1);
-      $player->updated_at = $dt->toDateTimeString();
-      $player->save();
-
-      // Then, delete all players who have been inactive for INACTIVE_TIME
-      $INACTIVE_TIME = 6; // In seconds
-      \oceler\Queue::where('updated_at', '<', $dt->subSeconds($INACTIVE_TIME))->delete();
-
-      // Get all trials that are active but already have been filled
-      // by querying the trial_user table
-      $running_trials = DB::table('trial_user')
-                         ->get();
-
-      $filled_trials = [];
-      foreach ($running_trials as $t) {
-        $filled_trials[] = $t->trial_id;
-      }
-
-      // Get the oldest active, not-already-filled trial
-      // the player qualifies for
-      $trial = Trial::where('is_active', 1)
-                    ->where('trial_type', '=', $player->trial_type)
-                    ->whereNotIn('id', $filled_trials)
-                    ->orderBy('created_at', 'asc')
-                    ->first();
-
-      // If such a trial exists, see if the # of players in the queue
-      // is equal to the required # of players for the trial
-      if(!$trial){
-        return -1;
-      }
-
-      $queued_players = \oceler\Queue::where('trial_type', '=', $player->trial_type)
-                                      ->count();
-
-      // If there are enough players...
-      if($queued_players >= $trial->num_players){
-
-        // ... Take the required amount
-        $selected = \oceler\Queue::where('trial_type', '=', $player->trial_type)
-                                  ->orderBy('created_at', 'asc')
-                                  ->take($trial->num_players)
-                                  ->get();
-
-        // Shuffle the collection of selected players so that
-        // their network node positions will essentially
-        // be randomized
-        $selected = $selected->shuffle();
-
-        // Insert each selected player into the trial_user table
-        // along with the group they are part of
-
-        $group = 1;
-        $count = 0; // Counts the users added so far
-        foreach ($selected as $user) {
-          DB::table('trial_user')->insert([
-            'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'user_id' => $user->user_id,
-            'trial_id' => $trial->id,
-            'group_id' => \DB::table('groups')
-                          ->where('trial_id', $trial->id)
-                          ->where('group', $group)
-                          ->value('id')
-          ]);
-          $count++;
-          if($count >= $trial->num_players / $trial->num_groups) $group++;
-          // ... And delete that user from the queue
-          \oceler\Queue::where('user_id', '=', $user->user_id)->delete();
+            return back()->with('error', 'Failed to delete trial');
         }
-
-          return 0;
-        }
-
-        else return $trial->num_players - $queued_players;
-
-    }
-
-    public function trialStopped()
-    {
-      $trial_user = DB::table('trial_user')
-                  ->where('user_id', '=', Auth::user()->id)
-                  ->orderBy('updated_at', 'desc')
-                  ->get();
-
-      foreach ($trial_user as $key => $t_u) {
-        $trial = Trial::find($t_u->trial_id);
-        $trial->stopTrial();
-      }
-
-      Log::info('USER ID'. Auth::user()->id .' was taken to the trial stopped page');
-      return View::make('layouts.player.trial-stopped');
     }
 
     /**
-     * Returns true if number of players in trial who have
-     * finished reading the instructions matches the total
-     * number of players in that trial.
-     * @return boolean
+     * Toggle the active status of a trial.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function instructionsStatus($trial_id)
+    public function toggle(int $id): RedirectResponse
     {
+        try {
+            $trial = $this->trialService->toggleTrialStatus($id);
+            $status = $trial->is_active ? 'activated' : 'deactivated';
+            
+            Log::info("Trial {$status}", [
+                'trial_id' => $id,
+                'type' => $trial->trial_type,
+                'num_players' => $trial->num_players
+            ]);
 
-      $trial = Trial::with('users')->find($trial_id);
+            return redirect()->route('admin.trials')
+                ->with('success', "Trial {$status} successfully");
+        } catch (\Exception $e) {
+            Log::error('Trial status toggle failed', [
+                'trial_id' => $id,
+                'error' => $e->getMessage()
+            ]);
 
-      $num_read = 0;
-
-      $INACTIVE_PING_TIME = 20;
-      $dt = \Carbon\Carbon::now();
-
-      $hasReadInstructions = false;
-
-      foreach ($trial->users as $user) {
-        if($user->id == \Auth::user()->id) {
-          $hasReadInstructions = ($user->pivot->instructions_read == true) ? true : false;
-          if($user->pivot->selected_for_removal == 1) {
-            return Response::json(['status' => 'remove']);
-          }
-          $trial->users()->updateExistingPivot($user->id, ['last_ping' => date("Y-m-d H:i:s")]);
+            return back()->with('error', 'Failed to toggle trial status');
         }
-        if(($user->pivot->instructions_read == true) &&
-           (!$user->pivot->selected_for_removal) &&
-           ($user->pivot->last_ping > $dt->subSeconds($INACTIVE_PING_TIME))) {
-            $num_read++;
-          }
-
-      }
-
-
-      if($num_read >= $trial->num_players) {
-        if($hasReadInstructions) {
-          return Response::json(['status' => 'ready']);
-        }
-        else {
-          return Response::json(['status' => 'remove']);
-        }
-      }
-      else {
-        return Response::json(['status' => 'waiting', 'num_completed' => $num_read, 'num_needed' => $trial->num_players]);
-      }
     }
 
-    public function markInstructionsAsRead($user_id)
-    {
-      Log::info("USER ID ". $user_id ." marked instructions as read");
-      DB::update('update trial_user set instructions_read = 1 where user_id = ?', [$user_id]);
-
-    }
-
-    public function notSelectedForTrial($trial_id) {
-      return redirect('/player/end-task/overrecruited');
-    }
-
-
-    public function manageQueue() {
-
-      // Delete any inactive users from Queue
-      $this->deleteInactiveQueueUsers();
-
-      // Get all trials that are active but already have been filled
-      // by querying the trial_user table
-     $active_trials = Trial::has('users', '>', 0)
-                           ->where('is_active', true)
-                           ->with('users')
-                           ->get();
-
-      $filled_trials = [];
-      foreach ($active_trials as $t) {
-        $filled_trials[] = $t->id;
-
-        // Process the instructions status of each running trial, if needed
-        if($t->users()->sum('selected_for_removal') == 0 && count($t->users) > $t->num_players) {
-            Log::info('User count for trial '.$t->id.' is '.count($t->users).' Num needed: '.$t->num_players);
-            $this->selectPlayersForTrial($t);
-        }
-      }
-
-
-      // Get all active, not-already-filled trials
-      $trials = Trial::where('is_active', 1)
-                      ->with('users')
-                      ->whereNotIn('id', $filled_trials)
-                      ->orderBy('created_at', 'asc')
-                      ->get();
-
-      // If no trials exist, return
-      if(count($trials) == 0){
-        //echo 'There are no active trials with slots open.';
-        return;
-      }
-
-      // For each active trial, see if the # of players in the queue
-      // is equal to the required # of players for the trial
-      foreach($trials as $trial) {
-          // If no number to recruit is entered, use num_players
-          $num_to_recruit = ($trial->num_to_recruit != '') ? $trial->num_to_recruit : $trial->num_players;
-          //echo 'Trial ' .$trial->name. ' (trial type ' .$trial->trial_type. ') needs ' .$num_to_recruit. ' players.<br><br>';
-
-          $LAST_PING_TIME = 6; // How recent a ping must be for player to be chosen
-          $dt = \Carbon\Carbon::now();
-          $queued_players = Queue::where('trial_type', '=', $trial->trial_type)
-                                 ->where('updated_at', '>=', $dt->subSeconds($LAST_PING_TIME))
-                                 ->count();
-
-          // If there aren't enough players for this trial type,
-          // move on to the next one
-          if($queued_players < $num_to_recruit){
-            //echo 'There are only ' .$queued_players. ' players with qualification type ' .$trial->trial_type. ' in the queue.<br><br>';
-            continue;
-          }
-
-          $inTrialPreSelection = DB::table('trial_user')->where('trial_id', $trial->id)->count();
-          Log::info('Selecting players for  '.$trial->id.' this trial currently has '.$inTrialPreSelection.' players in the trial_user table');
-          // If there are already players for this trial (maybe it hasn't been picked up by filled_trials yet) skip it
-          if($inTrialPreSelection >= $num_to_recruit) {
-            Log::info('Only '.$num_to_recruit.' players needed for  '.$trial->id.'. SKIPPING.');
-            continue;
-          }
-
-          // Otherwise, take the required amount
-          $selected = Queue::where('trial_type', '=', $trial->trial_type)
-                           ->where('updated_at', '>=', $dt->subSeconds($LAST_PING_TIME))
-                           ->orderBy('created_at', 'asc')
-                           ->take($num_to_recruit)
-                           ->get();
-
-          Log::info('Moving ' .$selected->count(). ' players into trial: ' .$trial->id);
-
-
-          // Shuffle the collection of selected players so that
-          // their network node positions will essentially
-          // be randomized
-          $selected = $selected->shuffle();
-
-          // Insert each selected player into the trial_user table
-          // along with the group they are part of
-
-          $group = 1;
-          $count = 0; // Counts the users added so far
-          foreach ($selected as $user) {
-              Log::info('Inserting into trial_user user: '.$user->user_id.' trial: '.$trial->id);
-              DB::table('trial_user')->insert([
-                'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
-                'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
-                'user_id' => $user->user_id,
-                'trial_id' => $trial->id,
-                'group_id' => \DB::table('groups')
-                              ->where('trial_id', $trial->id)
-                              ->where('group', $group)
-                              ->value('id')
-              ]);
-              $count++;
-
-              Log::info("Moved ". $user->user_id ." into trial ". $trial->id);
-              if($count >= $num_to_recruit / $trial->num_groups) $group++;
-              // ... And delete that user from the queue
-              Log::info("Moved USER ID ". $user->user_id ." into trial ". $trial->id);
-              \oceler\Log::trialLog($trial->id, "Moved USER ID ". $user->user_id ." into trial");
-              Queue::where('user_id', '=', $user->user_id)->delete();
-              Log::info("Removed USER ID ". $user->user_id ." from queue");
-          }
-          $inTrialPostSelection = DB::table('trial_user')->where('trial_id', $trial->id)->count();
-          Log::info("Moved ". $count ." players into trial ". $trial->id.'. Total now in trial: '.$inTrialPostSelection);
-      }
-    }
-
-    /*
-      Selects players (equal to trial->num_players) form an overrecruited trial.
+    /**
+     * Stop a specific trial.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    private function selectPlayersForTrial($trial) {
-      // Get all players who have read the instructions
-      $activePlayers = $trial->users()->wherePivot('instructions_read', true)->get();
-      $toRemove = count($activePlayers) - $trial->num_players;
-      if($toRemove > 0) {
-        $selectedPlayers = $activePlayers->random($toRemove);
-        Log::info($toRemove." more players than needed for trial ".$trial->id);
-        if($toRemove == 1) {
-          $selectedPlayers = collect([$selectedPlayers]);
-        }
-        foreach($selectedPlayers as $player) {
-          Log::info("Selected for removal: ".$player->id);
-          \DB::table('trial_user')->where('user_id', $player->id)->update(['selected_for_removal' => true]);
-        }
-      }
-    }
-
-    private function deleteInactiveQueueUsers()
+    public function stopTrial(int $id): RedirectResponse
     {
-        $INACTIVE_QUEUE_TIME = 6;
-        $dt = \Carbon\Carbon::now();
-        $toDelete = Queue::where('updated_at', '<', $dt->subSeconds($INACTIVE_QUEUE_TIME))->lists('user_id')->toArray();
-        if(count($toDelete) > 0) {
-          Log::info("Deleting from the Queue due to inactivity: ". implode(',', $toDelete));
-          Queue::whereIn('user_id', $toDelete)->delete();
+        try {
+            $this->trialService->stopTrial($id);
+            Log::info('Trial stopped by admin', ['trial_id' => $id]);
+
+            return redirect()->route('admin.trials')
+                ->with('success', 'Trial stopped successfully');
+        } catch (\Exception $e) {
+            Log::error('Trial stop failed', [
+                'trial_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Failed to stop trial');
         }
     }
 
-    public function testQueueManager()
+    /**
+     * Stop all active trials.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function stopAllTrials(): RedirectResponse
     {
-      $users = \oceler\User::where('id', '<', 6)->get();
-      foreach($users as $user) {
-        $player = \oceler\Queue::firstOrNew(['user_id' => $user->id]);
-        $player->trial_type = (rand(1, 2));
-        $player->save();
-      }
-      $queued_players = Queue::get()->count();
-      dump("There are ".$queued_players." in the queue.");
-      $trial_users = DB::table('trial_user')->get();
-      dump("There are ". count($trial_users). " placed in trials.");
+        try {
+            $this->trialService->stopAllTrials();
+            Log::info('All trials stopped by admin');
 
-      for($i = 0; $i < 3; $i++) {
-        $trial = new Trial;
-        $trial->name = 'QUEUE MANAGER TEST '.$i;
-        $trial->trial_type = rand(1, 2);
-        $trial->num_players = rand(2, 4);
-        $trial->is_active = 1;
-        $trial->num_groups = 1;
-        $trial->save();
+            return redirect()->route('admin.trials')
+                ->with('success', 'All trials stopped successfully');
+        } catch (\Exception $e) {
+            Log::error('Stop all trials failed', [
+                'error' => $e->getMessage()
+            ]);
 
-        $group = new \oceler\Group;
-        $group->trial_id = $trial->id;
-        $group->network_id = 2;
-        $group->group = 1;
-        $group->save();
-      }
+            return back()->with('error', 'Failed to stop all trials');
+        }
     }
 
-    public function testHitProcess()
+    /**
+     * Display the trial queue for players.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function enterQueue(): View|RedirectResponse
     {
-      $active_players = DB::table('trial_user')->lists('user_id');
-      $PROCESS_IF_WITHIN = 2; // Hours
-      $dt = \Carbon\Carbon::now();
-      $hits = \oceler\MturkHit::whereNotIn('user_id', $active_players)
-                               ->where('hit_processed', '=', 0)
-                               ->where('trial_id', '>', 0)
-                               ->where('updated_at', '>', $dt->subHours($PROCESS_IF_WITHIN))
-                               ->orWhere('trial_id', '=', -1)
-                               ->whereNotIn('user_id', $active_players)
-                               ->where('hit_processed', '=', 0)
-                               ->where('updated_at', '>', $dt->subHours($PROCESS_IF_WITHIN))
-                               ->get();
-      dump($hits);
+        try {
+            $user = Auth::user();
+            $result = $this->trialService->enterQueue($user);
+
+            if ($result['redirect']) {
+                return redirect()->route('player.instructions');
+            }
+
+            return view('player.queue');
+        } catch (\Exception $e) {
+            Log::error('Queue entry failed', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Failed to enter queue');
+        }
     }
 
-    public function testWhatevs(Request $request) {
+    /**
+     * Display the specified trial.
+     *
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
+    public function getTrial(int $id): View
+    {
+        $trial = $this->trialService->getTrialDetails($id);
+        return view('admin.trial-view', $trial);
+    }
 
+    /**
+     * Show the form for editing the specified trial.
+     *
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
+    public function editTrial(int $id): View
+    {
+        $trial = $this->trialService->getTrialForEdit($id);
+        return view('admin.trial-config', $trial);
+    }
+
+    /**
+     * Update the specified trial in storage.
+     *
+     * @param int $id
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateTrial(int $id, Request $request): RedirectResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'distribution_interval' => 'required|integer',
+                'num_players' => 'required|integer',
+                'mult_factoid' => 'nullable|numeric',
+                'pay_correct' => 'nullable|numeric',
+                'pay_time_factor' => 'nullable|numeric',
+                'payment_per_solution' => 'required|numeric'
+            ]);
+
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            $this->trialService->updateTrial($id, $request->all());
+            Log::info('Trial updated', ['trial_id' => $id]);
+
+            return redirect()->route('admin.trials')
+                ->with('success', 'Trial updated successfully');
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            Log::error('Trial update failed', [
+                'trial_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Failed to update trial');
+        }
+    }
+
+    /**
+     * Get all active trial players and their solutions.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getListenAllTrialPlayers(): JsonResponse
+    {
+        try {
+            $trials = $this->trialService->getActiveTrialsWithPlayers();
+            return response()->json($trials);
+        } catch (\Exception $e) {
+            Log::error('Failed to get active trial players', [
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Failed to get active trial players'], 500);
+        }
+    }
+
+    /**
+     * Get players and their solutions for a specific trial.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getListenTrialPlayers(int $id): JsonResponse
+    {
+        try {
+            $trial = $this->trialService->getTrialWithPlayers($id);
+            return response()->json($trial);
+        } catch (\Exception $e) {
+            Log::error('Failed to get trial players', [
+                'trial_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Failed to get trial players'], 500);
+        }
+    }
+
+    /**
+     * Manage the queue of players waiting to join a trial.
+     *
+     * @return int
+     */
+    public function queue(): int
+    {
+        try {
+            return $this->trialService->manageQueue();
+        } catch (\Exception $e) {
+            Log::error('Queue management failed', [
+                'error' => $e->getMessage()
+            ]);
+
+            return -1;
+        }
+    }
+
+    /**
+     * Handle when a trial is stopped.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function trialStopped(): View
+    {
+        try {
+            $this->trialService->handleTrialStopped(Auth::id());
+            Log::info('Trial stopped page viewed', ['user_id' => Auth::id()]);
+            
+            return view('player.trial-stopped');
+        } catch (\Exception $e) {
+            Log::error('Trial stopped page failed', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return view('player.trial-stopped');
+        }
+    }
+
+    /**
+     * Check the status of instructions for a trial.
+     *
+     * @param int $trial_id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function instructionsStatus(int $trial_id): JsonResponse
+    {
+        try {
+            $status = $this->trialService->getInstructionsStatus($trial_id, Auth::id());
+            return response()->json($status);
+        } catch (\Exception $e) {
+            Log::error('Failed to get instructions status', [
+                'trial_id' => $trial_id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Failed to get instructions status'], 500);
+        }
+    }
+
+    /**
+     * Mark instructions as read for a user.
+     *
+     * @param int $user_id
+     * @return void
+     */
+    public function markInstructionsAsRead(int $user_id): void
+    {
+        try {
+            $this->trialService->markInstructionsAsRead($user_id);
+            Log::info('Instructions marked as read', ['user_id' => $user_id]);
+        } catch (\Exception $e) {
+            Log::error('Failed to mark instructions as read', [
+                'user_id' => $user_id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Handle when a user is not selected for a trial.
+     *
+     * @param int $trial_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function notSelectedForTrial(int $trial_id): RedirectResponse
+    {
+        try {
+            $this->trialService->handleNotSelected($trial_id, Auth::id());
+            return redirect()->route('player.end-task', ['reason' => 'overrecruited']);
+        } catch (\Exception $e) {
+            Log::error('Failed to handle not selected status', [
+                'trial_id' => $trial_id,
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Failed to process selection status');
+        }
+    }
+
+    /**
+     * Manage the queue of players.
+     *
+     * @return void
+     */
+    public function manageQueue(): void
+    {
+        try {
+            $this->trialService->manageQueue();
+        } catch (\Exception $e) {
+            Log::error('Queue management failed', [
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }

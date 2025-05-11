@@ -1,71 +1,127 @@
 <?php
 
-namespace oceler\Exceptions;
+namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Auth;
-use Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that should not be reported.
+     * A list of the exception types that are not reported.
      *
      * @var array
      */
     protected $dontReport = [
-        HttpException::class,
-        ModelNotFoundException::class,
+        \Illuminate\Auth\AuthenticationException::class,
+        \Illuminate\Auth\Access\AuthorizationException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Illuminate\Session\TokenMismatchException::class,
+        \Illuminate\Validation\ValidationException::class,
     ];
+
+    /**
+     * The list of the inputs that are never flashed to the session on validation exceptions.
+     *
+     * @var array<int, string>
+     */
+    protected $dontFlash = [
+        'current_password',
+        'password',
+        'password_confirmation',
+    ];
+
+    /**
+     * Register the exception handling callbacks for the application.
+     */
+    public function register(): void
+    {
+        $this->reportable(function (Throwable $e) {
+            if ($this->shouldReport($e)) {
+                Log::error($e->getMessage(), [
+                    'exception' => $e,
+                    'user_id' => Auth::id(),
+                ]);
+            }
+        });
+
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Resource not found'
+                ], 404);
+            }
+        });
+
+        $this->renderable(function (AuthenticationException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Unauthenticated'
+                ], 401);
+            }
+        });
+    }
 
     /**
      * Report or log an exception.
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return void
      */
-    public function report(Exception $e)
+    public function report(Throwable $e)
     {
-        return parent::report($e);
+        parent::report($e);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $e
+     * @param  \Throwable  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $e)
+    public function render($request, Throwable $e)
     {
         if ($e instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($e->getMessage(), $e);
         }
 
         if(Auth::user()){
-          Log::info("USER ID ". Auth::user()->id ." has generated an Exception");
-        }
-        else {
-          Log::info("A non-logged-in user has generated an Exception");
+            Log::info("USER ID ". Auth::user()->id ." has generated an Exception");
+        } else {
+            Log::info("A non-logged-in user has generated an Exception");
         }
 
         Log::info("Exception ". get_class($e) .' '.$e->getMessage() ." URI: ".$_SERVER['REQUEST_URI']);
 
-        //return parent::render($request, $e);
-        //Log::info("USER ID ". $u_id ." is loading main trial page");
-        // If we are on the dev server (local) or an admin
-
         if(app()->isLocal() || (Auth::user() && Auth::user()->role_id == 2)) {
-          return parent::render($request, $e);
+            return parent::render($request, $e);
         }
 
-        // Otherwise, don't render the exception, instead take them to generic error message
         return redirect('/player/trial/trial-stopped');
+    }
+
+    /**
+     * Convert an authentication exception into a response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Auth\AuthenticationException  $exception
+     * @return \Illuminate\Http\Response
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return $request->expectsJson()
+            ? response()->json(['message' => 'Unauthenticated.'], 401)
+            : redirect()->guest(route('login'));
     }
 }

@@ -1,64 +1,71 @@
 <?php
 
-namespace oceler\Console\Commands;
+namespace App\Console\Commands;
+
 use Illuminate\Console\Command;
-use DB;
+use App\Models\MturkHit;
+use App\MTurk\MTurk;
+use Illuminate\Support\Facades\DB;
 
 class MTurkProcessQualification extends Command
 {
-
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'MTurkProcessQualification';
+    protected $signature = 'mturk:process-qualification';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Updates HIT qualifications using the MTurk API';
-
-    private $hits;
-
+    protected $description = 'Process MTurk qualifications';
 
     /**
      * Create a new command instance.
-     *
-     * @return void
      */
     public function __construct()
     {
         parent::__construct();
-
-        $active_players = DB::table('trial_user')->lists('user_id');
-        $PROCESS_IF_WITHIN = 2; // Hours
-        $dt = \Carbon\Carbon::now();
-        $this->hits = \oceler\MturkHit::whereNotIn('user_id', $active_players)
-                                 ->where('qualification_processed', '=', 0)
-                                 ->where('trial_id', '>', 0)
-                                 ->where('updated_at', '>', $dt->subHours($PROCESS_IF_WITHIN))
-                                 ->orWhere('trial_id', '=', -1)
-                                 ->whereNotIn('user_id', $active_players)
-                                 ->where('updated_at', '>', $dt->subHours($PROCESS_IF_WITHIN))
-                                 ->where('qualification_processed', '=', 0)
-                                 ->get();
     }
 
     /**
-     * Execute the command.
-     *
-     * @return void
+     * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
+        $active_players = DB::table('trial_user')
+            ->where('selected_for_removal', 0)
+            ->pluck('user_id')
+            ->toArray();
+
+        $hits = MturkHit::whereNotIn('user_id', $active_players)
+            ->where('status', 'Approved')
+            ->where('qualification_processed', false)
+            ->get();
+
+        if ($hits->isEmpty()) {
+            $this->info('No qualifications to process.');
+            return;
+        }
+
         $mturks = [];
-        foreach ($this->hits as $key => $hit) {
-          $mturks[$key] = new \oceler\MTurk\MTurk();
-          $mturks[$key]->hit = $hit;
-          $mturks[$key]->process_qualification();
+        foreach ($hits as $key => $hit) {
+            try {
+                if (!isset($mturks[$key])) {
+                    $mturks[$key] = new MTurk();
+                }
+                $result = $mturks[$key]->processQualification($hit);
+                if ($result) {
+                    $this->info("Processed qualification for worker {$hit->worker_id}");
+                } else {
+                    $this->error("Failed to process qualification for worker {$hit->worker_id}");
+                }
+            } catch (\Exception $e) {
+                $this->error("Error processing qualification for worker {$hit->worker_id}: {$e->getMessage()}");
+            }
         }
     }
 }

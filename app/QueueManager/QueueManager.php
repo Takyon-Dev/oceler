@@ -1,9 +1,9 @@
 <?php
-namespace oceler\QueueManager;
+namespace App\QueueManager;
 
 use DB;
-use oceler\Queue;
-use oceler\Trial;
+use App\Queue;
+use App\Trial;
 
 
 class QueueManager

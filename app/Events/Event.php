@@ -1,6 +1,6 @@
 <?php
 
-namespace oceler\Events;
+namespace App\Events;
 
 abstract class Event
 {

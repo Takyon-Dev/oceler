@@ -1,31 +1,40 @@
 <?php
 
-namespace oceler\Providers;
+namespace App\Providers;
 
-use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The policy mappings for the application.
+     * The model to policy mappings for the application.
      *
-     * @var array
+     * @var array<class-string, class-string>
      */
     protected $policies = [
-        'oceler\Model' => 'oceler\Policies\ModelPolicy',
+        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
     ];
 
     /**
-     * Register any application authentication / authorization services.
-     *
-     * @param  \Illuminate\Contracts\Auth\Access\Gate  $gate
-     * @return void
+     * Register any authentication / authorization services.
      */
-    public function boot(GateContract $gate)
+    public function boot(): void
     {
-        parent::registerPolicies($gate);
+        $this->registerPolicies();
 
-        //
+        // Define gates here if needed
+        Gate::define('is-admin', fn (User $user) => $user->role_id === 2);
+        Gate::define('is-player', fn (User $user) => $user->role_id === 1);
+
+        // Define role-based gates
+        Gate::define('manage-trials', fn (User $user) => $user->role_id === 2);
+        Gate::define('participate-in-trials', fn (User $user) => $user->role_id === 1);
+
+        // Define resource-based gates
+        Gate::define('view-trial', fn (User $user, $trial) => 
+            $user->role_id === 2 || $trial->users->contains($user)
+        );
     }
 }
