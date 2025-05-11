@@ -62,7 +62,7 @@ Route::middleware(['auth', 'roles:player'])->group(function () {
     Route::get('player/trial/queue', [TrialController::class, 'enterQueue']);
     Route::get('player/trial/queue/status', [PlayerController::class, 'queueStatus']);
     Route::get('player/trial/instructions', [PlayerController::class, 'showInstructions']);
-    Route::get('player/trial/trial-stopped', [PlayerController::class, 'trialStopped']);
+    Route::get('player/trial/stopped', [PlayerController::class, 'trialStopped'])->name('player.trial.stopped');
     Route::get('player/trial/instructions/status/{id}', [TrialController::class, 'instructionsStatus']);
     Route::get('player/trial/instructions/status/read/{id}', [TrialController::class, 'markInstructionsAsRead']);
     Route::get('player/trial/not-selected/{id}', [TrialController::class, 'notSelectedForTrial']);
@@ -70,7 +70,6 @@ Route::middleware(['auth', 'roles:player'])->group(function () {
     Route::get('player/post-trial-survey', [PlayerController::class, 'showPostTrialSurvey']);
     Route::get('player/trial/new-round', [PlayerController::class, 'startTrialRound']);
     Route::get('player/trial/end', [PlayerController::class, 'endTrial']);
-    Route::get('player/trial/stopped', [PlayerController::class, 'trialStopped']);
     Route::get('player/end-task/{reason}', [PlayerController::class, 'endTask']);
     Route::post('/solution', [PlayerController::class, 'postSolution']);
     Route::post('/message', [MessageController::class, 'postMessage']);

@@ -119,7 +119,7 @@ class Handler extends ExceptionHandler
                 return parent::render($request, $e);
             }
 
-            return redirect('/player/trial/trial-stopped');
+            return redirect()->route('player.trial.stopped');
         } catch (\Throwable $t) {
             // Fallback if facades aren't ready
             return response()->json(['message' => 'An error occurred'], 500);
