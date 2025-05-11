@@ -17,7 +17,7 @@ class CheckRole
 	 * @param  string  $role
 	 * @return mixed
 	 */
-	public function handle(Request $request, Closure $next, string $role): Response
+	public function handle(Request $request, Closure $next, string ...$roles): Response
 	{
 		if (!Auth::check()) {
 			return response()->json([
@@ -28,8 +28,10 @@ class CheckRole
 			], Response::HTTP_UNAUTHORIZED);
 		}
 
-		if (Auth::user()->hasRole($role)) {
-			return $next($request);
+		foreach ($roles as $role) {
+			if (Auth::user()->hasRole($role)) {
+				return $next($request);
+			}
 		}
 
 		return response()->json([

@@ -80,7 +80,7 @@ Route::middleware(['auth', 'roles:player'])->group(function () {
 });
 
 // Admin routes
-Route::middleware(['auth', 'roles:administrator'])->group(function () {
+Route::middleware(['auth', 'roles:Admin'])->group(function () {
     Route::get('/admin/players', [AdminController::class, 'showPlayers'])->name('admin_home');
     Route::get('/admin/listen/queue', [AdminController::class, 'getListenQueue']);
     Route::get('/admin/listen/trial', [TrialController::class, 'getListenAllTrialPlayers']);
