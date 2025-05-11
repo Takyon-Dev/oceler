@@ -62,7 +62,7 @@ Route::middleware(['auth', 'roles:player'])->group(function () {
     Route::get('player/trial/queue', [TrialController::class, 'enterQueue']);
     Route::get('player/trial/queue/status', [PlayerController::class, 'queueStatus']);
     Route::get('player/trial/instructions', [PlayerController::class, 'showInstructions']);
-    Route::get('player/trial/trial-stopped', [TrialController::class, 'trialStopped']);
+    Route::get('player/trial/trial-stopped', [PlayerController::class, 'trialStopped']);
     Route::get('player/trial/instructions/status/{id}', [TrialController::class, 'instructionsStatus']);
     Route::get('player/trial/instructions/status/read/{id}', [TrialController::class, 'markInstructionsAsRead']);
     Route::get('player/trial/not-selected/{id}', [TrialController::class, 'notSelectedForTrial']);

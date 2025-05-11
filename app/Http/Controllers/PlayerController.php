@@ -481,7 +481,7 @@ class PlayerController extends Controller
      */
     public function trialStopped(): View
     {
-        return view('player.trial-stopped');
+        return view('layouts.player.trial-stopped');
     }
 
     /**
