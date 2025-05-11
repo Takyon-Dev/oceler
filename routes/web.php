@@ -116,7 +116,7 @@ Route::get('/home', function () {
     }
     
     return redirect('/player');
-})->middleware('auth');
+})->middleware('auth')->name('home');
 
 // Testing routes...
 Route::get('/player/timer-test', [PlayerController::class, 'timerTest']);
