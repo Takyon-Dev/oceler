@@ -46,10 +46,15 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             if ($this->shouldReport($e)) {
-                Log::error($e->getMessage(), [
-                    'exception' => $e,
-                    'user_id' => Auth::id(),
-                ]);
+                try {
+                    Log::error($e->getMessage(), [
+                        'exception' => $e,
+                        'user_id' => Auth::id(),
+                    ]);
+                } catch (\Throwable $t) {
+                    // Fallback if facades aren't ready
+                    error_log($e->getMessage());
+                }
             }
         });
 
@@ -80,7 +85,12 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $e)
     {
-        parent::report($e);
+        try {
+            parent::report($e);
+        } catch (\Throwable $t) {
+            // Fallback if facades aren't ready
+            error_log($e->getMessage());
+        }
     }
 
     /**
@@ -92,23 +102,28 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-        if ($e instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException($e->getMessage(), $e);
+        try {
+            if ($e instanceof ModelNotFoundException) {
+                $e = new NotFoundHttpException($e->getMessage(), $e);
+            }
+
+            if(Auth::user()){
+                Log::info("USER ID ". Auth::user()->id ." has generated an Exception");
+            } else {
+                Log::info("A non-logged-in user has generated an Exception");
+            }
+
+            Log::info("Exception ". get_class($e) .' '.$e->getMessage() ." URI: ".$_SERVER['REQUEST_URI']);
+
+            if(app()->isLocal() || (Auth::user() && Auth::user()->role_id == 2)) {
+                return parent::render($request, $e);
+            }
+
+            return redirect('/player/trial/trial-stopped');
+        } catch (\Throwable $t) {
+            // Fallback if facades aren't ready
+            return response()->json(['message' => 'An error occurred'], 500);
         }
-
-        if(Auth::user()){
-            Log::info("USER ID ". Auth::user()->id ." has generated an Exception");
-        } else {
-            Log::info("A non-logged-in user has generated an Exception");
-        }
-
-        Log::info("Exception ". get_class($e) .' '.$e->getMessage() ." URI: ".$_SERVER['REQUEST_URI']);
-
-        if(app()->isLocal() || (Auth::user() && Auth::user()->role_id == 2)) {
-            return parent::render($request, $e);
-        }
-
-        return redirect('/player/trial/trial-stopped');
     }
 
     /**
