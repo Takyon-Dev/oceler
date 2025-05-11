@@ -49,7 +49,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin routes
 Route::middleware(['auth', 'roles:Admin'])->group(function () {
-    Route::get('/admin/players', [AdminController::class, 'showPlayers'])->name('admin_home');
+    Route::get('/admin/players', [AdminController::class, 'users'])->name('admin_home');
     Route::get('/admin/listen/queue', [AdminController::class, 'getListenQueue']);
     Route::get('/admin/listen/trial', [TrialController::class, 'getListenAllTrialPlayers']);
     Route::get('/admin/listen/trial/{id}', [TrialController::class, 'getListenTrialPlayers']);
