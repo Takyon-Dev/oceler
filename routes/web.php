@@ -48,13 +48,14 @@ Route::middleware('guest')->group(function () {
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/home', function () {
-    return Auth::user()->role_id == 2
+    $user = Auth::user();
+    return $user->hasRole('Admin')
         ? Redirect::route('admin_home')
         : Redirect::route('player_home');
 })->middleware('auth');
 
 // Player routes
-Route::middleware(['auth', 'roles:player'])->group(function () {
+Route::middleware(['auth', 'roles:Player'])->group(function () {
     Route::get('player/', [PlayerController::class, 'home'])->name('player_home');
     Route::get('player/ping/solution/{last_sol}/message/{last_msg}', [PlayerController::class, 'ping']);
     Route::get('player/trial', [PlayerController::class, 'playerTrial']);

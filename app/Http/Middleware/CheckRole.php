@@ -14,18 +14,13 @@ class CheckRole
 	 *
 	 * @param  \Illuminate\Http\Request  $request
 	 * @param  \Closure  $next
-	 * @param  string  $role
+	 * @param  string  ...$roles
 	 * @return mixed
 	 */
 	public function handle(Request $request, Closure $next, string ...$roles): Response
 	{
 		if (!Auth::check()) {
-			return response()->json([
-				'error' => [
-					'code' => 'UNAUTHORIZED',
-					'description' => 'You must be logged in to access this resource.'
-				]
-			], Response::HTTP_UNAUTHORIZED);
+			return redirect()->route('login');
 		}
 
 		foreach ($roles as $role) {
@@ -34,11 +29,7 @@ class CheckRole
 			}
 		}
 
-		return response()->json([
-			'error' => [
-				'code' => 'INSUFFICIENT_ROLE',
-				'description' => 'You are not authorized to access this resource.'
-			]
-		], Response::HTTP_FORBIDDEN);
+		return redirect()->route('home')
+			->with('error', 'You do not have permission to access this resource.');
 	}
 }
