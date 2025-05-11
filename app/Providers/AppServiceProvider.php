@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Foundation\Support\Providers\ServiceProvider as BaseServiceProvider;
 
-class AppServiceProvider extends BaseServiceProvider
+class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
